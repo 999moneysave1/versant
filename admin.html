@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Student Results</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 20px; background: #1a202c; color: #fff; }
+        .container { max-width: 1000px; margin: auto; background: #2d3748; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        h2 { text-align: center; color: #63b3ed; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 14px; }
+        th, td { border: 1px solid #4a5568; padding: 12px; text-align: left; }
+        th { background-color: #3182ce; color: white; }
+        tr:nth-child(even) { background-color: #3a475a; }
+        tr:hover { background-color: #4a5568; }
+        .hidden { display: none; }
+        .login-box { text-align: center; margin-top: 50px; background: #2d3748; padding: 30px; border-radius: 10px; max-width: 400px; margin-left: auto; margin-right: auto; }
+        input { padding: 10px; margin: 10px 0; width: 80%; border-radius: 5px; border: 1px solid #4a5568; background: #1a202c; color: white; }
+        button { padding: 10px 20px; background: #38a169; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button:hover { opacity: 0.9; }
+        .status-pass { color: #48bb78; font-weight: bold; }
+        .status-fail { color: #f56565; font-weight: bold; }
+        .btn-delete { background: #e53e3e; padding: 5px 10px; font-size: 12px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Admin Login Screen -->
+    <div id="login-screen" class="login-box">
+        <h2>🔒 Admin Login</h2>
+        <input type="password" id="admin-pass" placeholder="Enter Admin Password">
+        <br>
+        <button onclick="loginAdmin()">Login</button>
+    </div>
+
+    <!-- Results Dashboard Screen -->
+    <div id="dashboard-screen" class="hidden">
+        <div style="display: flex; justify-between; align-items: center; border-bottom: 1px solid #4a5568; pb-10;">
+            <h2>📊 Student Test Results</h2>
+            <button onclick="fetchResults()" style="background:#3182ce;">🔄 Refresh Data</button>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>S.No.</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Score</th>
+                    <th>Status</th>
+                    <th>Date & Time</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody id="results-table">
+                <!-- Data from Firebase will appear here -->
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getFirestore, collection, getDocs, query, orderBy, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    // 🟢 आपकी वेबसाइट का Firebase Configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyAZtEP3pUWHLUMQhV-c6SnaQT4TFiOYb74",
+        authDomain: "versant-mcat.firebaseapp.com",
+        projectId: "versant-mcat",
+        storageBucket: "versant-mcat.firebasestorage.app",
+        messagingSenderId: "474002889841",
+        appId: "1:474002889841:web:b1e9780aa13737fb320fd0",
+        measurementId: "G-C1ML6Q9CWF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    // 🔑 Admin Password Login Check
+    window.loginAdmin = function() {
+        const pass = document.getElementById('admin-pass').value;
+        if(pass === "eewsa999") { // 🔴 आपका पासवर्ड: eewsa999
+            document.getElementById('login-screen').classList.add('hidden');
+            document.getElementById('dashboard-screen').classList.remove('hidden');
+            fetchResults();
+        } else {
+            alert("गलत पासवर्ड!");
+        }
+    };
+
+    // 📊 Fetch Results from Firebase
+    window.fetchResults = async function() {
+        const tableBody = document.getElementById('results-table');
+        tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>लोड हो रहा है...</td></tr>";
+
+        try {
+            const q = query(collection(db, "test_results"), orderBy("submittedAt", "desc"));
+            const querySnapshot = await getDocs(q);
+
+            tableBody.innerHTML = "";
+            let count = 1;
+
+            if (querySnapshot.empty) {
+                tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center;'>कोई रिजल्ट नहीं मिला।</td></tr>";
+                return;
+            }
+
+            querySnapshot.forEach((docSnap) => {
+                const data = docSnap.data();
+                const docId = docSnap.id;
+                const date = data.submittedAt ? new Date(data.submittedAt.toDate()).toLocaleString() : "N/A";
+                const statusClass = data.status === "PASSED" ? "status-pass" : "status-fail";
+
+                const row = `<tr>
+                    <td>${count++}</td>
+                    <td><b>${data.name}</b></td>
+                    <td>${data.email}</td>
+                    <td><b style="color:#63b3ed;">${data.score} / 100</b></td>
+                    <td class="${statusClass}">${data.status || 'N/A'}</td>
+                    <td>${date}</td>
+                    <td><button class="btn-delete" onclick="deleteRecord('${docId}')">🗑 Delete</button></td>
+                </tr>`;
+                tableBody.innerHTML += row;
+            });
+        } catch (error) {
+            console.error("Data Fetch Error:", error);
+            tableBody.innerHTML = "<tr><td colspan='7' style='text-align:center; color:#f56565;'>डेटा लोड करने में समस्या आई।</td></tr>";
+        }
+    };
+
+    // 🗑 Delete Record Functionality
+    window.deleteRecord = async function(docId) {
+        if (confirm("क्या आप इस रिकॉर्ड को हटाना चाहते हैं?")) {
+            try {
+                await deleteDoc(doc(db, "test_results", docId));
+                alert("रिकॉर्ड डिलीट हो गया!");
+                fetchResults(); // Refresh list
+            } catch (error) {
+                console.error("Delete error:", error);
+                alert("डिलीट करने में समस्या आई।");
+            }
+        }
+    };
+</script>
+
+</body>
+</html>

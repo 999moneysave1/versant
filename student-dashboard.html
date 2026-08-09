@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Pro Batch 1 - Student & Admin Analytics Portal</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Chart.js CDN for Weekly Performance Graphs -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Tesseract OCR CDN (For Scanning Images to Text) -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        html,
+        body {
+            width: 100%;
+            max-width: 100vw;
+            overflow-x: hidden !important;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        .text-3xs {
+            font-size: 0.65rem;
+            line-height: 0.875rem;
+        }
+
+        .text-2xs {
+            font-size: 0.72rem;
+            line-height: 0.95rem;
+        }
+
+        @media (min-width: 380px) {
+            .xs\:text-xs {
+                font-size: 0.75rem;
+            }
+
+            .xs\:text-sm {
+                font-size: 0.875rem;
+            }
+
+            .xs\:text-base {
+                font-size: 1rem;
+            }
+        }
+
+        .swal-mobile-size {
+            width: 92% !important;
+            max-width: 360px !important;
+            padding: 1rem !important;
+            background: #0f172a !important;
+            color: #fff !important;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-900 text-white min-h-screen p-2 xs:p-3 sm:p-6 font-sans antialiased">
+
+    <!-- 1. LOGIN SCREEN -->
+    <div id="login-modal" class="fixed inset-0 bg-gray-950/95 flex items-center justify-center p-3 z-50">
+        <div class="bg-gray-800 border border-gray-700 p-4 xs:p-6 rounded-xl w-full max-w-sm space-y-4 shadow-2xl">
+            <div class="text-center space-y-1">
+                <h2 class="text-base xs:text-lg font-bold text-amber-400">PRO BATCH 1 PORTAL</h2>
+                <p class="text-3xs xs:text-xs text-gray-400">Login to view your Weekly Results & Fees Status</p>
+            </div>
+
+            <div class="space-y-3">
+                <div>
+                    <label class="text-3xs text-gray-300 block mb-1">Email ID</label>
+                    <input type="email" id="login-email" placeholder="e.g. shahzan.pro1@gmail.com"
+                        class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <div>
+                    <label class="text-3xs text-gray-300 block mb-1">Password</label>
+                    <input type="password" id="login-pass" placeholder="Enter password"
+                        class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-400">
+                </div>
+                <button type="button" id="btn-login-submit"
+                    class="w-full bg-amber-400 hover:bg-amber-500 text-black font-bold p-2.5 rounded text-xs transition-colors">
+                    🔑 Login to Dashboard
+                </button>
+            </div>
+            <div class="text-center pt-2">
+                <p class="text-3xs text-gray-400 text-center">Powered by <b>999moneysave.co.in</b></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. MAIN DASHBOARD CONTENT -->
+    <div id="dashboard-content" class="hidden max-w-5xl mx-auto space-y-4 xs:space-y-6">
+
+        <!-- Header Branding & Logout -->
+        <header
+            class="flex flex-col xs:flex-row justify-between items-center bg-gray-800 p-3 xs:p-4 rounded-xl border border-gray-700 gap-3">
+            <div>
+                <h1 class="text-base xs:text-xl sm:text-2xl font-bold text-blue-400">🎓 Pro Batch 1 Analytics</h1>
+                <p class="text-3xs xs:text-xs text-gray-400">Powered by <b>999moneysave.co.in</b></p>
+            </div>
+
+            <!-- 🟢 ADMIN ACTIVE EXAM WEEK CONTROL BOX (Visible for Admin Only) -->
+            <div id="admin-week-control-box"
+                class="hidden bg-gray-750 p-2 rounded-lg border border-amber-400/80 flex items-center gap-2">
+                <label class="text-3xs text-amber-300 font-bold whitespace-nowrap">🎯 Set Active Exam Week:</label>
+                <select id="admin-active-week-select"
+                    class="bg-gray-700 text-xs text-amber-300 font-bold p-1 rounded border border-gray-600 focus:outline-none">
+                    <!-- Dynamically loaded -->
+                </select>
+                <button onclick="saveActiveExamWeekByAdmin()"
+                    class="bg-amber-400 hover:bg-amber-500 text-black font-bold px-2 py-1 rounded text-3xs whitespace-nowrap">
+                    🔒 Lock Active Week
+                </button>
+            </div>
+
+            <!-- Admin Student Switch Dropdown -->
+            <div id="admin-controls" class="hidden w-full xs:w-auto">
+                <select id="admin-student-select" onchange="switchStudentView()"
+                    class="w-full xs:w-64 bg-gray-700 border border-amber-400 rounded p-1.5 text-xs text-amber-300 font-semibold cursor-pointer">
+                    <!-- Admin Options Loaded Dynamically -->
+                </select>
+            </div>
+
+            <button onclick="handleLogout()"
+                class="bg-red-600 hover:bg-red-700 text-white text-3xs xs:text-xs px-3 py-1.5 rounded font-bold self-end xs:self-center">
+                🚪 Logout
+            </button>
+        </header>
+
+        <!-- 🟢 ADMIN ADVANCED QUESTION & SECTION MANAGER -->
+        <div id="admin-question-manager" class="hidden bg-gray-750 p-3 rounded-xl border border-amber-500/50 space-y-3">
+            <span class="text-xs font-bold text-amber-400 block border-b border-gray-600 pb-1.5">
+                🛠️ Dynamic Section & Question Builder
+            </span>
+
+            <!-- 1. ACTIVE SECTIONS TOGGLE CHECKBOXES -->
+            <div>
+                <label class="text-3xs text-gray-300 block mb-1 font-bold">Enable/Disable Exam Sections:</label>
+                <div class="grid grid-cols-2 xs:grid-cols-3 gap-1.5 text-3xs">
+                    <label class="flex items-center space-x-1"><input type="checkbox" id="sec-a" checked
+                            class="accent-amber-400"> <span>Sec A (Grammar)</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" id="sec-b" checked
+                            class="accent-amber-400"> <span>Sec B (Email)</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" id="sec-c" checked
+                            class="accent-amber-400"> <span>Sec C (Typing)</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" id="sec-d" checked
+                            class="accent-amber-400"> <span>Sec D (Read Aloud)</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" id="sec-e" checked
+                            class="accent-amber-400"> <span>Sec E (Memory)</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" id="sec-f" checked
+                            class="accent-amber-400"> <span>Sec F (Listen)</span></label>
+                    <label class="flex items-center space-x-1"><input type="checkbox" id="sec-g" checked
+                            class="accent-amber-400"> <span>Sec G (Story)</span></label>
+                    <!-- 🟢 NEW CUSTOM SECTIONS -->
+                    <label class="flex items-center space-x-1 text-green-300"><input type="checkbox" id="sec-tf" checked
+                            class="accent-green-400"> <span>Sec H (True/False)</span></label>
+                    <label class="flex items-center space-x-1 text-green-300"><input type="checkbox" id="sec-fib"
+                            checked class="accent-green-400"> <span>Sec I (Fill Blanks)</span></label>
+                </div>
+            </div>
+
+            <!-- 2. OCR IMAGE SCANNER & JSON PASTE BOX -->
+            <div class="space-y-2">
+                <label class="text-3xs text-gray-300 block font-bold">Upload Question Paper Image (OCR Scan - Max 4) OR
+                    Paste JSON:</label>
+                <div class="flex items-center gap-2">
+                    <input type="file" id="ocr-image-file" accept="image/*" multiple
+                        class="text-3xs text-gray-400 bg-gray-700 p-1 rounded w-full border border-gray-600">
+                    <button onclick="scanQuestionImage()"
+                        class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-3xs px-2.5 py-1.5 rounded whitespace-nowrap">
+                        📷 Scan Text
+                    </button>
+                </div>
+
+                <textarea id="admin-json-box" rows="5" placeholder="Paste full week JSON or section JSON here..."
+                    class="w-full bg-gray-700 border border-gray-600 rounded p-1.5 text-3xs text-green-300 font-mono focus:outline-none"></textarea>
+            </div>
+
+            <button onclick="saveDynamicExamConfig()"
+                class="w-full bg-green-600 hover:bg-green-700 text-white font-bold p-2 rounded text-2xs transition-colors shadow-md">
+                💾 Save Settings & Deploy to Firebase
+            </button>
+        </div>
+
+        <!-- Profile & Payment Section -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 xs:gap-6">
+
+            <!-- Student Profile Information Card -->
+            <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 space-y-3 shadow-lg">
+                <div class="flex items-center gap-3 border-b border-gray-700 pb-3">
+                    <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-lg font-bold"
+                        id="profile-avatar">S</div>
+                    <div>
+                        <h2 class="text-sm xs:text-base font-bold text-amber-400" id="disp-name">--</h2>
+                        <span class="text-3xs bg-blue-900/60 text-blue-300 px-2 py-0.5 rounded font-mono">PRO BATCH
+                            1</span>
+                    </div>
+                </div>
+
+                <div class="space-y-2 text-2xs xs:text-xs">
+                    <div class="flex justify-between border-b border-gray-700/50 pb-1.5">
+                        <span class="text-gray-400"><i class="fa-solid fa-user-tie text-amber-400 mr-1"></i>
+                            Father:</span>
+                        <span class="font-medium text-gray-200" id="disp-father">--</span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-700/50 pb-1.5">
+                        <span class="text-gray-400"><i class="fa-solid fa-cake-candles text-amber-400 mr-1"></i>
+                            DOB:</span>
+                        <span class="font-medium text-gray-200" id="disp-dob">--</span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-700/50 pb-1.5">
+                        <span class="text-gray-400"><i class="fa-solid fa-calendar-check text-amber-400 mr-1"></i>
+                            Joining:</span>
+                        <span class="font-medium text-gray-200" id="disp-doj">--</span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-700/50 pb-1.5">
+                        <span class="text-gray-400"><i class="fa-solid fa-phone text-amber-400 mr-1"></i> Mobile:</span>
+                        <a id="disp-mobile-link" href="#"
+                            class="font-bold text-blue-400 underline hover:text-blue-300">--</a>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-700/50 pb-1.5">
+                        <span class="text-gray-400"><i class="fa-solid fa-envelope text-amber-400 mr-1"></i>
+                            Email:</span>
+                        <span class="font-mono text-gray-200 truncate max-w-[140px]" id="disp-email">--</span>
+                    </div>
+                    <div class="flex justify-between border-b border-gray-700/50 pb-1.5">
+                        <span class="text-gray-400"><i class="fa-solid fa-key text-amber-400 mr-1"></i> Pass:</span>
+                        <span class="font-mono text-amber-300" id="disp-pass">--</span>
+                    </div>
+                </div>
+
+                <!-- ADMIN CREDENTIALS EDIT BOX (Visible ONLY for Admin) -->
+                <div id="admin-cred-box"
+                    class="hidden bg-gray-750 p-2.5 rounded-lg border border-amber-500/50 space-y-2 mt-2">
+                    <span class="text-3xs font-bold text-amber-400 block"><i class="fa-solid fa-user-gear mr-1"></i>
+                        Admin: Edit Student Credentials</span>
+                    <div>
+                        <label class="text-3xs text-gray-400 block">Update Registered Email:</label>
+                        <input type="email" id="edit-email-input"
+                            class="w-full bg-gray-700 border border-gray-600 rounded p-1 text-2xs text-white">
+                    </div>
+                    <div>
+                        <label class="text-3xs text-gray-400 block">Update Login Password:</label>
+                        <input type="text" id="edit-pass-input"
+                            class="w-full bg-gray-700 border border-gray-600 rounded p-1 text-2xs text-white">
+                    </div>
+                    <button onclick="saveUpdatedCredentials()"
+                        class="w-full bg-amber-500 hover:bg-amber-600 text-black font-bold p-1.5 rounded text-2xs transition-colors">
+                        🔄 Update & Transfer History
+                    </button>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="bg-gray-750 p-3 rounded-lg border border-gray-600 space-y-2 mt-3">
+                    <div class="flex justify-between items-center">
+                        <span class="text-2xs font-bold text-amber-400"><i class="fa-solid fa-wallet mr-1"></i> Fees
+                            Paid:</span>
+                        <span class="text-xs font-bold text-green-400 font-mono" id="disp-payment-amount">₹0</span>
+                    </div>
+
+                    <!-- Payment Update (Visible for Admin) -->
+                    <div id="admin-payment-box" class="hidden space-y-2 pt-2 border-t border-gray-600">
+                        <label class="text-3xs text-gray-300 block">Update Payment (Quick or Custom):</label>
+                        <select id="pay-quick-select" onchange="handlePaySelectChange()"
+                            class="w-full bg-gray-700 border border-gray-600 rounded p-1.5 text-2xs text-white">
+                            <option value="500">₹ 500</option>
+                            <option value="1000">₹ 1000</option>
+                            <option value="1500">₹ 1500</option>
+                            <option value="2000">₹ 2000</option>
+                            <option value="2500">₹ 2500</option>
+                            <option value="3000">₹ 3000</option>
+                            <option value="custom">✏️ Custom Input Amount...</option>
+                        </select>
+
+                        <input type="number" id="pay-custom-input" placeholder="Enter custom amount (e.g. 5000)"
+                            class="hidden w-full bg-gray-700 border border-gray-600 rounded p-1.5 text-2xs text-white">
+
+                        <button onclick="updateStudentPayment()"
+                            class="w-full bg-green-600 hover:bg-green-700 text-white font-bold p-1.5 rounded text-2xs">
+                            💾 Save Payment
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Weekly Progress Graph -->
+            <div
+                class="md:col-span-2 bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg flex flex-col justify-between">
+                <div class="flex justify-between items-center mb-2">
+                    <h3 class="text-xs xs:text-sm font-bold text-gray-200"><i
+                            class="fa-solid fa-chart-line text-blue-400 mr-1.5"></i> Weekly Performance Graph</h3>
+                    <span class="text-3xs text-gray-400">Scaled Score (Out of 100)</span>
+                </div>
+                <div class="relative h-56 xs:h-64 w-full">
+                    <canvas id="weeklyChart"></canvas>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Weekly Test Results Table -->
+        <div class="bg-gray-800 p-4 rounded-xl border border-gray-700 shadow-lg space-y-3">
+            <h3 class="text-xs xs:text-sm font-bold text-amber-400 border-b border-gray-700 pb-2">
+                <i class="fa-solid fa-list-check mr-1.5"></i> Live Weekly Test Results
+            </h3>
+
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-2xs xs:text-xs">
+                    <thead>
+                        <tr class="bg-gray-700 text-gray-300">
+                            <th class="p-2 xs:p-3 rounded-l">Week</th>
+                            <th class="p-2 xs:p-3">Test Name</th>
+                            <th class="p-2 xs:p-3">Score (100)</th>
+                            <th class="p-2 xs:p-3">Status</th>
+                            <th class="p-2 xs:p-3 rounded-r">Date & Time</th>
+                        </tr>
+                    </thead>
+                    <tbody id="test-results-body" class="divide-y divide-gray-700 text-gray-200">
+                        <!-- Dynamic Test Rows Load Here -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Firebase SDK Setup & Main JavaScript -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getFirestore, collection, getDocs, query, where, orderBy, doc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+        // Firebase Config
+        const firebaseConfig = {
+            apiKey: "AIzaSyAZtEP3pUWHLUMQhV-c6SnaQT4TFiOYb74",
+            authDomain: "versant-mcat.firebaseapp.com",
+            projectId: "versant-mcat",
+            storageBucket: "versant-mcat.firebasestorage.app",
+            messagingSenderId: "474002889841",
+            appId: "1:474002889841:web:b1e9780aa13737fb320fd0",
+            measurementId: "G-C1ML6Q9CWF"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+
+        // 🟢 PRO BATCH 1 STUDENTS LIST
+const proBatch1Students = [
+    { id: "farhan", name: "Farhan Alam Ansari", father: "Firoj Alam", dob: "24/07/2013", doj: "21 July 2026", mobile: "9432843353", email: "salma7980389249@gmail.com", pass: "farhan123", payment: 1500 },
+    { id: "shahid", name: "Shahid Shah Noor", father: "Jamil Ahmad", dob: "27/05/2013", doj: "27-05-2026", mobile: "9431297344", email: "j.ahmad2020@gmail.com", pass: "shahid123", payment: 2000 },
+    { id: "kausen", name: "MD KAUSEN", father: "MD IMTIYAJ", dob: "21/03/2009", doj: "18th May 2026", mobile: "8100351209", email: "mdkausen8100@gmail.com", pass: "kausen123", payment: 1000 },
+    { id: "shahzan", name: "Shahzan Ansari", father: "MD Shakil Ansari", dob: "25/06/2009", doj: "18/05/2026", mobile: "7479470888", email: "shahzanansari925@gmail.com", pass: "shahzan123", payment: 2500 },
+    { id: "saba", name: "Saba Parveen", father: "Abdul Nesar Adil", dob: "09/01/2002", doj: "07 July 2026", mobile: "6290559945", email: "sababauria2002@gmail.com", pass: "saba123", payment: 3000 },
+    { id: "afzal", name: "MD AFZAL ANSARI", father: "SHAHAZADA ANSARI", dob: "22/04/2010", doj: "10/05/2026", mobile: "8910956369", email: "mdarhan89109@gmail.com", pass: "afzal123", payment: 1000 },
+    { id: "nasim", name: "MD NASIM", father: "MD SHAFIQ", dob: "15/08/2008", doj: "12/05/2026", mobile: "7003249051", email: "mohnasim760@gmail.com", pass: "nasim123", payment: 1000 }
+];
+        let currentActiveUser = null;
+        let isAdminLoggedIn = false;
+        let myChart = null;
+
+        // Multi-Image OCR Scanner
+        window.scanQuestionImage = async function () {
+            const fileInput = document.getElementById('ocr-image-file');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                Swal.fire({ icon: 'warning', title: 'Select Image(s)', text: 'Please select 1 to 4 images!', customClass: { popup: 'swal-mobile-size' } });
+                return;
+            }
+
+            const files = Array.from(fileInput.files).slice(0, 4);
+            let fullText = "";
+
+            Swal.fire({
+                title: 'Scanning Image(s)...',
+                text: `Processing ${files.length} image(s) via OCR...`,
+                allowOutsideClick: false,
+                didOpen: () => Swal.showLoading()
+            });
+
+            try {
+                const worker = await Tesseract.createWorker('eng');
+                for (let i = 0; i < files.length; i++) {
+                    const ret = await worker.recognize(files[i]);
+                    fullText += `\n--- IMAGE ${i + 1} TEXT ---\n` + ret.data.text;
+                }
+                await worker.terminate();
+
+                Swal.close();
+                const jsonBox = document.getElementById('admin-json-box');
+                if (jsonBox) jsonBox.value = fullText.trim();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Text Extracted Successfully',
+                    text: 'Images text extracted! Convert into valid JSON syntax before saving.',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+            } catch (err) {
+                console.error("OCR Error:", err);
+                Swal.close();
+                Swal.fire({ icon: 'error', title: 'Scan Failed', text: 'Could not read images clearly: ' + err.message, customClass: { popup: 'swal-mobile-size' } });
+            }
+        };
+
+        // Save Dynamic Exam Config & Create New Set/Week automatically
+        window.saveDynamicExamConfig = async function () {
+            const jsonRaw = document.getElementById('admin-json-box').value.trim();
+            if (!jsonRaw) {
+                Swal.fire({ icon: 'warning', title: 'Empty JSON', text: 'Please paste or scan a valid JSON string!', customClass: { popup: 'swal-mobile-size' } });
+                return;
+            }
+
+            let parsedQuestions = null;
+            try {
+                parsedQuestions = JSON.parse(jsonRaw);
+            } catch (e) {
+                Swal.fire({ icon: 'error', title: 'Invalid JSON Syntax', text: 'Format error! Please check JSON syntax, brackets, and commas.', customClass: { popup: 'swal-mobile-size' } });
+                return;
+            }
+
+            let activeWeek = "1";
+            if (Array.isArray(parsedQuestions) && parsedQuestions.length > 0 && parsedQuestions[0].setId) {
+                activeWeek = parsedQuestions[0].setId.toString();
+            } else if (parsedQuestions.setId) {
+                activeWeek = parsedQuestions.setId.toString();
+            } else {
+                const selEl = document.getElementById('admin-active-week-select');
+                if (selEl) activeWeek = selEl.value;
+            }
+
+            const activeSections = {
+                secA: document.getElementById('sec-a')?.checked ?? true,
+                secB: document.getElementById('sec-b')?.checked ?? true,
+                secC: document.getElementById('sec-c')?.checked ?? true,
+                secD: document.getElementById('sec-d')?.checked ?? true,
+                secE: document.getElementById('sec-e')?.checked ?? true,
+                secF: document.getElementById('sec-f')?.checked ?? true,
+                secG: document.getElementById('sec-g')?.checked ?? true,
+                secTF: document.getElementById('sec-tf')?.checked ?? false,
+                secFIB: document.getElementById('sec-fib')?.checked ?? false
+            };
+
+            try {
+                Swal.fire({ title: `Deploying Week ${activeWeek}...`, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                await setDoc(doc(db, "exam_config", `week_${activeWeek}_config`), {
+                    weekId: activeWeek,
+                    activeSections: activeSections,
+                    customData: parsedQuestions,
+                    updatedAt: new Date()
+                });
+
+                await setDoc(doc(db, "exam_config", "active_week_setting"), {
+                    activeWeek: activeWeek
+                });
+
+                const activeWeekSelectEl = document.getElementById('admin-active-week-select');
+                if (activeWeekSelectEl) {
+                    let optionExists = Array.from(activeWeekSelectEl.options).some(opt => opt.value == activeWeek);
+                    if (!optionExists) {
+                        const newOpt = document.createElement('option');
+                        newOpt.value = activeWeek;
+                        newOpt.innerText = `Week ${activeWeek}`;
+                        activeWeekSelectEl.appendChild(newOpt);
+                    }
+                    activeWeekSelectEl.value = activeWeek;
+                }
+
+                Swal.fire({
+                    icon: 'success',
+                    title: `Week ${activeWeek} Deployed!`,
+                    text: `Week ${activeWeek} test configuration updated and active!`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+            } catch (err) {
+                console.error("Error saving exam config:", err);
+                Swal.fire({ icon: 'error', title: 'Save Failed', text: err.message, customClass: { popup: 'swal-mobile-size' } });
+            }
+        };
+
+        // Setup Admin Views
+        window.setupAdminView = async function () {
+            const ctrlEl = document.getElementById('admin-controls');
+            const payEl = document.getElementById('admin-payment-box');
+            const credEl = document.getElementById('admin-cred-box');
+            const weekEl = document.getElementById('admin-week-control-box');
+            const qMgrEl = document.getElementById('admin-question-manager');
+
+            if (ctrlEl) ctrlEl.classList.remove('hidden');
+            if (payEl) payEl.classList.remove('hidden');
+            if (credEl) credEl.classList.remove('hidden');
+            if (weekEl) weekEl.classList.remove('hidden');
+            if (qMgrEl) qMgrEl.classList.remove('hidden');
+
+            const selectEl = document.getElementById('admin-student-select');
+            if (selectEl) {
+                selectEl.innerHTML = proBatch1Students.map(s =>
+                    `<option value="${s.id}">👤 ${s.name} (${s.email})</option>`
+                ).join('');
+            }
+
+            const activeWeekSelectEl = document.getElementById('admin-active-week-select');
+            if (activeWeekSelectEl) {
+                try {
+                    const response = await fetch('questions.json');
+                    const questionsData = await response.json();
+
+                    if (questionsData && questionsData.length > 0) {
+                        activeWeekSelectEl.innerHTML = questionsData.map(set =>
+                            `<option value="${set.setId}">Week ${set.setId}</option>`
+                        ).join('');
+                    } else {
+                        activeWeekSelectEl.innerHTML = `<option value="1">Week 1</option>`;
+                    }
+                } catch (err) {
+                    console.error("Could not fetch questions.json:", err);
+                    activeWeekSelectEl.innerHTML = `<option value="1">Week 1</option>`;
+                }
+            }
+        };
+
+        // Login Handler
+        window.handleLogin = function () {
+            const emailInput = document.getElementById('login-email');
+            const passInput = document.getElementById('login-pass');
+
+            const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
+            const pass = passInput ? passInput.value.trim() : "";
+
+            if (!pass) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Password Required',
+                    text: 'Please enter your password!',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+                return;
+            }
+
+            // 1. ADMIN LOGIN
+            if (pass === "admin123") {
+                isAdminLoggedIn = true;
+                currentActiveUser = proBatch1Students[0];
+
+                window.setupAdminView();
+                showDashboard();
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Admin Access Granted',
+                    text: 'Welcome to Admin Management Portal!',
+                    timer: 1500,
+                    showConfirmButton: false,
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+                return;
+            }
+
+            // 2. STUDENT LOGIN
+            const matched = proBatch1Students.find(s => s.email.toLowerCase() === email && s.pass === pass);
+            if (matched) {
+                isAdminLoggedIn = false;
+                currentActiveUser = matched;
+
+                const ctrlEl = document.getElementById('admin-controls');
+                const payEl = document.getElementById('admin-payment-box');
+                const credEl = document.getElementById('admin-cred-box');
+                const weekEl = document.getElementById('admin-week-control-box');
+                const qMgrEl = document.getElementById('admin-question-manager');
+
+                if (ctrlEl) ctrlEl.classList.add('hidden');
+                if (payEl) payEl.classList.add('hidden');
+                if (credEl) credEl.classList.add('hidden');
+                if (weekEl) weekEl.classList.add('hidden');
+                if (qMgrEl) qMgrEl.classList.add('hidden');
+
+                showDashboard();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: 'Invalid Email ID or Password!',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+            }
+        };
+
+        window.saveActiveExamWeekByAdmin = async function () {
+            const selectedWeek = document.getElementById('admin-active-week-select').value;
+
+            try {
+                await setDoc(doc(db, "exam_config", "active_week_setting"), {
+                    activeWeek: selectedWeek
+                });
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Active Week Updated!',
+                    text: `Students will now automatically see and attempt Week ${selectedWeek} Test.`,
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+            } catch (err) {
+                console.error("Error saving active week:", err);
+            }
+        };
+
+        window.switchStudentView = function () {
+            const selectedId = document.getElementById('admin-student-select').value;
+            currentActiveUser = proBatch1Students.find(s => s.id === selectedId);
+            loadUserData();
+        };
+
+        window.handleLogout = function () {
+            document.getElementById('dashboard-content').classList.add('hidden');
+            document.getElementById('login-modal').classList.remove('hidden');
+        };
+
+        function showDashboard() {
+            document.getElementById('login-modal').classList.add('hidden');
+            document.getElementById('dashboard-content').classList.remove('hidden');
+            loadUserData();
+        }
+
+        async function loadUserData() {
+            if (!currentActiveUser) return;
+
+            document.getElementById('disp-name').innerText = currentActiveUser.name;
+            document.getElementById('disp-father').innerText = currentActiveUser.father;
+            document.getElementById('disp-dob').innerText = currentActiveUser.dob;
+            document.getElementById('disp-doj').innerText = currentActiveUser.doj;
+
+            const mobLink = document.getElementById('disp-mobile-link');
+            mobLink.innerText = currentActiveUser.mobile;
+            mobLink.href = `tel:${currentActiveUser.mobile}`;
+
+            document.getElementById('disp-email').innerText = currentActiveUser.email;
+            document.getElementById('disp-pass').innerText = currentActiveUser.pass;
+            document.getElementById('profile-avatar').innerText = currentActiveUser.name.charAt(0).toUpperCase();
+            document.getElementById('disp-payment-amount').innerText = `₹ ${currentActiveUser.payment}`;
+
+            if (isAdminLoggedIn) {
+                document.getElementById('edit-email-input').value = currentActiveUser.email;
+                document.getElementById('edit-pass-input').value = currentActiveUser.pass;
+            }
+
+            const tbody = document.getElementById('test-results-body');
+            tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-400">Loading live scores from database...</td></tr>`;
+
+            let testResults = [];
+            try {
+                const q = query(
+                    collection(db, "test_results"),
+                    where("email", "==", currentActiveUser.email),
+                    orderBy("submittedAt", "asc")
+                );
+                const querySnapshot = await getDocs(q);
+
+                querySnapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    const date = data.submittedAt ? new Date(data.submittedAt.toDate()).toLocaleString() : "N/A";
+                    testResults.push({
+                        week: data.weekTag || "Week 1",
+                        title: "Versant Diagnostic Suite",
+                        score: data.score,
+                        status: data.status,
+                        date: date
+                    });
+                });
+            } catch (err) {
+                console.error("Firebase fetch error:", err);
+            }
+
+            if (testResults.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-yellow-300">No test taken yet. (Week 1 exam pending)</td></tr>`;
+            } else {
+                tbody.innerHTML = testResults.map(t => `
+                    <tr class="hover:bg-gray-750">
+                        <td class="p-2.5 font-bold text-amber-400">${t.week}</td>
+                        <td class="p-2.5">${t.title}</td>
+                        <td class="p-2.5 font-mono font-bold text-blue-300">${t.score} / 100</td>
+                        <td class="p-2.5"><span class="px-2 py-0.5 text-3xs font-bold rounded ${t.status === 'PASSED' ? 'bg-green-900/80 text-green-300' : 'bg-red-900/80 text-red-300'}">${t.status}</span></td>
+                        <td class="p-2.5 text-gray-400 text-3xs">${t.date}</td>
+                    </tr>
+                `).join('');
+            }
+
+            renderChart(testResults);
+        }
+
+        window.saveUpdatedCredentials = async function () {
+            if (!isAdminLoggedIn) return;
+
+            const newEmail = document.getElementById('edit-email-input').value.trim().toLowerCase();
+            const newPass = document.getElementById('edit-pass-input').value.trim();
+
+            if (!newEmail || !newPass) {
+                Swal.fire({ icon: 'warning', title: 'Invalid Data', text: 'Email and Password cannot be empty!', customClass: { popup: 'swal-mobile-size' } });
+                return;
+            }
+
+            const oldEmail = currentActiveUser.email;
+
+            if (oldEmail !== newEmail) {
+                try {
+                    Swal.fire({ title: 'Transferring Data...', text: 'Migrating old test records to new email...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    const q = query(collection(db, "test_results"), where("email", "==", oldEmail));
+                    const snapshot = await getDocs(q);
+
+                    const updatePromises = [];
+                    snapshot.forEach((docSnap) => {
+                        const docRef = doc(db, "test_results", docSnap.id);
+                        updatePromises.push(updateDoc(docRef, { email: newEmail }));
+                    });
+
+                    await Promise.all(updatePromises);
+                } catch (err) {
+                    console.error("Migration error:", err);
+                }
+            }
+
+            currentActiveUser.email = newEmail;
+            currentActiveUser.pass = newPass;
+
+            window.setupAdminView();
+            document.getElementById('admin-student-select').value = currentActiveUser.id;
+
+            Swal.fire({ icon: 'success', title: 'Updated Successfully', text: 'Email and Password updated!', timer: 2000, showConfirmButton: false });
+            loadUserData();
+        };
+
+        function renderChart(testResults) {
+            const ctx = document.getElementById('weeklyChart').getContext('2d');
+            const labels = testResults.length > 0 ? testResults.map(t => t.week) : ["Week 1"];
+            const scores = testResults.length > 0 ? testResults.map(t => t.score) : [0];
+
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Weekly Score (Out of 100)',
+                        data: scores,
+                        borderColor: '#f59e0b',
+                        backgroundColor: 'rgba(245, 158, 11, 0.15)',
+                        borderWidth: 3,
+                        pointBackgroundColor: '#2563eb',
+                        pointRadius: 5,
+                        fill: true,
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: { beginAtZero: true, max: 100, grid: { color: '#374151' }, ticks: { color: '#9ca3af' } },
+                        x: { grid: { color: '#374151' }, ticks: { color: '#9ca3af' } }
+                    },
+                    plugins: { legend: { labels: { color: '#f3f4f6' } } }
+                }
+            });
+        }
+
+        window.handlePaySelectChange = function () {
+            const val = document.getElementById('pay-quick-select').value;
+            const customInp = document.getElementById('pay-custom-input');
+            if (val === "custom") {
+                customInp.classList.remove('hidden');
+            } else {
+                customInp.classList.add('hidden');
+            }
+        };
+
+        window.updateStudentPayment = function () {
+            const selectVal = document.getElementById('pay-quick-select').value;
+            const customVal = document.getElementById('pay-custom-input').value;
+            let finalAmt = selectVal === "custom" ? parseInt(customVal) : parseInt(selectVal);
+
+            if (!finalAmt || isNaN(finalAmt)) {
+                Swal.fire({ icon: 'warning', title: 'Invalid Amount', text: 'Enter a valid payment number!', customClass: { popup: 'swal-mobile-size' } });
+                return;
+            }
+
+            currentActiveUser.payment = finalAmt;
+            document.getElementById('disp-payment-amount').innerText = `₹ ${finalAmt}`;
+            Swal.fire({ icon: 'success', title: 'Payment Saved', text: `Fees updated to ₹ ${finalAmt}`, timer: 1500, showConfirmButton: false });
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const loginBtn = document.getElementById('btn-login-submit');
+            if (loginBtn) {
+                loginBtn.addEventListener('click', () => {
+                    if (typeof window.handleLogin === 'function') {
+                        window.handleLogin();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Versant Test & AMCAT Practice Portal | Official Proctoring Suite - 999moneysave.co.in</title>
+
+    <!-- SEO Meta Tags -->
+    <meta name="description"
+        content="Official Versant Practice Test & AMCAT English Assessment Portal powered by 999moneysave.co.in. Test your spoken English, typing speed, and grammar skills online.">
+    <meta name="keywords"
+        content="Versant Test, Versant Practice Test, AMCAT English Test, Spoken English Test, Grammar Test, English Assessment Online, Versant Proctoring Portal, 999moneysave">
+    <meta name="author" content="999moneysave.co.in">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://999moneysave.co.in/versant-test">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Versant Practice Test & AMCAT English Evaluation Portal">
+    <meta property="og:description"
+        content="Take the official Versant Assessment and AMCAT English evaluation test online with automated scoring. Brought to you by 999moneysave.co.in.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://999moneysave.co.in/versant-test">
+    <meta property="og:site_name" content="999moneysave.co.in">
+
+    <!-- Schema.org Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "EducationalApplication",
+      "name": "Versant Practice Test Suite",
+      "description": "Online Versant Test and AMCAT Spoken English Proctoring Portal",
+      "provider": {
+        "@type": "Organization",
+        "name": "999moneysave.co.in",
+        "url": "https://999moneysave.co.in"
+      },
+      "educationalUse": "Assessment",
+      "interactivityType": "Active"
+    }
+    </script>
+
+    <!-- Preconnect CDNs -->
+    <link rel="preconnect" href="https://cdn.tailwindcss.com">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- EmailJS SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- html2pdf SDK -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body
+    class="p-2 sm:p-4 flex flex-col justify-center items-center min-h-screen bg-gray-900 text-white font-sans antialiased overflow-x-hidden w-full">
+
+    <!-- Header Branding -->
+    <header class="w-full max-w-3xl text-center mb-2 xs:mb-3">
+        <a href="https://999moneysave.co.in" target="_blank"
+            class="inline-block text-2xs xs:text-xs font-bold text-blue-300 hover:text-blue-200 tracking-wide transition-colors">
+            🌐 Part of <span class="text-amber-400 underline">999moneysave.co.in</span> Educational Services
+        </a>
+    </header>
+
+    <main
+        class="custom-card w-full max-w-3xl p-3 xs:p-4 sm:p-6 relative bg-gray-800 rounded-lg shadow-2xl border border-gray-700 box-border">
+
+        <!-- 1. Candidate Registration -->
+        <section id="screen-reg" class="block space-y-3 sm:space-y-4" aria-label="Candidate Registration">
+            <h1 class="text-base xs:text-xl sm:text-2xl font-bold text-center text-blue-400 tracking-tight">Versant
+                Official Proctoring Suite</h1>
+            <p class="text-gray-400 text-3xs xs:text-xs text-center">Dynamic Question Sets & AI-Assisted Assessment
+                Portal</p>
+
+            <div class="space-y-2.5">
+                <div>
+                    <label for="cand-name" class="sr-only">Full Name</label>
+                    <input type="text" id="cand-name" placeholder="Full Name" aria-required="true"
+                        class="w-full bg-gray-700 border border-gray-600 rounded p-2.5 xs:p-3 text-white text-xs xs:text-sm focus:outline-none focus:border-amber-400 box-border">
+                </div>
+                <div>
+                    <label for="cand-email" class="sr-only">Email Address</label>
+                    <input type="email" id="cand-email" placeholder="Email Address" aria-required="true"
+                        class="w-full bg-gray-700 border border-gray-600 rounded p-2.5 xs:p-3 text-white text-xs xs:text-sm focus:outline-none focus:border-amber-400 box-border">
+                </div>
+            </div>
+
+            <button id="btn-reg-start" onclick="goToHardwareCheck()" aria-label="Begin Hardware Setup"
+                class="btn-primary w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm text-white shadow-md transition-all">Begin
+                Hardware Setup</button>
+        </section>
+
+        <!-- 2. Hardware Diagnostics & Authentication -->
+        <section id="screen-syscheck" class="hidden space-y-3 xs:space-y-4" aria-label="Hardware Diagnostics">
+            <h2
+                class="text-sm xs:text-lg sm:text-xl font-bold text-amber-400 border-b border-gray-700 pb-2 text-center xs:text-left">
+                Hardware Diagnostics & Authentication
+            </h2>
+
+            <!-- Network Check -->
+            <div class="bg-gray-700 p-3 xs:p-4 rounded space-y-2">
+                <div class="flex justify-between items-center gap-2">
+                    <span class="text-2xs xs:text-xs sm:text-sm font-medium">🌐 Network Latency Test</span>
+                    <button id="btn-net" onclick="runRealSpeedTest()"
+                        class="bg-blue-600 hover:bg-blue-700 px-2.5 py-1 rounded text-2xs xs:text-xs font-semibold whitespace-nowrap">Run
+                        Check</button>
+                </div>
+                <p id="net-result" class="text-3xs xs:text-xs text-gray-300">Test connection bandwidth.</p>
+            </div>
+
+            <!-- Microphone & Speaker Audio Diagnostics Box -->
+            <div class="bg-gray-700 p-3 xs:p-4 rounded space-y-3">
+                <div class="text-center bg-gray-800 p-2 rounded border border-gray-600">
+                    <span class="block text-xs xs:text-sm font-bold text-yellow-300">📢 Please check your audio</span>
+                    <span class="block text-3xs xs:text-xs text-gray-400 mt-0.5">Record a sample voice note, watch the
+                        visualizer graph, and listen back.</span>
+                </div>
+
+                <!-- Dynamic Live Audio Visualizer Canvas -->
+                <div
+                    class="w-full bg-gray-900 h-14 rounded-md border border-gray-600 flex items-center justify-center relative overflow-hidden">
+                    <canvas id="audio-visualizer" class="w-full h-full"></canvas>
+                    <span id="visualizer-placeholder" class="text-3xs xs:text-xs text-gray-500 absolute">Click Record & Speak into Microphone</span>
+                </div>
+
+                <div class="flex flex-wrap gap-2 items-center justify-between">
+                    <button id="btn-mic-rec" onclick="testMicRecord()"
+                        class="btn-danger text-2xs xs:text-xs bg-red-600 hover:bg-red-700 px-3 py-2 rounded font-bold transition-all">
+                        🔴 Record Sample
+                    </button>
+                    <button id="btn-mic-listen" onclick="playMicSample()" disabled
+                        class="bg-gray-600 opacity-50 cursor-not-allowed text-2xs xs:text-xs text-white px-3 py-2 rounded font-bold transition-all">
+                        🎧 Listen Sample Audio
+                    </button>
+                </div>
+
+                <!-- Confirmation Prompt -->
+                <div id="mic-confirm-box"
+                    class="hidden bg-gray-800 p-2.5 rounded border border-green-500/50 space-y-2 mt-2">
+                    <p class="text-3xs xs:text-xs text-yellow-200 font-semibold">Is your sound playback clear and audible?</p>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="chk-audio-ok" onchange="checkProceed()"
+                            class="w-4 h-4 text-green-500 rounded cursor-pointer">
+                        <label for="chk-audio-ok"
+                            class="text-3xs xs:text-xs text-green-300 cursor-pointer font-medium">Yes, my sound is clear. Proceed to next step.</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- OTP Verification Box -->
+            <div class="bg-gray-800 p-3 xs:p-4 border border-blue-500 rounded-lg space-y-2.5">
+                <div class="flex justify-between items-center gap-2">
+                    <span class="text-3xs xs:text-xs text-blue-300">📩 OTP sent to your registered email</span>
+                    <button onclick="resendOTP()"
+                        class="text-3xs xs:text-xs bg-gray-700 hover:bg-gray-600 px-2 py-1 rounded text-amber-400 font-semibold whitespace-nowrap">Resend
+                        OTP</button>
+                </div>
+                <button onclick="promptOTPVerification()"
+                    class="w-full bg-amber-400 hover:bg-amber-500 p-2 xs:p-2.5 rounded font-bold text-xs xs:text-sm text-black transition-colors">
+                    🔑 Enter OTP Code
+                </button>
+            </div>
+
+            <button id="btn-proceed-test" onclick="startFullAssessment()"
+                class="btn-primary bg-green-600 hover:bg-green-700 p-2.5 xs:p-3 rounded font-bold w-full hidden text-xs xs:text-sm text-white shadow-lg">
+                Start Test Suite
+            </button>
+        </section>
+
+        <!-- 3. Section Instructions -->
+        <section id="screen-instruction" class="hidden text-center space-y-3 xs:space-y-4 py-2 xs:py-4"
+            aria-label="Section Instructions">
+            <h2 id="inst-title" class="text-base xs:text-xl sm:text-2xl font-bold text-blue-400"></h2>
+            <div class="bg-gray-700 p-3 xs:p-4 rounded-lg text-left">
+                <p id="inst-example" class="text-3xs xs:text-xs sm:text-sm text-gray-300 leading-relaxed"></p>
+            </div>
+            <button onclick="startActivePart()" aria-label="Start Active Section"
+                class="btn-primary bg-green-600 hover:bg-green-700 p-2.5 xs:p-3 rounded font-bold w-full text-xs xs:text-sm text-white">Start
+                Section</button>
+        </section>
+
+        <!-- 4. Active Examination Dashboard -->
+        <section id="screen-test" class="hidden space-y-3 xs:space-y-4" aria-label="Active Examination Module">
+            <div class="flex justify-between items-center border-b border-gray-700 pb-2 gap-2">
+                <span id="part-indicator" class="text-2xs xs:text-sm sm:text-lg font-bold text-amber-400 truncate"></span>
+                <span id="timer-display" class="text-red-400 font-mono font-bold text-2xs xs:text-sm sm:text-base whitespace-nowrap"></span>
+            </div>
+
+            <!-- Part A -->
+            <div id="part-a" class="hidden space-y-3 xs:space-y-4">
+                <span id="qa-counter" class="text-3xs xs:text-xs text-gray-400 block">Question 1 of 10</span>
+                <div class="bg-gray-700 p-3 xs:p-4 rounded space-y-2.5">
+                    <p id="qa-text" class="text-xs xs:text-sm sm:text-base font-semibold text-white leading-snug"></p>
+                    <div id="qa-options" class="space-y-1.5 xs:space-y-2"></div>
+                </div>
+                <button onclick="saveAndNextObj()" class="btn-primary w-full bg-blue-600 hover:bg-blue-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm">Next Question</button>
+            </div>
+
+            <!-- Part B -->
+            <div id="part-b" class="hidden space-y-3 xs:space-y-4">
+                <div class="bg-gray-700 p-3 rounded text-3xs xs:text-xs sm:text-sm text-amber-200">
+                    <b>Prompt:</b> <span id="qb-email-prompt"></span>
+                </div>
+                <textarea id="ans-email" rows="5" class="w-full bg-gray-700 border border-gray-600 rounded p-2.5 xs:p-3 text-white text-3xs xs:text-xs sm:text-sm focus:outline-none focus:border-amber-400 box-border" placeholder="Type your email response..."></textarea>
+                <button onclick="submitEmailAndNext()" class="btn-primary w-full bg-blue-600 hover:bg-blue-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm">Submit Email Task</button>
+            </div>
+
+            <!-- Part C -->
+            <div id="part-c" class="hidden space-y-3 xs:space-y-4">
+                <div class="bg-gray-700 p-2.5 xs:p-3 rounded text-green-300 font-mono text-3xs xs:text-xs leading-relaxed max-h-36 xs:max-h-40 overflow-y-auto select-none" id="qc-typing"></div>
+                <textarea id="ans-typing" rows="4" oninput="trackTyping()" class="w-full bg-gray-700 border border-gray-600 rounded p-2.5 xs:p-3 font-mono text-white text-3xs xs:text-xs sm:text-sm focus:outline-none focus:border-amber-400 box-border" placeholder="Start typing the passage above..."></textarea>
+                <button onclick="submitTypingAndNext()" class="btn-primary w-full bg-blue-600 hover:bg-blue-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm">Submit Typing Task</button>
+            </div>
+
+            <!-- Part D -->
+            <div id="part-d" class="hidden space-y-3 xs:space-y-4">
+                <span id="qd-counter" class="text-3xs xs:text-xs text-gray-400 block">Prompt 1 of 5</span>
+                <p id="qd-voice-text" class="text-xs xs:text-sm sm:text-lg text-blue-300 italic font-medium bg-gray-700 p-3 xs:p-4 rounded"></p>
+                <div class="bg-gray-700 p-2.5 xs:p-3 rounded text-3xs xs:text-xs text-gray-300">
+                    <b>Transcribed Output:</b> <span id="transcribed-text-d" class="text-amber-400 font-mono">Listening...</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-rec-d" onclick="toggleRecordPart('D')" class="btn-danger text-3xs xs:text-xs bg-red-600 p-2 rounded font-semibold whitespace-nowrap">🔴 Record Speech</button>
+                </div>
+                <button onclick="saveAndNextD()" class="btn-primary w-full bg-blue-600 hover:bg-blue-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm mt-2">Next Sentence</button>
+            </div>
+
+            <!-- Part E -->
+            <div id="part-e" class="hidden space-y-3 xs:space-y-4">
+                <span id="qe-counter" class="text-3xs xs:text-xs text-gray-400 block">Passage 1 of 5</span>
+                <div class="bg-gray-700 p-3 xs:p-4 rounded min-h-[70px] xs:min-h-[80px] flex items-center justify-center">
+                    <p id="qe-display-text" class="text-xs xs:text-sm sm:text-lg font-bold text-amber-300 text-center"></p>
+                </div>
+                <textarea id="ans-passage-e" rows="3" class="w-full bg-gray-700 border border-gray-600 rounded p-2.5 xs:p-3 text-white text-3xs xs:text-xs sm:text-sm focus:outline-none focus:border-amber-400 box-border" placeholder="Reconstruct the passage from memory..."></textarea>
+                <button onclick="saveAndNextE()" class="btn-primary w-full bg-blue-600 hover:bg-blue-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm">Submit Response</button>
+            </div>
+
+            <!-- Part F -->
+            <div id="part-f" class="hidden space-y-3 xs:space-y-4">
+                <span id="qf-counter" class="text-3xs xs:text-xs text-gray-400 block">Audio Item 1 of 5</span>
+                <div class="bg-gray-700 p-3 xs:p-4 rounded text-center space-y-2">
+                    <p class="text-3xs xs:text-xs text-gray-400">🔊 Audio playing now. Listen carefully...</p>
+                    <button onclick="playAudioPromptF()" class="bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-3xs xs:text-xs text-white font-semibold">Replay Audio Prompt</button>
+                </div>
+                <div class="bg-gray-700 p-2.5 xs:p-3 rounded text-3xs xs:text-xs text-gray-300">
+                    <b>Transcribed Output:</b> <span id="transcribed-text-f" class="text-amber-400 font-mono">Listening...</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-rec-f" onclick="toggleRecordPart('F')" class="btn-danger text-3xs xs:text-xs bg-red-600 p-2 rounded font-semibold whitespace-nowrap">🔴 Record Speech</button>
+                </div>
+                <button onclick="saveAndNextF()" class="btn-primary w-full bg-blue-600 hover:bg-blue-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm mt-2">Next Sentence</button>
+            </div>
+
+            <!-- Part G -->
+            <div id="part-g" class="hidden space-y-3 xs:space-y-4">
+                <span id="qg-counter" class="text-3xs xs:text-xs text-gray-400 block">Question 1</span>
+                <div class="bg-gray-700 p-3 xs:p-4 rounded space-y-1.5">
+                    <p class="text-3xs xs:text-xs sm:text-sm font-bold text-amber-300" id="qg-prompt-title"></p>
+                    <p class="text-3xs xs:text-xs text-gray-300 whitespace-pre-line leading-relaxed" id="qg-prompt-desc"></p>
+                </div>
+                <textarea id="ans-story-g" rows="5" class="w-full bg-gray-700 border border-gray-600 rounded p-2.5 xs:p-3 text-white text-3xs xs:text-xs sm:text-sm focus:outline-none focus:border-amber-400 box-border" placeholder="Write your full response in English here..."></textarea>
+                <button onclick="saveAndNextG()" class="btn-primary w-full bg-green-600 hover:bg-green-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm" id="btn-next-g">Next Question</button>
+            </div>
+
+            <!-- 🟢 Part TF (True / False Section) -->
+            <div id="part-tf" class="hidden space-y-3 xs:space-y-4">
+                <span id="qtf-counter" class="text-3xs xs:text-xs text-gray-400 block">Question 1 of 5</span>
+                <div class="bg-gray-700 p-3 xs:p-4 rounded space-y-2.5">
+                    <p id="qtf-text" class="text-xs xs:text-sm sm:text-base font-semibold text-white leading-snug"></p>
+                    <div id="qtf-options" class="space-y-1.5 xs:space-y-2">
+                        <label class="block bg-gray-600 p-3 rounded cursor-pointer hover:bg-gray-500 text-sm">
+                            <input type="radio" name="single_tf_opt" value="True"> True
+                        </label>
+                        <label class="block bg-gray-600 p-3 rounded cursor-pointer hover:bg-gray-500 text-sm">
+                            <input type="radio" name="single_tf_opt" value="False"> False
+                        </label>
+                    </div>
+                </div>
+                <button onclick="saveAndNextTF()" class="btn-primary w-full bg-blue-600 hover:bg-blue-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm">Next Question</button>
+            </div>
+
+            <!-- 🟢 Part FIB (Fill in the Blanks Section) -->
+            <div id="part-fib" class="hidden space-y-3 xs:space-y-4">
+                <span id="qfib-counter" class="text-3xs xs:text-xs text-gray-400 block">Question 1 of 5</span>
+                <div class="bg-gray-700 p-3 xs:p-4 rounded space-y-2.5">
+                    <p id="qfib-text" class="text-xs xs:text-sm sm:text-base font-semibold text-white leading-snug"></p>
+                    <input type="text" id="ans-fib" class="w-full bg-gray-800 border border-gray-600 rounded p-2 text-white text-xs xs:text-sm focus:outline-none focus:border-amber-400" placeholder="Type missing word here...">
+                </div>
+                <button onclick="saveAndNextFIB()" class="btn-primary w-full bg-blue-600 hover:bg-blue-700 p-2.5 xs:p-3 rounded font-bold text-xs xs:text-sm">Next Question</button>
+            </div>
+        </section>
+
+        <!-- 5. Thank You & Submission Screen -->
+        <section id="screen-result" class="hidden text-center space-y-4 xs:space-y-6 py-4 xs:py-6"
+            aria-label="Test Submission Confirmation">
+            <div class="bg-gray-700 p-4 xs:p-6 sm:p-8 rounded-lg border border-gray-600 space-y-3 xs:space-y-4">
+                <div class="text-green-400 text-3xl xs:text-4xl sm:text-5xl mb-1">✅</div>
+                <h2 class="text-base xs:text-xl sm:text-2xl font-bold text-white">Your Examination Has Been Successfully
+                    Submitted!</h2>
+                <p class="text-gray-300 text-3xs xs:text-xs sm:text-sm leading-relaxed">
+                    The evaluation process has been initiated. Your score report and official certificate have been
+                    emailed to your registered address and downloaded to your device.
+                </p>
+                <div class="p-2.5 xs:p-3 bg-gray-800 rounded text-3xs xs:text-xs text-amber-300 border border-gray-600">
+                    💡 Please check your email inbox and spam folder. Powered by <b>999moneysave.co.in</b>.
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer Branding -->
+    <footer class="w-full max-w-3xl text-center mt-3 xs:mt-4 text-3xs xs:text-xs text-gray-400">
+        <p>&copy; 2026 Versant Proctoring Suite. Official Partner of <a href="https://999moneysave.co.in"
+                target="_blank" class="text-blue-400 hover:underline">999moneysave.co.in</a>. All Rights Reserved.</p>
+    </footer>
+
+    <script type="module" src="script3.js"></script>
+    <script type="module" src="security.js"></script>
+</body>
+
+</html>

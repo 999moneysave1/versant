@@ -1,0 +1,62 @@
+[
+  {
+    "setId": 1,
+    "obj": [
+      { "q": "1. She _____ to office every day.", "opts": ["go", "goes", "going"], "ans": "goes" },
+      { "q": "2. Neither of the cars _____ working.", "opts": ["is", "are", "were"], "ans": "is" },
+      { "q": "3. Choose correct spelling:", "opts": ["Receive", "Recieve", "Receve"], "ans": "Receive" },
+      { "q": "4. Identify synonym of 'Fast':", "opts": ["Slow", "Rapid", "Late"], "ans": "Rapid" },
+      { "q": "5. They _____ playing football yesterday.", "opts": ["was", "were", "are"], "ans": "were" },
+      { "q": "6. He is senior _____ me.", "opts": ["than", "to", "from"], "ans": "to" },
+      { "q": "7. I have been living here _____ 2010.", "opts": ["since", "for", "from"], "ans": "since" },
+      { "q": "8. Select correct sentence:", "opts": ["He don't know", "He doesn't know"], "ans": "He doesn't know" },
+      { "q": "9. The book is _____ the table.", "opts": ["on", "at", "in"], "ans": "on" },
+      { "q": "10. Opposite of 'Abundant':", "opts": ["Scarce", "Plentiful", "Huge"], "ans": "Scarce" }
+    ],
+    "email": {
+      "question": "A customer received a damaged shipment. Write a professional apology email offering a free replacement within 24 hours.",
+      "correctAnswer": "Dear Customer, I am extremely sorry to hear that you received a damaged shipment. We apologize for the inconvenience caused. We are offering you a free replacement product which will be dispatched within 24 hours. Thank you for your patience and understanding. Best regards, Customer Support Team.",
+      "keywords": ["apologize", "sorry", "damaged shipment", "free replacement", "24 hours", "inconvenience", "dispatched", "patience", "best regards"]
+    },
+    "typing": "Non-voice email support requires high attention to grammar, tone, and resolution speed. Accuracy builds customer trust. Professionalism in written communication is crucial for business operations.",
+    "voiceD": [
+      "Please hold on while I check your account details.",
+      "Our team is working diligently to resolve your query.",
+      "Thank you for reaching out to our customer care.",
+      "We apologize for the delay in processing your invoice.",
+      "Your confirmation email has been dispatched successfully."
+    ],
+    "passagesE": [
+      "I am reading a newspaper in the living room.",
+      "The server will undergo routine maintenance tonight.",
+      "Customer satisfaction remains our top priority.",
+      "Please submit your travel expenses by Friday.",
+      "Quality communication resolves issues effectively."
+    ],
+    "audioPromptsF": [
+      "I am reading a newspaper.",
+      "Your account balance is updated.",
+      "Please hold the line for an agent.",
+      "We offer a 30 day refund policy.",
+      "Thank you for calling customer service."
+    ],
+    "storyG": [
+      {
+        "id": 1,
+        "question": "Tell me about your Happiest Moment (Getting your first job offer).",
+        "correctAnswer": "I woke up early and got ready for my interview. I reached the office on time. I greeted the interviewer with a smile. I answered all the interview questions confidently. I completed all the interview rounds successfully. I went back home and waited for the result. I received a phone call from the HR team. They offered me my first job. I thanked the HR for giving me this opportunity. I immediately shared the good news with my family. My parents congratulated me and felt proud. We celebrated the special day together. We ordered my favorite food. We clicked many happy pictures. My friends also congratulated me. I thanked God for this wonderful opportunity. I promised myself to work hard. I became more confident about my future. That day became a beautiful memory. It was the happiest moment of my life. Thank you for giving me this opportunity!",
+        "keywords": ["woke up early", "got ready for my interview", "reached the office on time", "greeted the interviewer", "answered all the interview questions confidently", "completed all the interview rounds successfully", "waited for the result", "phone call from the HR team", "offered me my first job", "thanked the HR", "shared the good news with my family", "parents congratulated me", "celebrated the special day together", "ordered my favorite food", "clicked many happy pictures", "thanked God", "promised myself to work hard", "became more confident", "beautiful memory", "happiest moment of my life"]
+      }
+    ],
+    "trueFalse": [
+      { "q": "1. Sound travels faster in water than in air.", "ans": "True" },
+      { "q": "2. HTML is a programming language.", "ans": "False" }
+    ],
+    "fillBlanks": [
+      { "q": "1. The capital of France is _____.", "ans": "Paris" },
+      { "q": "2. Water boils at _____ degrees Celsius.", "ans": "100" }
+    ]
+  }
+
+
+]
