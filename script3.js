@@ -30,7 +30,7 @@ const db = getFirestore(app);
 let isNetOk = false, isAudioOk = false;
 window.isOTPVerified = false;
 let questionPool = [];
-let activeSet, timerInterval;
+let activeSet = null, timerInterval;
 let currentObjIdx = 0, userObjAnswers = {};
 let currentDIdx = 0, voiceDAnswers = {};
 let currentEIdx = 0, userEAnswers = {};
@@ -45,6 +45,10 @@ let activeExamWeekNum = "1";
 let selectedWeekTag = "Week 1";
 let activeSectionList = [];
 let currentSectionIndex = 0;
+let currentExamConfig = {
+    secA: true, secB: true, secC: true, secD: true,
+    secE: true, secF: true, secG: true, secTF: true, secFIB: true
+};
 
 window.addEventListener('DOMContentLoaded', () => {
     fetch('questions.json')
@@ -60,7 +64,6 @@ window.addEventListener('DOMContentLoaded', () => {
         .catch(err => console.error("Error loading JSON:", err));
 });
 
-// 🟢 active_week_setting और उस वीक का Firestore डेटा फेच करें
 async function fetchActiveExamConfig() {
     try {
         const configRef = doc(db, "exam_config", "active_week_setting");
@@ -69,15 +72,19 @@ async function fetchActiveExamConfig() {
         if (configSnap.exists()) {
             activeExamWeekNum = configSnap.data().activeWeek || "1";
             selectedWeekTag = `Week ${activeExamWeekNum}`;
-            console.log(`System locked to Admin Selected Week: ${selectedWeekTag}`);
 
-            // 🟢 अगर Firebase में इस हफ्ते का नया JSON सेव है, तो उसे अभी से लोड कर लें
             const weekConfigRef = doc(db, "exam_config", `week_${activeExamWeekNum}_config`);
             const weekConfigSnap = await getDoc(weekConfigRef);
 
-            if (weekConfigSnap.exists() && weekConfigSnap.data().customData) {
-                activeSet = weekConfigSnap.data().customData;
-                console.log(`Firebase Custom Question Set Loaded for ${selectedWeekTag}`);
+            if (weekConfigSnap.exists()) {
+                const wData = weekConfigSnap.data();
+                if (wData.activeSections) {
+                    currentExamConfig = wData.activeSections;
+                }
+                if (wData.customData) {
+                    let cData = wData.customData;
+                    activeSet = Array.isArray(cData) ? cData[0] : cData;
+                }
             }
         }
     } catch (e) {
@@ -105,24 +112,53 @@ function hideAll() {
     });
 }
 
-// Dynamic Section Discovery Engine (Skips Omitted Sections Automatically)
+// Helper: Ensure activeSet is correctly extracted as an Object (not Array)
+function normalizeActiveSet(dataSet) {
+    if (!dataSet) return null;
+    if (Array.isArray(dataSet)) {
+        return dataSet.length > 0 ? dataSet[0] : null;
+    }
+    return dataSet;
+}
+
+// Dynamic Section Discovery Engine
 function getAvailableSections() {
     let activeSections = [];
-    if (activeSet.obj && activeSet.obj.length > 0) activeSections.push({ key: 'obj', name: 'Objective Grammar Test' });
-    if (activeSet.email && activeSet.email.question) activeSections.push({ key: 'email', name: 'Timed Email Writing' });
-    if (activeSet.typing && activeSet.typing.trim().length > 0) activeSections.push({ key: 'typing', name: 'Typing Speed Assessment' });
-    if (activeSet.voiceD && activeSet.voiceD.length > 0) activeSections.push({ key: 'voiceD', name: 'Read Aloud Speaking' });
-    if (activeSet.passagesE && activeSet.passagesE.length > 0) activeSections.push({ key: 'passagesE', name: 'Memory Passage Reconstruction' });
-    if (activeSet.audioPromptsF && activeSet.audioPromptsF.length > 0) activeSections.push({ key: 'audioPromptsF', name: 'Listen & Repeat Speaking' });
-    if (activeSet.storyG && activeSet.storyG.length > 0) activeSections.push({ key: 'storyG', name: 'Essay & Story Response' });
-    if (activeSet.trueFalse && activeSet.trueFalse.length > 0) activeSections.push({ key: 'trueFalse', name: 'True / False Diagnostics' });
-    if (activeSet.fillBlanks && activeSet.fillBlanks.length > 0) activeSections.push({ key: 'fillBlanks', name: 'Fill in the Blanks' });
+    let setObj = normalizeActiveSet(activeSet);
+
+    if (!setObj) return activeSections;
+
+    if (currentExamConfig.secA && setObj.obj && setObj.obj.length > 0)
+        activeSections.push({ key: 'obj', name: 'Objective Grammar Test' });
+
+    if (currentExamConfig.secB && setObj.email && setObj.email.question)
+        activeSections.push({ key: 'email', name: 'Timed Email Writing' });
+
+    if (currentExamConfig.secC && setObj.typing && setObj.typing.trim().length > 0)
+        activeSections.push({ key: 'typing', name: 'Typing Speed Assessment' });
+
+    if (currentExamConfig.secD && setObj.voiceD && setObj.voiceD.length > 0)
+        activeSections.push({ key: 'voiceD', name: 'Read Aloud Speaking' });
+
+    if (currentExamConfig.secE && setObj.passagesE && setObj.passagesE.length > 0)
+        activeSections.push({ key: 'passagesE', name: 'Memory Passage Reconstruction' });
+
+    if (currentExamConfig.secF && setObj.audioPromptsF && setObj.audioPromptsF.length > 0)
+        activeSections.push({ key: 'audioPromptsF', name: 'Listen & Repeat Speaking' });
+
+    if (currentExamConfig.secG && setObj.storyG && setObj.storyG.length > 0)
+        activeSections.push({ key: 'storyG', name: 'Essay & Story Response' });
+
+    if (currentExamConfig.secTF && setObj.trueFalse && setObj.trueFalse.length > 0)
+        activeSections.push({ key: 'trueFalse', name: 'True / False Diagnostics' });
+
+    if (currentExamConfig.secFIB && setObj.fillBlanks && setObj.fillBlanks.length > 0)
+        activeSections.push({ key: 'fillBlanks', name: 'Fill in the Blanks' });
+
     return activeSections;
 }
 
-// 🟢 100% Firebase & Local Sync Question Loader
 window.startFullAssessment = async function () {
-    // 1. पहले Firebase से लॉक्ड एक्टिव वीक और उसका डेटा निकालें
     try {
         const configRef = doc(db, "exam_config", "active_week_setting");
         const configSnap = await getDoc(configRef);
@@ -135,17 +171,17 @@ window.startFullAssessment = async function () {
         const weekConfigRef = doc(db, "exam_config", `week_${activeExamWeekNum}_config`);
         const weekConfigSnap = await getDoc(weekConfigRef);
 
-        // प्रायोरिटी 1: अगर एडमिन ने डैशबोर्ड से नया JSON डिप्लॉय किया है (Firebase Storage)
-        if (weekConfigSnap.exists() && weekConfigSnap.data().customData) {
-            let firebaseData = weekConfigSnap.data().customData;
-            activeSet = Array.isArray(firebaseData) ? firebaseData[0] : firebaseData;
-            console.log(`Loaded Question Paper from Firebase for ${selectedWeekTag}`);
+        if (weekConfigSnap.exists()) {
+            const wData = weekConfigSnap.data();
+            if (wData.activeSections) currentExamConfig = wData.activeSections;
+            if (wData.customData) {
+                activeSet = normalizeActiveSet(wData.customData);
+            }
         }
-        // प्रायोरिटी 2: अगर Firebase में नहीं मिला, तो लोकल questions.json से फेच करें
-        else if (questionPool && questionPool.length > 0) {
+
+        if (!activeSet && questionPool && questionPool.length > 0) {
             const matchedSet = questionPool.find(s => s.setId == activeExamWeekNum);
             activeSet = matchedSet ? matchedSet : questionPool[0];
-            console.log(`Loaded Question Paper from questions.json for ${selectedWeekTag}`);
         }
     } catch (err) {
         console.error("Error loading active week set:", err);
@@ -154,6 +190,8 @@ window.startFullAssessment = async function () {
             activeSet = matchedSet ? matchedSet : questionPool[0];
         }
     }
+
+    activeSet = normalizeActiveSet(activeSet);
 
     if (!activeSet) {
         alert("Question paper is loading or invalid. Please try again!");
@@ -164,7 +202,7 @@ window.startFullAssessment = async function () {
     currentSectionIndex = 0;
 
     if (activeSectionList.length === 0) {
-        alert("No active test sections found for this test!");
+        alert("No active test sections found for this test! Please check Admin Settings.");
         return;
     }
 
@@ -184,7 +222,6 @@ function loadCurrentInstructionSection() {
 
 window.startActivePart = function () {
     window.isTestActive = true;
-    window.sectionSwitchCount = 0;
 
     hideAll();
     document.getElementById('screen-test').classList.remove('hidden');
@@ -197,16 +234,18 @@ window.startActivePart = function () {
     const displayLabel = String.fromCharCode(65 + currentSectionIndex);
     document.getElementById('part-indicator').innerText = `Section ${displayLabel}: ${currentSec.name}`;
 
+    let setObj = normalizeActiveSet(activeSet);
+
     if (currentSec.key === 'obj') {
         document.getElementById('part-a').classList.remove('hidden');
         currentObjIdx = 0; showSingleObjQuestion();
     } else if (currentSec.key === 'email') {
         document.getElementById('part-b').classList.remove('hidden');
-        document.getElementById('qb-email-prompt').innerText = activeSet.email.question;
+        document.getElementById('qb-email-prompt').innerText = setObj.email.question;
         startTimer(600, () => window.submitEmailAndNext());
     } else if (currentSec.key === 'typing') {
         document.getElementById('part-c').classList.remove('hidden');
-        document.getElementById('qc-typing').innerText = activeSet.typing;
+        document.getElementById('qc-typing').innerText = setObj.typing;
         typingStartTime = new Date();
         startTimer(120, () => window.submitTypingAndNext());
     } else if (currentSec.key === 'voiceD') {
@@ -240,7 +279,7 @@ function goToNextSectionInOrder() {
     }
 }
 
-// Hardware Diagnostics and Registration Handler
+// Hardware Diagnostics & OTP Verification
 window.goToHardwareCheck = async function () {
     const nameEl = document.getElementById('cand-name');
     const emailEl = document.getElementById('cand-email');
@@ -262,11 +301,7 @@ window.goToHardwareCheck = async function () {
     const userDocId = email.replace(/[^a-zA-Z0-9]/g, "_");
     const userRef = doc(db, "otp_attempts", userDocId);
     let userSnap = null;
-    try {
-        userSnap = await getDoc(userRef);
-    } catch(e) {
-        console.warn("Firestore fetch notice:", e);
-    }
+    try { userSnap = await getDoc(userRef); } catch(e) {}
 
     const now = Date.now();
     let attempts = 0, blockUntil = 0, isBanned = false;
@@ -326,9 +361,7 @@ window.promptOTPVerification = async function () {
     const userDocId = email.replace(/[^a-zA-Z0-9]/g, "_");
     const userRef = doc(db, "otp_attempts", userDocId);
     let userSnap = null;
-    try {
-        userSnap = await getDoc(userRef);
-    } catch(e) {}
+    try { userSnap = await getDoc(userRef); } catch(e) {}
 
     let attempts = userSnap && userSnap.exists() ? (userSnap.data().attempts || 0) : 0;
     let totalFailCycles = userSnap && userSnap.exists() ? (userSnap.data().totalFailCycles || 0) : 0;
@@ -421,14 +454,8 @@ window.runRealSpeedTest = function () {
         });
 };
 
-// Microphone Diagnostics & Audio Visualizer Engine
-let testStream = null;
-let testRecorder = null;
-let testChunks = [];
-let audioBlob = null;
-let audioCtx = null;
-let analyser = null;
-let animFrameId = null;
+// Microphone Visualizer
+let testStream = null, testRecorder = null, testChunks = [], audioBlob = null, audioCtx = null, analyser = null, animFrameId = null;
 
 window.testMicRecord = async function () {
     const btnRec = document.getElementById('btn-mic-rec');
@@ -440,9 +467,7 @@ window.testMicRecord = async function () {
             testStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') {
-                await audioCtx.resume();
-            }
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
 
             analyser = audioCtx.createAnalyser();
             const source = audioCtx.createMediaStreamSource(testStream);
@@ -453,9 +478,7 @@ window.testMicRecord = async function () {
             testRecorder = new MediaRecorder(testStream, options);
             testChunks = [];
 
-            testRecorder.ondataavailable = e => {
-                if (e.data.size > 0) testChunks.push(e.data);
-            };
+            testRecorder.ondataavailable = e => { if (e.data.size > 0) testChunks.push(e.data); };
 
             testRecorder.onstop = () => {
                 audioBlob = new Blob(testChunks, { type: testRecorder.mimeType || 'audio/wav' });
@@ -474,13 +497,8 @@ window.testMicRecord = async function () {
                     placeholder.innerText = "Recording saved. Click Listen Sample Audio.";
                 }
 
-                if (testStream) {
-                    testStream.getTracks().forEach(track => track.stop());
-                }
-
-                if (audioCtx && audioCtx.state !== 'closed') {
-                    audioCtx.close();
-                }
+                if (testStream) testStream.getTracks().forEach(track => track.stop());
+                if (audioCtx && audioCtx.state !== 'closed') audioCtx.close();
             };
 
             testRecorder.start();
@@ -564,11 +582,15 @@ window.checkProceed = function () {
     }
 };
 
-// Question Display Functions
+// 🟢 SAFE QUESTION DISPLAY & NAVIGATION ENGINE
 function showSingleObjQuestion() {
-    if (currentObjIdx >= activeSet.obj.length) { goToNextSectionInOrder(); return; }
-    const qObj = activeSet.obj[currentObjIdx];
-    document.getElementById('qa-counter').innerText = `Question ${currentObjIdx + 1} of ${activeSet.obj.length}`;
+    let setObj = normalizeActiveSet(activeSet);
+    if (!setObj || !setObj.obj || currentObjIdx >= setObj.obj.length) {
+        goToNextSectionInOrder();
+        return;
+    }
+    const qObj = setObj.obj[currentObjIdx];
+    document.getElementById('qa-counter').innerText = `Question ${currentObjIdx + 1} of ${setObj.obj.length}`;
     document.getElementById('qa-text').innerText = qObj.q;
     document.getElementById('qa-options').innerHTML = qObj.opts.map(o =>
         `<label class="block bg-gray-600 p-3 rounded cursor-pointer hover:bg-gray-500 text-sm">
@@ -583,7 +605,13 @@ window.saveAndNextObj = function () {
     const sel = document.querySelector('input[name="single_q_opt"]:checked');
     userObjAnswers[currentObjIdx] = sel ? sel.value : "Not Answered";
     currentObjIdx++;
-    showSingleObjQuestion();
+
+    let setObj = normalizeActiveSet(activeSet);
+    if (setObj && setObj.obj && currentObjIdx >= setObj.obj.length) {
+        goToNextSectionInOrder();
+    } else {
+        showSingleObjQuestion();
+    }
 };
 
 window.submitEmailAndNext = function () {
@@ -600,9 +628,10 @@ window.submitTypingAndNext = function () {
 };
 
 function showSingleDQuestion() {
-    if (currentDIdx >= activeSet.voiceD.length) { goToNextSectionInOrder(); return; }
-    document.getElementById('qd-counter').innerText = `Prompt ${currentDIdx + 1} of ${activeSet.voiceD.length}`;
-    document.getElementById('qd-voice-text').innerText = `"${activeSet.voiceD[currentDIdx]}"`;
+    let setObj = normalizeActiveSet(activeSet);
+    if (!setObj || !setObj.voiceD || currentDIdx >= setObj.voiceD.length) { goToNextSectionInOrder(); return; }
+    document.getElementById('qd-counter').innerText = `Prompt ${currentDIdx + 1} of ${setObj.voiceD.length}`;
+    document.getElementById('qd-voice-text').innerText = `"${setObj.voiceD[currentDIdx]}"`;
     document.getElementById('transcribed-text-d').innerText = "Listening...";
     startTimer(45, () => window.saveAndNextD());
 }
@@ -610,15 +639,21 @@ function showSingleDQuestion() {
 window.saveAndNextD = function () {
     clearInterval(timerInterval);
     currentDIdx++;
-    showSingleDQuestion();
+    let setObj = normalizeActiveSet(activeSet);
+    if (setObj && setObj.voiceD && currentDIdx >= setObj.voiceD.length) {
+        goToNextSectionInOrder();
+    } else {
+        showSingleDQuestion();
+    }
 };
 
 function showSingleEQuestion() {
-    if (currentEIdx >= activeSet.passagesE.length) { goToNextSectionInOrder(); return; }
-    document.getElementById('qe-counter').innerText = `Passage ${currentEIdx + 1} of ${activeSet.passagesE.length}`;
+    let setObj = normalizeActiveSet(activeSet);
+    if (!setObj || !setObj.passagesE || currentEIdx >= setObj.passagesE.length) { goToNextSectionInOrder(); return; }
+    document.getElementById('qe-counter').innerText = `Passage ${currentEIdx + 1} of ${setObj.passagesE.length}`;
     document.getElementById('ans-passage-e').value = "";
     const textEl = document.getElementById('qe-display-text');
-    textEl.innerText = activeSet.passagesE[currentEIdx];
+    textEl.innerText = setObj.passagesE[currentEIdx];
     textEl.classList.remove('fade-out');
 
     setTimeout(() => { textEl.classList.add('fade-out'); }, 8000);
@@ -629,32 +664,44 @@ window.saveAndNextE = function () {
     clearInterval(timerInterval);
     userEAnswers[currentEIdx] = document.getElementById('ans-passage-e').value || "No Response";
     currentEIdx++;
-    showSingleEQuestion();
+    let setObj = normalizeActiveSet(activeSet);
+    if (setObj && setObj.passagesE && currentEIdx >= setObj.passagesE.length) {
+        goToNextSectionInOrder();
+    } else {
+        showSingleEQuestion();
+    }
 };
 
 function showSingleFQuestion() {
-    if (currentFIdx >= activeSet.audioPromptsF.length) { goToNextSectionInOrder(); return; }
-    document.getElementById('qf-counter').innerText = `Audio Item ${currentFIdx + 1} of ${activeSet.audioPromptsF.length}`;
+    let setObj = normalizeActiveSet(activeSet);
+    if (!setObj || !setObj.audioPromptsF || currentFIdx >= setObj.audioPromptsF.length) { goToNextSectionInOrder(); return; }
+    document.getElementById('qf-counter').innerText = `Audio Item ${currentFIdx + 1} of ${setObj.audioPromptsF.length}`;
     document.getElementById('transcribed-text-f').innerText = "Listening...";
-    speak(activeSet.audioPromptsF[currentFIdx]);
+    speak(setObj.audioPromptsF[currentFIdx]);
     startTimer(45, () => window.saveAndNextF());
 }
 
 window.saveAndNextF = function () {
     clearInterval(timerInterval);
     currentFIdx++;
-    showSingleFQuestion();
+    let setObj = normalizeActiveSet(activeSet);
+    if (setObj && setObj.audioPromptsF && currentFIdx >= setObj.audioPromptsF.length) {
+        goToNextSectionInOrder();
+    } else {
+        showSingleFQuestion();
+    }
 };
 
 function showSingleGQuestion() {
-    if (!activeSet.storyG || currentGIdx >= activeSet.storyG.length) { goToNextSectionInOrder(); return; }
-    const qG = activeSet.storyG[currentGIdx];
-    document.getElementById('qg-counter').innerText = `Question ${currentGIdx + 1} of ${activeSet.storyG.length}`;
+    let setObj = normalizeActiveSet(activeSet);
+    if (!setObj || !setObj.storyG || currentGIdx >= setObj.storyG.length) { goToNextSectionInOrder(); return; }
+    const qG = setObj.storyG[currentGIdx];
+    document.getElementById('qg-counter').innerText = `Question ${currentGIdx + 1} of ${setObj.storyG.length}`;
     document.getElementById('qg-prompt-title').innerText = `Q${currentGIdx + 1}. Story Task`;
     document.getElementById('qg-prompt-desc').innerText = qG.question;
     document.getElementById('ans-story-g').value = "";
 
-    document.getElementById('btn-next-g').innerText = (currentGIdx === activeSet.storyG.length - 1) ? "Submit Section" : "Next Question";
+    document.getElementById('btn-next-g').innerText = (currentGIdx === setObj.storyG.length - 1) ? "Next Section" : "Next Question";
     startTimer(300, () => window.saveAndNextG());
 }
 
@@ -662,13 +709,19 @@ window.saveAndNextG = function () {
     clearInterval(timerInterval);
     userGAnswers[currentGIdx] = document.getElementById('ans-story-g').value || "";
     currentGIdx++;
-    showSingleGQuestion();
+    let setObj = normalizeActiveSet(activeSet);
+    if (setObj && setObj.storyG && currentGIdx >= setObj.storyG.length) {
+        goToNextSectionInOrder();
+    } else {
+        showSingleGQuestion();
+    }
 };
 
 function showSingleTFQuestion() {
-    if (!activeSet.trueFalse || currentTFIdx >= activeSet.trueFalse.length) { goToNextSectionInOrder(); return; }
-    const qTF = activeSet.trueFalse[currentTFIdx];
-    if (document.getElementById('qtf-counter')) document.getElementById('qtf-counter').innerText = `Question ${currentTFIdx + 1} of ${activeSet.trueFalse.length}`;
+    let setObj = normalizeActiveSet(activeSet);
+    if (!setObj || !setObj.trueFalse || currentTFIdx >= setObj.trueFalse.length) { goToNextSectionInOrder(); return; }
+    const qTF = setObj.trueFalse[currentTFIdx];
+    if (document.getElementById('qtf-counter')) document.getElementById('qtf-counter').innerText = `Question ${currentTFIdx + 1} of ${setObj.trueFalse.length}`;
     if (document.getElementById('qtf-text')) document.getElementById('qtf-text').innerText = qTF.q;
     startTimer(30, () => window.saveAndNextTF());
 }
@@ -678,13 +731,19 @@ window.saveAndNextTF = function () {
     const sel = document.querySelector('input[name="single_tf_opt"]:checked');
     userTFAnswers[currentTFIdx] = sel ? sel.value : "Not Answered";
     currentTFIdx++;
-    showSingleTFQuestion();
+    let setObj = normalizeActiveSet(activeSet);
+    if (setObj && setObj.trueFalse && currentTFIdx >= setObj.trueFalse.length) {
+        goToNextSectionInOrder();
+    } else {
+        showSingleTFQuestion();
+    }
 };
 
 function showSingleFIBQuestion() {
-    if (!activeSet.fillBlanks || currentFIBIdx >= activeSet.fillBlanks.length) { goToNextSectionInOrder(); return; }
-    const qFIB = activeSet.fillBlanks[currentFIBIdx];
-    if (document.getElementById('qfib-counter')) document.getElementById('qfib-counter').innerText = `Question ${currentFIBIdx + 1} of ${activeSet.fillBlanks.length}`;
+    let setObj = normalizeActiveSet(activeSet);
+    if (!setObj || !setObj.fillBlanks || currentFIBIdx >= setObj.fillBlanks.length) { goToNextSectionInOrder(); return; }
+    const qFIB = setObj.fillBlanks[currentFIBIdx];
+    if (document.getElementById('qfib-counter')) document.getElementById('qfib-counter').innerText = `Question ${currentFIBIdx + 1} of ${setObj.fillBlanks.length}`;
     if (document.getElementById('qfib-text')) document.getElementById('qfib-text').innerText = qFIB.q;
     if (document.getElementById('ans-fib')) document.getElementById('ans-fib').value = "";
     startTimer(45, () => window.saveAndNextFIB());
@@ -695,7 +754,12 @@ window.saveAndNextFIB = function () {
     const ans = document.getElementById('ans-fib') ? document.getElementById('ans-fib').value.trim() : "";
     userFIBAnswers[currentFIBIdx] = ans || "Not Answered";
     currentFIBIdx++;
-    showSingleFIBQuestion();
+    let setObj = normalizeActiveSet(activeSet);
+    if (setObj && setObj.fillBlanks && currentFIBIdx >= setObj.fillBlanks.length) {
+        goToNextSectionInOrder();
+    } else {
+        showSingleFIBQuestion();
+    }
 };
 
 let recognition = null;
@@ -710,6 +774,7 @@ if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
 window.toggleRecordPart = function (partKey) {
     const btn = document.getElementById(`btn-rec-${partKey.toLowerCase()}`);
     const textDisplay = document.getElementById(`transcribed-text-${partKey.toLowerCase()}`);
+    let setObj = normalizeActiveSet(activeSet);
 
     if (recognition) {
         recognition.start();
@@ -730,7 +795,7 @@ window.toggleRecordPart = function (partKey) {
         };
     } else {
         alert("Browser speech recognition not supported.");
-        textDisplay.innerText = partKey === 'D' ? activeSet.voiceD[currentDIdx] : activeSet.audioPromptsF[currentFIdx];
+        textDisplay.innerText = partKey === 'D' ? setObj.voiceD[currentDIdx] : setObj.audioPromptsF[currentFIdx];
     }
 };
 
@@ -751,8 +816,9 @@ function startTimer(seconds, onTimeout) {
 
 // Evaluation Logic
 window.trackTyping = function () {
+    let setObj = normalizeActiveSet(activeSet);
     const typed = (document.getElementById('ans-typing') ? document.getElementById('ans-typing').value : "").trim();
-    const target = activeSet.typing ? activeSet.typing.trim() : "";
+    const target = setObj && setObj.typing ? setObj.typing.trim() : "";
     if (!typed || !target) { finalWPM = 0; finalAcc = 0; return; }
 
     const typedWords = typed.split(/\s+/);
@@ -801,55 +867,87 @@ function validateGrammarlyStyle(text) {
 
     return { isValid: penaltyPct < 0.20, penaltyPct: Math.min(0.50, penaltyPct) };
 }
-
+// 🟢 FIXED EVALUATION ENGINE: "Best of Two" (Similarity vs Keyword) & Copy-Paste Protection
 function evaluateBestOfTwoSpecial(userAnswer, correctAnswer, keywords, baseMaxMarks, promptQuestion = "") {
     userAnswer = (userAnswer || "").trim();
     correctAnswer = (correctAnswer || "").trim();
-    if (!userAnswer) return { finalScore: 0, methodUsed: "No Answer Provided" };
 
+    // 1. अगर कोई उत्तर नहीं दिया
+    if (!userAnswer) {
+        return { finalScore: 0, methodUsed: "No Answer Provided" };
+    }
+
+    // 2. 🟢 COPY-PASTE CHECK: अगर प्रश्न को ही उत्तर में कॉपी-पेस्ट कर दिया है (Keywords ignored)
     if (promptQuestion && promptQuestion.length > 10) {
-        if (getSimilarityPercentage(userAnswer, promptQuestion) > 70) {
-            return { finalScore: 0, methodUsed: "Rejected: Question Copied As Answer" };
+        const copySimPct = getSimilarityPercentage(userAnswer, promptQuestion);
+        if (copySimPct >= 65) {
+            return {
+                finalScore: 0,
+                methodUsed: "REJECTED (0 Marks): Question Copied as Answer"
+            };
         }
     }
 
     const normUser = userAnswer.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, ' ').trim();
     const normCorrect = correctAnswer.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, ' ').trim();
-    if (normUser === normCorrect) return { finalScore: baseMaxMarks, methodUsed: "Top Priority: 100% As-It-Is Exact Match" };
 
+    // ==========================================
+    // METHOD A: DIRECT SIMILARITY MATCH (0-100)
+    // ==========================================
     const exactSimPct = getSimilarityPercentage(normUser, normCorrect);
-    const grammarResult = validateGrammarlyStyle(userAnswer);
+    let simScorePct = 0;
+
+    if (exactSimPct >= 98) simScorePct = 100;
+    else if (exactSimPct >= 90) simScorePct = 90;
+    else if (exactSimPct >= 80) simScorePct = 80;
+    else if (exactSimPct >= 70) simScorePct = 70;
+    else simScorePct = Math.round(exactSimPct); // Below 70, give exact raw similarity %
+
+    // ==========================================
+    // METHOD B: KEYWORD MATCHING ENGINE (0-100)
+    // ==========================================
+    const userWords = normUser.split(/\s+/);
+    const matchedKeywords = keywords.filter(word =>
+        userWords.includes(word.toLowerCase()) || normUser.includes(word.toLowerCase())
+    );
+    const keywordMatchPct = keywords.length > 0 ? (matchedKeywords.length / keywords.length) * 100 : 0;
+
+    let keyScorePct = 0;
+    if (keywordMatchPct >= 98) keyScorePct = 95;
+    else if (keywordMatchPct >= 80) keyScorePct = 85;
+    else if (keywordMatchPct >= 60) keyScorePct = 70;
+    else if (keywordMatchPct >= 40) keyScorePct = 50;
+    else keyScorePct = 0;
+
+    // ==========================================
+    // 🟢 "BEST OF TWO" SELECTION LOGIC
+    // ==========================================
     let rawScorePct = 0;
     let evalMethod = "";
 
-    if (exactSimPct >= 70) {
-        rawScorePct = exactSimPct;
-        evalMethod = `Top Priority Match (${Math.round(exactSimPct)}% Accuracy)`;
+    if (simScorePct >= keyScorePct) {
+        rawScorePct = simScorePct;
+        evalMethod = `Similarity Match Won (${simScorePct}% Accuracy)`;
     } else {
-        const userWords = normUser.split(/\s+/);
-        const matchedKeywords = keywords.filter(word => userWords.includes(word.toLowerCase()) || normUser.includes(word.toLowerCase()));
-        const keywordMatchPct = keywords.length > 0 ? (matchedKeywords.length / keywords.length) * 100 : 0;
-
-        if (keywordMatchPct >= 90) rawScorePct = 95;
-        else if (keywordMatchPct >= 80) rawScorePct = 85;
-        else if (keywordMatchPct >= 70) rawScorePct = 75;
-        else if (keywordMatchPct >= 60) rawScorePct = 65;
-        else if (keywordMatchPct >= 50) rawScorePct = 50;
-        else if (keywordMatchPct >= 30) rawScorePct = 35;
-        else rawScorePct = 0;
-
-        evalMethod = `Own Words + Keyword Logic (${matchedKeywords.length}/${keywords.length} Keywords)`;
+        rawScorePct = keyScorePct;
+        evalMethod = `Keyword Match Won (${matchedKeywords.length}/${keywords.length} Keywords)`;
     }
 
+    // ==========================================
+    // GRAMMAR ERROR CHECK & PENALTY DEDUCTION
+    // ==========================================
+    const grammarResult = validateGrammarlyStyle(userAnswer);
     if (rawScorePct > 0 && grammarResult.penaltyPct > 0) {
-        rawScorePct = Math.max(0, rawScorePct - (rawScorePct * grammarResult.penaltyPct));
+        const penaltyAmount = rawScorePct * grammarResult.penaltyPct;
+        rawScorePct = Math.max(0, rawScorePct - penaltyAmount);
         evalMethod += ` | Grammar Penalty (-${Math.round(grammarResult.penaltyPct * 100)}%)`;
     }
 
-    return { finalScore: Math.round(((rawScorePct / 100) * baseMaxMarks) * 10) / 10, methodUsed: evalMethod };
+    const finalMarks = Math.round(((rawScorePct / 100) * baseMaxMarks) * 10) / 10;
+    return { finalScore: finalMarks, methodUsed: evalMethod };
 }
-
 // Result Compilation & Automatic 100-Score Scaling
+// 🟢 RESULT COMPILATION & PDF GENERATION (WITH QUESTION, CANDIDATE ANS & CORRECT ANS)
 async function finishTest() {
     window.isTestActive = false;
     clearInterval(timerInterval);
@@ -859,136 +957,190 @@ async function finishTest() {
     const candName = document.getElementById('cand-name').value.trim();
     const candEmail = document.getElementById('cand-email').value.trim();
 
+    let setObj = normalizeActiveSet(activeSet);
     let rawObtainedScore = 0;
     let rawMaxTotalScore = 0;
     let fullReportHtml = "";
     let sectionDisplayCounter = 0;
 
-    // 1. Objective Grammar
-    if (activeSet.obj && activeSet.obj.length > 0) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        let scoreA = 0, detailsA = "";
-        activeSet.obj.forEach((item, i) => {
-            const userAns = userObjAnswers[i] || "Not Answered";
-            const isCorr = userAns === item.ans;
-            if (isCorr) scoreA += 1.5;
-            detailsA += `<div style="border-bottom:1px solid #e2e8f0; padding:8px 0;"><p><b>Q${i + 1}:</b> ${item.q}</p><p>Your Ans: <span style="color:${isCorr ? '#16a34a' : '#dc2626'}; font-weight:bold;">${userAns}</span> | Correct: <b>${item.ans}</b></p></div>`;
-        });
-        rawObtainedScore += scoreA;
-        rawMaxTotalScore += (activeSet.obj.length * 1.5);
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: OBJECTIVE GRAMMAR (${scoreA} / ${activeSet.obj.length * 1.5} Marks)</div>${detailsA}`;
-    }
+    const cfg = currentExamConfig || {};
 
-    // 2. Email Writing
-    if (activeSet.email && activeSet.email.question) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        const userEmail = document.getElementById('ans-email') ? document.getElementById('ans-email').value : "";
-        const evalB = evaluateBestOfTwoSpecial(userEmail, activeSet.email.correctAnswer, activeSet.email.keywords, 15, activeSet.email.question);
-        rawObtainedScore += evalB.finalScore;
-        rawMaxTotalScore += 15;
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: EMAIL WRITING (${evalB.finalScore} / 15 Marks)</div><div style="border-bottom:1px solid #e2e8f0; padding:8px 0;"><p><b>Prompt:</b> ${activeSet.email.question}</p><p><b>Candidate Ans:</b> ${userEmail || 'No response'}</p><p style="font-size:11px;"><b>Evaluation Method:</b> ${evalB.methodUsed}</p></div>`;
-    }
+    if (setObj) {
+        // 1. Objective Grammar
+        if (cfg.secA !== false && setObj.obj && setObj.obj.length > 0) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            let scoreA = 0, detailsA = "";
+            setObj.obj.forEach((item, i) => {
+                const userAns = userObjAnswers[i] || "Not Answered";
+                const isCorr = userAns === item.ans;
+                if (isCorr) scoreA += 1.5;
+                detailsA += `
+                    <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
+                        <p style="margin:2px 0;"><b>Q${i + 1}:</b> ${item.q}</p>
+                        <p style="margin:2px 0;">Candidate Ans: <span style="color:${isCorr ? '#16a34a' : '#dc2626'}; font-weight:bold;">${userAns}</span></p>
+                        <p style="margin:2px 0; color:#15803d; font-weight:bold;">Correct Answer: ${item.ans}</p>
+                    </div>`;
+            });
+            rawObtainedScore += scoreA;
+            rawMaxTotalScore += (setObj.obj.length * 1.5);
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: OBJECTIVE GRAMMAR (${scoreA} / ${setObj.obj.length * 1.5} Marks)</div>${detailsA}`;
+        }
 
-    // 3. Typing
-    if (activeSet.typing && activeSet.typing.trim().length > 0) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        let scoreC = finalAcc >= 20 ? Math.round((finalAcc / 100) * 10 + (Math.min(finalWPM, 40) / 40) * 5) : 0;
-        rawObtainedScore += scoreC;
-        rawMaxTotalScore += 15;
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: TYPING TEST (${scoreC} / 15 Marks)</div><div style="padding:8px 0;"><p><b>Speed:</b> ${finalWPM} WPM | <b>Accuracy:</b> ${finalAcc}%</p></div>`;
-    }
+        // 2. Email Writing
+        if (cfg.secB !== false && setObj.email && setObj.email.question) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            const userEmail = document.getElementById('ans-email') ? document.getElementById('ans-email').value : "";
+            const evalB = evaluateBestOfTwoSpecial(userEmail, setObj.email.correctAnswer, setObj.email.keywords, 15, setObj.email.question);
+            rawObtainedScore += evalB.finalScore;
+            rawMaxTotalScore += 15;
+            fullReportHtml += `
+                <div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: EMAIL WRITING (${evalB.finalScore} / 15 Marks)</div>
+                <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
+                    <p style="margin:4px 0;"><b>Question Prompt:</b> ${setObj.email.question}</p>
+                    <p style="margin:4px 0;"><b>Candidate Response:</b> ${userEmail || 'No response'}</p>
+                    <p style="color:#15803d; background:#f0fdf4; padding:6px; border-radius:4px; font-size:11px; margin:4px 0;"><b>Correct Standard Answer:</b> ${setObj.email.correctAnswer}</p>
+                    <p style="font-size:11px; color:#4b5563; margin:2px 0;"><b>Evaluation Method:</b> ${evalB.methodUsed}</p>
+                </div>`;
+        }
 
-    // 4. Read Aloud
-    if (activeSet.voiceD && activeSet.voiceD.length > 0) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        let scoreD = 0, detailsD = "";
-        activeSet.voiceD.forEach((orig, i) => {
-            const spoken = voiceDAnswers[i] || "Not Spoken";
-            const isMatch = spoken.toLowerCase().includes(orig.split(" ")[0].toLowerCase());
-            if (isMatch) scoreD += 3;
-            detailsD += `<div style="border-bottom:1px solid #e2e8f0; padding:8px 0;"><p><b>Prompt ${i + 1}:</b> "${orig}"</p><p>You Spoke: <span style="color:${isMatch ? '#16a34a' : '#dc2626'}; font-weight:bold;">"${spoken}"</span></p></div>`;
-        });
-        rawObtainedScore += scoreD;
-        rawMaxTotalScore += (activeSet.voiceD.length * 3);
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: READ ALOUD (${scoreD} / ${activeSet.voiceD.length * 3} Marks)</div>${detailsD}`;
-    }
+        // 3. Typing
+        if (cfg.secC !== false && setObj.typing && setObj.typing.trim().length > 0) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            let scoreC = finalAcc >= 20 ? Math.round((finalAcc / 100) * 10 + (Math.min(finalWPM, 40) / 40) * 5) : 0;
+            rawObtainedScore += scoreC;
+            rawMaxTotalScore += 15;
+            fullReportHtml += `
+                <div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: TYPING TEST (${scoreC} / 15 Marks)</div>
+                <div style="padding:8px 0;">
+                    <p style="margin:4px 0;"><b>Target Passage:</b> "${setObj.typing}"</p>
+                    <p style="margin:4px 0;"><b>Speed:</b> ${finalWPM} WPM | <b>Accuracy:</b> ${finalAcc}%</p>
+                </div>`;
+        }
 
-    // 5. Memory Passage
-    if (activeSet.passagesE && activeSet.passagesE.length > 0) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        let scoreE = 0, detailsE = "";
-        const perQMax = 15 / activeSet.passagesE.length;
-        activeSet.passagesE.forEach((orig, i) => {
-            const rec = (userEAnswers[i] || "").trim();
-            const simPct = getSimilarityPercentage(rec, orig);
-            let qScore = simPct >= 90 ? perQMax : (simPct >= 60 ? Math.round((simPct / 100) * perQMax * 10) / 10 : 0);
-            scoreE += qScore;
-            detailsE += `<div style="border-bottom:1px solid #e2e8f0; padding:8px 0;"><p><b>Target ${i + 1}:</b> "${orig}"</p><p>Your Recall: "${rec || 'No response'}" | Marks: <b>${qScore} / ${perQMax}</b></p></div>`;
-        });
-        rawObtainedScore += scoreE;
-        rawMaxTotalScore += 15;
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: MEMORY RECONSTRUCTION (${scoreE} / 15 Marks)</div>${detailsE}`;
-    }
+        // 4. Read Aloud
+        if (cfg.secD !== false && setObj.voiceD && setObj.voiceD.length > 0) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            let scoreD = 0, detailsD = "";
+            setObj.voiceD.forEach((orig, i) => {
+                const spoken = voiceDAnswers[i] || "Not Spoken";
+                const isMatch = spoken.toLowerCase().includes(orig.split(" ")[0].toLowerCase());
+                if (isMatch) scoreD += 3;
+                detailsD += `
+                    <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
+                        <p style="margin:2px 0;"><b>Prompt ${i + 1}:</b> "${orig}"</p>
+                        <p style="margin:2px 0;">Candidate Spoke: <span style="color:${isMatch ? '#16a34a' : '#dc2626'}; font-weight:bold;">"${spoken}"</span></p>
+                        <p style="margin:2px 0; color:#15803d; font-weight:bold;">Correct Sentence: "${orig}"</p>
+                    </div>`;
+            });
+            rawObtainedScore += scoreD;
+            rawMaxTotalScore += (setObj.voiceD.length * 3);
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: READ ALOUD (${scoreD} / ${setObj.voiceD.length * 3} Marks)</div>${detailsD}`;
+        }
 
-    // 6. Listen & Repeat
-    if (activeSet.audioPromptsF && activeSet.audioPromptsF.length > 0) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        let scoreF = 0, detailsF = "";
-        activeSet.audioPromptsF.forEach((orig, i) => {
-            const spoken = voiceFAnswers[i] || "Not Spoken";
-            const isMatch = spoken.toLowerCase().includes(orig.split(" ")[0].toLowerCase());
-            if (isMatch) scoreF += 2;
-            detailsF += `<div style="border-bottom:1px solid #e2e8f0; padding:8px 0;"><p><b>Audio Prompt ${i + 1}:</b> "${orig}"</p><p>You Spoke: <span style="color:${isMatch ? '#16a34a' : '#dc2626'}; font-weight:bold;">"${spoken}"</span></p></div>`;
-        });
-        rawObtainedScore += scoreF;
-        rawMaxTotalScore += (activeSet.audioPromptsF.length * 2);
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: LISTEN & REPEAT (${scoreF} / ${activeSet.audioPromptsF.length * 2} Marks)</div>${detailsF}`;
-    }
+        // 5. Memory Passage
+        if (cfg.secE !== false && setObj.passagesE && setObj.passagesE.length > 0) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            let scoreE = 0, detailsE = "";
+            const perQMax = 15 / setObj.passagesE.length;
+            setObj.passagesE.forEach((orig, i) => {
+                const rec = (userEAnswers[i] || "").trim();
+                const simPct = getSimilarityPercentage(rec, orig);
+                let qScore = simPct >= 90 ? perQMax : (simPct >= 60 ? Math.round((simPct / 100) * perQMax * 10) / 10 : 0);
+                scoreE += qScore;
+                detailsE += `
+                    <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
+                        <p style="margin:2px 0;"><b>Target Passage ${i + 1}:</b> "${orig}"</p>
+                        <p style="margin:2px 0;">Candidate Recall: "${rec || 'No response'}"</p>
+                        <p style="margin:2px 0; color:#15803d; font-weight:bold;">Correct Passage: "${orig}"</p>
+                        <p style="margin:2px 0; font-size:11px;">Marks Awarded: <b>${qScore} / ${perQMax}</b></p>
+                    </div>`;
+            });
+            rawObtainedScore += scoreE;
+            rawMaxTotalScore += 15;
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: MEMORY RECONSTRUCTION (${scoreE} / 15 Marks)</div>${detailsE}`;
+        }
 
-    // 7. Story Response
-    if (activeSet.storyG && activeSet.storyG.length > 0) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        let totalGScore = 0, detailsG = "";
-        const perQMax = 15 / activeSet.storyG.length;
-        activeSet.storyG.forEach((qG, i) => {
-            const ansG = userGAnswers[i] || "";
-            const evalG = evaluateBestOfTwoSpecial(ansG, qG.correctAnswer, qG.keywords, perQMax, qG.question);
-            totalGScore += evalG.finalScore;
-            detailsG += `<div style="border-bottom:1px solid #e2e8f0; padding:8px 0;"><p><b>Prompt:</b> ${qG.question}</p><p><b>Candidate Ans:</b> "${ansG || 'No response'}"</p><p style="font-size:11px;"><b>Marks Awarded:</b> ${evalG.finalScore} / ${perQMax}</p></div>`;
-        });
-        rawObtainedScore += totalGScore;
-        rawMaxTotalScore += 15;
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: STORY RESPONSES (${totalGScore} / 15 Marks)</div>${detailsG}`;
-    }
+        // 6. Listen & Repeat
+        if (cfg.secF !== false && setObj.audioPromptsF && setObj.audioPromptsF.length > 0) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            let scoreF = 0, detailsF = "";
+            setObj.audioPromptsF.forEach((orig, i) => {
+                const spoken = voiceFAnswers[i] || "Not Spoken";
+                const isMatch = spoken.toLowerCase().includes(orig.split(" ")[0].toLowerCase());
+                if (isMatch) scoreF += 2;
+                detailsF += `
+                    <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
+                        <p style="margin:2px 0;"><b>Audio Prompt ${i + 1}:</b> "${orig}"</p>
+                        <p style="margin:2px 0;">Candidate Spoke: <span style="color:${isMatch ? '#16a34a' : '#dc2626'}; font-weight:bold;">"${spoken}"</span></p>
+                        <p style="margin:2px 0; color:#15803d; font-weight:bold;">Correct Sentence: "${orig}"</p>
+                    </div>`;
+            });
+            rawObtainedScore += scoreF;
+            rawMaxTotalScore += (setObj.audioPromptsF.length * 2);
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: LISTEN & REPEAT (${scoreF} / ${setObj.audioPromptsF.length * 2} Marks)</div>${detailsF}`;
+        }
 
-    // 8. True / False Section
-    if (activeSet.trueFalse && activeSet.trueFalse.length > 0) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        let scoreTF = 0, detailsTF = "";
-        activeSet.trueFalse.forEach((item, i) => {
-            const userAns = userTFAnswers[i] || "Not Answered";
-            const isCorr = userAns.toLowerCase() === item.ans.toLowerCase();
-            if (isCorr) scoreTF += 2;
-            detailsTF += `<div style="border-bottom:1px solid #e2e8f0; padding:8px 0;"><p><b>Q${i + 1}:</b> ${item.q}</p><p>Your Ans: <b>${userAns}</b> | Correct: <b>${item.ans}</b></p></div>`;
-        });
-        rawObtainedScore += scoreTF;
-        rawMaxTotalScore += (activeSet.trueFalse.length * 2);
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: TRUE / FALSE (${scoreTF} / ${activeSet.trueFalse.length * 2} Marks)</div>${detailsTF}`;
-    }
+        // 7. Story Response
+        if (cfg.secG !== false && setObj.storyG && setObj.storyG.length > 0) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            let totalGScore = 0, detailsG = "";
+            const perQMax = 15 / setObj.storyG.length;
+            setObj.storyG.forEach((qG, i) => {
+                const ansG = userGAnswers[i] || "";
+                const evalG = evaluateBestOfTwoSpecial(ansG, qG.correctAnswer, qG.keywords, perQMax, qG.question);
+                totalGScore += evalG.finalScore;
+                detailsG += `
+                    <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
+                        <p style="margin:4px 0;"><b>Question Prompt:</b> ${qG.question}</p>
+                        <p style="margin:4px 0;"><b>Candidate Response:</b> "${ansG || 'No response'}"</p>
+                        <p style="color:#15803d; background:#f0fdf4; padding:6px; border-radius:4px; font-size:11px; margin:4px 0;"><b>Correct Standard Response:</b> "${qG.correctAnswer}"</p>
+                        <p style="font-size:11px; color:#4b5563; margin:2px 0;"><b>Evaluation Method:</b> ${evalG.methodUsed} | <b>Marks:</b> ${evalG.finalScore} / ${perQMax}</p>
+                    </div>`;
+            });
+            rawObtainedScore += totalGScore;
+            rawMaxTotalScore += 15;
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: STORY RESPONSES (${totalGScore} / 15 Marks)</div>${detailsG}`;
+        }
 
-    // 9. Fill in the Blanks Section
-    if (activeSet.fillBlanks && activeSet.fillBlanks.length > 0) {
-        const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
-        let scoreFIB = 0, detailsFIB = "";
-        activeSet.fillBlanks.forEach((item, i) => {
-            const userAns = (userFIBAnswers[i] || "").trim();
-            const isCorr = userAns.toLowerCase() === item.ans.toLowerCase();
-            if (isCorr) scoreFIB += 2;
-            detailsFIB += `<div style="border-bottom:1px solid #e2e8f0; padding:8px 0;"><p><b>Q${i + 1}:</b> ${item.q}</p><p>Your Ans: <b>${userAns}</b> | Correct: <b>${item.ans}</b></p></div>`;
-        });
-        rawObtainedScore += scoreFIB;
-        rawMaxTotalScore += (activeSet.fillBlanks.length * 2);
-        fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: FILL IN THE BLANKS (${scoreFIB} / ${activeSet.fillBlanks.length * 2} Marks)</div>${detailsFIB}`;
+        // 8. True / False Section
+        if (cfg.secTF !== false && setObj.trueFalse && setObj.trueFalse.length > 0) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            let scoreTF = 0, detailsTF = "";
+            setObj.trueFalse.forEach((item, i) => {
+                const userAns = userTFAnswers[i] || "Not Answered";
+                const isCorr = userAns.toLowerCase() === item.ans.toLowerCase();
+                if (isCorr) scoreTF += 2;
+                detailsTF += `
+                    <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
+                        <p style="margin:2px 0;"><b>Q${i + 1}:</b> ${item.q}</p>
+                        <p style="margin:2px 0;">Candidate Ans: <span style="color:${isCorr ? '#16a34a' : '#dc2626'}; font-weight:bold;">${userAns}</span></p>
+                        <p style="margin:2px 0; color:#15803d; font-weight:bold;">Correct Answer: ${item.ans}</p>
+                    </div>`;
+            });
+            rawObtainedScore += scoreTF;
+            rawMaxTotalScore += (setObj.trueFalse.length * 2);
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: TRUE / FALSE (${scoreTF} / ${setObj.trueFalse.length * 2} Marks)</div>${detailsTF}`;
+        }
+
+        // 9. Fill in the Blanks Section
+        if (cfg.secFIB !== false && setObj.fillBlanks && setObj.fillBlanks.length > 0) {
+            const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
+            let scoreFIB = 0, detailsFIB = "";
+            setObj.fillBlanks.forEach((item, i) => {
+                const userAns = (userFIBAnswers[i] || "").trim();
+                const isCorr = userAns.toLowerCase() === item.ans.toLowerCase();
+                if (isCorr) scoreFIB += 2;
+                detailsFIB += `
+                    <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
+                        <p style="margin:2px 0;"><b>Q${i + 1}:</b> ${item.q}</p>
+                        <p style="margin:2px 0;">Candidate Ans: <span style="color:${isCorr ? '#16a34a' : '#dc2626'}; font-weight:bold;">${userAns}</span></p>
+                        <p style="margin:2px 0; color:#15803d; font-weight:bold;">Correct Answer: ${item.ans}</p>
+                    </div>`;
+            });
+            rawObtainedScore += scoreFIB;
+            rawMaxTotalScore += (setObj.fillBlanks.length * 2);
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: FILL IN THE BLANKS (${scoreFIB} / ${setObj.fillBlanks.length * 2} Marks)</div>${detailsFIB}`;
+        }
     }
 
     let finalScaled100Score = rawMaxTotalScore > 0 ? Math.round((rawObtainedScore / rawMaxTotalScore) * 100) : 0;
