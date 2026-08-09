@@ -132,6 +132,326 @@
             background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%);
             box-shadow: 0 0 12px rgba(244, 63, 94, 0.35);
         }
+
+
+        /* 🟢 MOBILE COMPACT OPTIMIZATION (500px down to 250px) */
+        @media (max-width: 500px) {
+
+            /* 1. Global Spacing & Typography Downscaling */
+            body {
+                padding: 0.25rem !important;
+                /* Extremely tight padding for ultra-small screens */
+            }
+
+            #dashboard-content {
+                gap: 0.5rem !important;
+            }
+
+            /* 2. Container Cards & Padding */
+            .bg-gray-800,
+            .bg-gray-750,
+            .bg-gray-900\/80 {
+                padding: 0.5rem !important;
+                border-radius: 0.5rem !important;
+            }
+
+            /* 3. Headings & Subtitles Scaling */
+            h1 {
+                font-size: 0.85rem !important;
+                line-height: 1.1rem !important;
+            }
+
+            h2 {
+                font-size: 0.78rem !important;
+                line-height: 1rem !important;
+            }
+
+            h3 {
+                font-size: 0.72rem !important;
+                line-height: 0.95rem !important;
+            }
+
+            p,
+            span,
+            label,
+            td,
+            th,
+            input,
+            select,
+            button {
+                font-size: 0.62rem !important;
+                line-height: 0.82rem !important;
+            }
+
+            /* 4. FontAwesome Icon Size Scaling */
+            .fa-solid,
+            .fa-brands,
+            .fa-regular {
+                font-size: 0.7rem !important;
+            }
+
+            /* 5. Header & Controls Realignment */
+            header {
+                padding: 0.5rem !important;
+                gap: 0.4rem !important;
+            }
+
+            /* 6. Profile Avatar Shrink */
+            #profile-avatar {
+                width: 1.75rem !important;
+                height: 1.75rem !important;
+                font-size: 0.75rem !important;
+            }
+
+            /* 7. Input Fields & Select Dropdowns Scaling */
+            input,
+            select,
+            textarea {
+                padding: 0.25rem 0.35rem !important;
+                font-size: 0.6rem !important;
+            }
+
+            /* 8. Button Sizing & Padding Tightening */
+            button {
+                padding: 0.25rem 0.4rem !important;
+                font-size: 0.6rem !important;
+                border-radius: 0.25rem !important;
+            }
+
+            /* 9. Tables Tightening for Extremely Narrow Screens */
+            table th,
+            table td {
+                padding: 0.3rem 0.2rem !important;
+                font-size: 0.58rem !important;
+                white-space: nowrap;
+            }
+
+            /* 10. Concentric Ring Donut Chart Resizing */
+            .w-36.h-36,
+            .w-40.h-40 {
+                width: 6.5rem !important;
+                height: 6.5rem !important;
+            }
+
+            #donut-avg-score {
+                font-size: 1rem !important;
+            }
+
+            /* 11. Performance Pillars Bar Chart Scale */
+            #weekly-vertical-bars {
+                height: 7rem !important;
+                gap: 0.25rem !important;
+            }
+
+            /* 12. Modal Sizes for Ultra-Narrow Mobile Screens */
+            .swal-mobile-size,
+            #payment-modal>div {
+                width: 96% !important;
+                padding: 0.6rem !important;
+            }
+        }
+
+
+        /* 🟢 COMPREHENSIVE & OPTIMIZED CSS MEDIA QUERY (BELOW 400px) */
+@media (max-width: 400px) {
+
+    /* 1. Shared Centering Utilities (Groups All Centered Container Elements) */
+    div.border-b.border-gray-700\/80,
+    div.border-b.border-gray-700\/60,
+    span.text-amber-300.font-extrabold.uppercase,
+    #donut-legend-box,
+    p.text-gray-400.italic,
+    .donut-legend-container p,
+    h3:has(.fa-list-check),
+    .live-test-header h3,
+    div:has(> button[onclick*="generateCompleteDashboardPDF"]) {
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+        width: 100% !important;
+    }
+
+    /* 2. Shared Child Auto-Centering Rules */
+    div.border-b.border-gray-700\/80 > h3,
+    div.border-b.border-gray-700\/80 > span,
+    div.border-b.border-gray-700\/60 > span,
+    div.border-b.border-gray-700\/60 > div,
+    div:has(> button[onclick*="generateCompleteDashboardPDF"]) > h3,
+    div:has(> button[onclick*="generateCompleteDashboardPDF"]) > button {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+        width: 100% !important;
+        margin: 0 auto !important;
+    }
+
+    /* 3. Component-Specific Spacing & Layout Row-Gaps */
+    div.border-b.border-gray-700\/80 { row-gap: 0.4rem !important; }
+    div.border-b.border-gray-700\/60 { row-gap: 0.35rem !important; }
+    div:has(> button[onclick*="generateCompleteDashboardPDF"]) { row-gap: 0.5rem !important; }
+    span.text-amber-300.font-extrabold.uppercase { margin: 0 auto 0.35rem auto !important; }
+    p.text-gray-400.italic, .donut-legend-container p { margin: 0.25rem auto 0 auto !important; }
+
+    /* 4. Top Branding Header Alignment & Powered By Shift */
+    div.text-center.xs\:text-left {
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        text-align: left !important;
+        width: auto !important;
+        margin-left: 0 !important;
+        margin-right: auto !important;
+    }
+
+    div.text-center.xs\:text-left h1 {
+        text-align: left !important;
+        width: 100% !important;
+        margin: 0 !important;
+    }
+
+    /* Shifts 'Powered by' to align directly under 'Pro' word */
+    div.text-center.xs\:text-left p {
+        text-align: left !important;
+        width: 100% !important;
+        margin: 0.1rem 0 0 1.4rem !important;
+    }
+
+    /* 5. Admin Week Control Box Layout */
+    #admin-week-control-box {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        width: 100% !important;
+        padding: 0.5rem !important;
+        gap: 0.5rem !important;
+    }
+
+    #admin-week-control-box label {
+        flex: 1 1 auto !important;
+        text-align: left !important;
+        font-size: 0.62rem !important;
+        margin: 0 !important;
+    }
+
+    #admin-active-week-select {
+        flex: 0 0 auto !important;
+        width: auto !important;
+        min-width: 80px !important;
+        text-align: center !important;
+        font-size: 0.65rem !important;
+        padding: 0.25rem 0.4rem !important;
+        margin: 0 !important;
+    }
+
+    #admin-week-control-box button {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        text-align: center !important;
+        margin-top: 0.25rem !important;
+        font-size: 0.65rem !important;
+        padding: 0.35rem 0.5rem !important;
+    }
+
+    /* 6. Donut Badges & Label Fixes (Prevents Text Cropping) */
+    #donut-legend-box {
+        flex-wrap: wrap !important;
+        margin: 0.25rem auto !important;
+        gap: 0.35rem !important;
+    }
+
+    #donut-legend-box span,
+    #donut-legend-box b {
+        white-space: nowrap !important;
+        font-size: 0.6rem !important;
+        padding: 0.25rem 0.4rem !important;
+        line-height: 1 !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        max-width: 100% !important;
+        overflow: visible !important;
+    }
+
+    #weekly-vertical-bars > div > span:last-child {
+        font-size: 0.58rem !important;
+        white-space: nowrap !important;
+        overflow: visible !important;
+        text-align: center !important;
+        display: block !important;
+        width: 100% !important;
+    }
+
+    /* 7. Tables Container & Touch Scroll Handling */
+    .overflow-x-auto {
+        cursor: grab !important;
+        touch-action: pan-x !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-behavior: smooth !important;
+        padding-bottom: 0.5rem !important;
+        border-radius: 0.5rem !important;
+    }
+
+    .overflow-x-auto:active {
+        cursor: grabbing !important;
+    }
+
+    /* Custom Modern Slim Scrollbar */
+    .overflow-x-auto::-webkit-scrollbar {
+        height: 5px !important;
+    }
+    .overflow-x-auto::-webkit-scrollbar-track {
+        background: #0f172a !important;
+        border-radius: 10px !important;
+    }
+    .overflow-x-auto::-webkit-scrollbar-thumb {
+        background: linear-gradient(90deg, #3b82f6, #10b981) !important;
+        border-radius: 10px !important;
+    }
+
+    /* 8. Larger Data Rows, Dates, Scores & Status Badges */
+    #student-attendance-history-body tr,
+    #test-results-body tr {
+        height: 2.8rem !important;
+    }
+
+    #student-attendance-history-body td,
+    #test-results-body td {
+        font-size: 0.78rem !important;
+        padding: 0.6rem 0.8rem !important;
+        white-space: nowrap !important;
+        vertical-align: middle !important;
+    }
+
+    #test-results-body td.text-blue-300,
+    #student-attendance-history-body td.text-amber-400,
+    #student-attendance-history-body td.text-gray-300 {
+        font-size: 0.82rem !important;
+        font-weight: 800 !important;
+    }
+
+    #test-results-body td span,
+    #student-attendance-history-body td span {
+        font-size: 0.7rem !important;
+        padding: 0.25rem 0.55rem !important;
+        border-radius: 0.375rem !important;
+        display: inline-block !important;
+    }
+
+    .mposition {
+        position: absolute;
+        top: 15px !important;
+    }
+}
+
+
+
     </style>
 </head>
 
@@ -206,7 +526,7 @@
             </div>
 
             <button onclick="handleLogout()"
-                class="bg-red-600 hover:bg-red-700 text-white text-3xs xs:text-xs px-3 py-1.5 rounded font-bold self-end xs:self-center">
+                class="bg-red-600 hover:bg-red-700 text-white text-3xs xs:text-xs px-3 py-1.5 rounded font-bold self-end xs:self-center mposition">
                 🚪 Logout
             </button>
         </header>
@@ -1335,8 +1655,6 @@
             }
         });
     </script>
-        <script type="module" src="security.js"></script>
-
 </body>
 
 </html>
