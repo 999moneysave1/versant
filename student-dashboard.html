@@ -4,24 +4,71 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pro Batch 1 - Student & Admin Analytics Portal</title>
+    <!-- 🟢 1. BASIC SEO & TITLE TAGS -->
+    <title>Versant English Test | Easy English with Sarfraz</title>
+    <meta name="title" content="Versant English Test | Easy English with Sarfraz">
+    <meta name="description"
+        content="Take your online Versant English test now. Practice, test your skills, and get real-time analytics with Sarfraz Sir.">
 
-    <!-- Tailwind CSS CDN -->
+    <!-- 🟢 2. FAVICON TAGS (PNG format for max browser & iOS compatibility) -->
+    <link rel="icon" type="image/png" sizes="32x32" href="https://999moneysave.co.in/assets/images/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://999moneysave.co.in/assets/images/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://999moneysave.co.in/assets/images/apple-touch-icon.png">
+
+
+    <!-- 🟢 STUDENT DASHBOARD PORTAL META TAGS -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://999moneysave1.github.io/versant/student-dashboard.html"> <!-- अपने सही डैशबोर्ड पेज का लिंक डालें -->
+    <meta property="og:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
+    <meta property="og:description"
+        content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
+    <meta property="og:image" content="https://999moneysave.co.in/assets/images/og-banner-eews.png">
+    <meta property="og:image:secure_url" content="https://999moneysave.co.in/assets/images/og-banner-eews.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Easy English with Sarfraz Dashboard Portal Banner">
+    <meta property="og:site_name" content="Easy English with Sarfraz">
+    <meta property="og:locale" content="en_US">
+
+    <!-- 🟢 AUTHOR CREDIT -->
+    <meta name="author" content="Easy English with Sarfraz">
+
+    <!-- 🟢 TWITTER / X CARD METADATA -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://999moneysave1.github.io/versant/student-dashboard.html">
+    <meta name="twitter:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
+    <meta name="twitter:description"
+        content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
+    <meta name="twitter:image" content="https://999moneysave.co.in/assets/images/og-banner-eews.png">
+
+
+
+    <!-- CDN Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-
-    <!-- SweetAlert2 CDN -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
-    <!-- Tesseract OCR CDN -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-
-    <!-- html2pdf SDK for Attendance PDF Generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+
+    <!-- Schema.org Structured Data for Student Analytics Dashboard , add original link below under url and check by ctrl+click if working -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Pro Batch 1 Student Analytics Dashboard",
+  "description": "Student Performance Portal to view live test scores, diagnostic reports, and payment status.",
+  "url": "https://999moneysave1.github.io/versant/student-dashboard.html",
+  "applicationCategory": "BusinessApplication",
+  "browserRequirements": "Requires JavaScript. Requires HTML5.",
+  "provider": {
+    "@type": "EducationalOrganization",
+    "name": "Easy English with Sarfraz",
+    "url": "https://999moneysave.co.in"
+  }
+}
+</script>
 
     <style>
         html,
@@ -65,7 +112,6 @@
             background: #0f172a !important;
             color: #fff !important;
         }
-
 
         /* 🟢 Modern Visual Dashboard Animations & Styling */
         #pie-gauge-path {
@@ -125,29 +171,79 @@
 
         .pillar-glow-pass {
             background: linear-gradient(180deg, #10b981 0%, #047857 100%);
-            box-shadow: 0 0 12px rgba(16, 185, 129, 0.35);
+            box-shadow: 0 0 8px rgba(16, 185, 129, 0.35);
         }
 
         .pillar-glow-fail {
             background: linear-gradient(180deg, #f43f5e 0%, #be123c 100%);
-            box-shadow: 0 0 12px rgba(244, 63, 94, 0.35);
+            box-shadow: 0 0 8px rgba(244, 63, 94, 0.35);
         }
 
+        /* 🟢 DASHBOARD / TEST PAGE BACKGROUND WATERMARK (FIXED) */
+        #dashboard-content,
+        .test-page-container {
+            position: relative !important;
+            background-color: rgba(15, 23, 42, 0.85) !important;
+        }
+
+        /* वॉटरमार्क के लिए ::before ओवरले */
+        #dashboard-content::before,
+        .test-page-container::before {
+            content: "" !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            background-image: url('logo.png') !important;
+            background-position: center center !important;
+            background-repeat: no-repeat !important;
+            background-size: 220px auto !important;
+            background-attachment: fixed !important;
+            opacity: 0.35 !important;
+            pointer-events: none !important;
+            z-index: 1 !important;
+        }
+
+        /* डैशबोर्ड के अंदर के कंटेंट को वॉटरमार्क के ऊपर लाने के लिए */
+        #dashboard-content>*,
+        .test-page-container>* {
+            position: relative !important;
+            z-index: 2 !important;
+        }
+
+        /* कार्ड्स को हल्का ट्रांसपेरेंट बनाएँ ताकि वॉटरमार्क आर-पार दिखे */
+        #dashboard-content .bg-gray-800,
+        #dashboard-content .bg-gray-900,
+        #dashboard-content .bg-gray-750 {
+            background-color: rgba(30, 41, 59, 0.70) !important;
+            backdrop-filter: blur(4px) !important;
+        }
+
+        @media (min-width: 640px) {
+
+            #dashboard-content,
+            .test-page-container {
+                background-size: 450px auto !important;
+            }
+        }
+
+        #weekly-vertical-bars span {
+            line-height: 1.4 !important;
+            overflow: visible !important;
+        }
 
         /* 🟢 MOBILE COMPACT OPTIMIZATION (500px down to 250px) */
         @media (max-width: 500px) {
 
-            /* 1. Global Spacing & Typography Downscaling */
             body {
                 padding: 0.25rem !important;
-                /* Extremely tight padding for ultra-small screens */
             }
 
             #dashboard-content {
                 gap: 0.5rem !important;
             }
 
-            /* 2. Container Cards & Padding */
             .bg-gray-800,
             .bg-gray-750,
             .bg-gray-900\/80 {
@@ -155,7 +251,6 @@
                 border-radius: 0.5rem !important;
             }
 
-            /* 3. Headings & Subtitles Scaling */
             h1 {
                 font-size: 0.85rem !important;
                 line-height: 1.1rem !important;
@@ -183,27 +278,23 @@
                 line-height: 0.82rem !important;
             }
 
-            /* 4. FontAwesome Icon Size Scaling */
             .fa-solid,
             .fa-brands,
             .fa-regular {
                 font-size: 0.7rem !important;
             }
 
-            /* 5. Header & Controls Realignment */
             header {
                 padding: 0.5rem !important;
                 gap: 0.4rem !important;
             }
 
-            /* 6. Profile Avatar Shrink */
             #profile-avatar {
                 width: 1.75rem !important;
                 height: 1.75rem !important;
                 font-size: 0.75rem !important;
             }
 
-            /* 7. Input Fields & Select Dropdowns Scaling */
             input,
             select,
             textarea {
@@ -211,14 +302,12 @@
                 font-size: 0.6rem !important;
             }
 
-            /* 8. Button Sizing & Padding Tightening */
             button {
                 padding: 0.25rem 0.4rem !important;
                 font-size: 0.6rem !important;
                 border-radius: 0.25rem !important;
             }
 
-            /* 9. Tables Tightening for Extremely Narrow Screens */
             table th,
             table td {
                 padding: 0.3rem 0.2rem !important;
@@ -226,7 +315,6 @@
                 white-space: nowrap;
             }
 
-            /* 10. Concentric Ring Donut Chart Resizing */
             .w-36.h-36,
             .w-40.h-40 {
                 width: 6.5rem !important;
@@ -237,13 +325,11 @@
                 font-size: 1rem !important;
             }
 
-            /* 11. Performance Pillars Bar Chart Scale */
             #weekly-vertical-bars {
-                height: 7rem !important;
-                gap: 0.25rem !important;
+                height: 7.5rem !important;
+                gap: 0.5rem !important;
             }
 
-            /* 12. Modal Sizes for Ultra-Narrow Mobile Screens */
             .swal-mobile-size,
             #payment-modal>div {
                 width: 96% !important;
@@ -251,207 +337,201 @@
             }
         }
 
-
         /* 🟢 COMPREHENSIVE & OPTIMIZED CSS MEDIA QUERY (BELOW 400px) */
-@media (max-width: 400px) {
+        @media (max-width: 400px) {
 
-    /* 1. Shared Centering Utilities (Groups All Centered Container Elements) */
-    div.border-b.border-gray-700\/80,
-    div.border-b.border-gray-700\/60,
-    span.text-amber-300.font-extrabold.uppercase,
-    #donut-legend-box,
-    p.text-gray-400.italic,
-    .donut-legend-container p,
-    h3:has(.fa-list-check),
-    .live-test-header h3,
-    div:has(> button[onclick*="generateCompleteDashboardPDF"]) {
-        display: flex !important;
-        flex-direction: column !important;
-        justify-content: center !important;
-        align-items: center !important;
-        text-align: center !important;
-        width: 100% !important;
-    }
+            div.border-b.border-gray-700\/80,
+            div.border-b.border-gray-700\/60,
+            span.text-amber-300.font-extrabold.uppercase,
+            #donut-legend-box,
+            p.text-gray-400.italic,
+            .donut-legend-container p,
+            h3:has(.fa-list-check),
+            .live-test-header h3,
+            div:has(> button[onclick*="generateCompleteDashboardPDF"]) {
+                display: flex !important;
+                flex-direction: column !important;
+                justify-content: center !important;
+                align-items: center !important;
+                text-align: center !important;
+                width: 100% !important;
+            }
 
-    /* 2. Shared Child Auto-Centering Rules */
-    div.border-b.border-gray-700\/80 > h3,
-    div.border-b.border-gray-700\/80 > span,
-    div.border-b.border-gray-700\/60 > span,
-    div.border-b.border-gray-700\/60 > div,
-    div:has(> button[onclick*="generateCompleteDashboardPDF"]) > h3,
-    div:has(> button[onclick*="generateCompleteDashboardPDF"]) > button {
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        text-align: center !important;
-        width: 100% !important;
-        margin: 0 auto !important;
-    }
+            div.border-b.border-gray-700\/80>h3,
+            div.border-b.border-gray-700\/80>span,
+            div.border-b.border-gray-700\/60>span,
+            div.border-b.border-gray-700\/60>div,
+            div:has(> button[onclick*="generateCompleteDashboardPDF"])>h3,
+            div:has(> button[onclick*="generateCompleteDashboardPDF"])>button {
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                text-align: center !important;
+                width: 100% !important;
+                margin: 0 auto !important;
+            }
 
-    /* 3. Component-Specific Spacing & Layout Row-Gaps */
-    div.border-b.border-gray-700\/80 { row-gap: 0.4rem !important; }
-    div.border-b.border-gray-700\/60 { row-gap: 0.35rem !important; }
-    div:has(> button[onclick*="generateCompleteDashboardPDF"]) { row-gap: 0.5rem !important; }
-    span.text-amber-300.font-extrabold.uppercase { margin: 0 auto 0.35rem auto !important; }
-    p.text-gray-400.italic, .donut-legend-container p { margin: 0.25rem auto 0 auto !important; }
+            div.border-b.border-gray-700\/80 {
+                row-gap: 0.4rem !important;
+            }
 
-    /* 4. Top Branding Header Alignment & Powered By Shift */
-    div.text-center.xs\:text-left {
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        text-align: left !important;
-        width: auto !important;
-        margin-left: 0 !important;
-        margin-right: auto !important;
-    }
+            div.border-b.border-gray-700\/60 {
+                row-gap: 0.35rem !important;
+            }
 
-    div.text-center.xs\:text-left h1 {
-        text-align: left !important;
-        width: 100% !important;
-        margin: 0 !important;
-    }
+            div:has(> button[onclick*="generateCompleteDashboardPDF"]) {
+                row-gap: 0.5rem !important;
+            }
 
-    /* Shifts 'Powered by' to align directly under 'Pro' word */
-    div.text-center.xs\:text-left p {
-        text-align: left !important;
-        width: 100% !important;
-        margin: 0.1rem 0 0 1.4rem !important;
-    }
+            span.text-amber-300.font-extrabold.uppercase {
+                margin: 0 auto 0.35rem auto !important;
+            }
 
-    /* 5. Admin Week Control Box Layout */
-    #admin-week-control-box {
-        display: flex !important;
-        flex-wrap: wrap !important;
-        justify-content: space-between !important;
-        align-items: center !important;
-        width: 100% !important;
-        padding: 0.5rem !important;
-        gap: 0.5rem !important;
-    }
+            p.text-gray-400.italic,
+            .donut-legend-container p {
+                margin: 0.25rem auto 0 auto !important;
+            }
 
-    #admin-week-control-box label {
-        flex: 1 1 auto !important;
-        text-align: left !important;
-        font-size: 0.62rem !important;
-        margin: 0 !important;
-    }
+            div.text-center.xs\:text-left {
+                display: flex !important;
+                flex-direction: column !important;
+                align-items: flex-start !important;
+                text-align: left !important;
+                width: auto !important;
+                margin-left: 0 !important;
+                margin-right: auto !important;
+            }
 
-    #admin-active-week-select {
-        flex: 0 0 auto !important;
-        width: auto !important;
-        min-width: 80px !important;
-        text-align: center !important;
-        font-size: 0.65rem !important;
-        padding: 0.25rem 0.4rem !important;
-        margin: 0 !important;
-    }
+            div.text-center.xs\:text-left h1 {
+                text-align: left !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
 
-    #admin-week-control-box button {
-        flex: 1 1 100% !important;
-        width: 100% !important;
-        display: flex !important;
-        justify-content: center !important;
-        align-items: center !important;
-        text-align: center !important;
-        margin-top: 0.25rem !important;
-        font-size: 0.65rem !important;
-        padding: 0.35rem 0.5rem !important;
-    }
+            div.text-center.xs\:text-left p {
+                text-align: left !important;
+                width: 100% !important;
+                margin: 0.1rem 0 0 1.4rem !important;
+            }
 
-    /* 6. Donut Badges & Label Fixes (Prevents Text Cropping) */
-    #donut-legend-box {
-        flex-wrap: wrap !important;
-        margin: 0.25rem auto !important;
-        gap: 0.35rem !important;
-    }
+            #admin-week-control-box {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                width: 100% !important;
+                padding: 0.5rem !important;
+                gap: 0.5rem !important;
+            }
 
-    #donut-legend-box span,
-    #donut-legend-box b {
-        white-space: nowrap !important;
-        font-size: 0.6rem !important;
-        padding: 0.25rem 0.4rem !important;
-        line-height: 1 !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        max-width: 100% !important;
-        overflow: visible !important;
-    }
+            #admin-week-control-box label {
+                flex: 1 1 auto !important;
+                text-align: left !important;
+                font-size: 0.62rem !important;
+                margin: 0 !important;
+            }
 
-    #weekly-vertical-bars > div > span:last-child {
-        font-size: 0.58rem !important;
-        white-space: nowrap !important;
-        overflow: visible !important;
-        text-align: center !important;
-        display: block !important;
-        width: 100% !important;
-    }
+            #admin-active-week-select {
+                flex: 0 0 auto !important;
+                width: auto !important;
+                min-width: 80px !important;
+                text-align: center !important;
+                font-size: 0.65rem !important;
+                padding: 0.25rem 0.4rem !important;
+                margin: 0 !important;
+            }
 
-    /* 7. Tables Container & Touch Scroll Handling */
-    .overflow-x-auto {
-        cursor: grab !important;
-        touch-action: pan-x !important;
-        -webkit-overflow-scrolling: touch !important;
-        scroll-behavior: smooth !important;
-        padding-bottom: 0.5rem !important;
-        border-radius: 0.5rem !important;
-    }
+            #admin-week-control-box button {
+                flex: 1 1 100% !important;
+                width: 100% !important;
+                display: flex !important;
+                justify-content: center !important;
+                align-items: center !important;
+                text-align: center !important;
+                margin-top: 0.25rem !important;
+                font-size: 0.65rem !important;
+                padding: 0.35rem 0.5rem !important;
+            }
 
-    .overflow-x-auto:active {
-        cursor: grabbing !important;
-    }
+            #donut-legend-box {
+                flex-wrap: wrap !important;
+                margin: 0.25rem auto !important;
+                gap: 0.35rem !important;
+            }
 
-    /* Custom Modern Slim Scrollbar */
-    .overflow-x-auto::-webkit-scrollbar {
-        height: 5px !important;
-    }
-    .overflow-x-auto::-webkit-scrollbar-track {
-        background: #0f172a !important;
-        border-radius: 10px !important;
-    }
-    .overflow-x-auto::-webkit-scrollbar-thumb {
-        background: linear-gradient(90deg, #3b82f6, #10b981) !important;
-        border-radius: 10px !important;
-    }
+            #donut-legend-box span,
+            #donut-legend-box b {
+                white-space: nowrap !important;
+                font-size: 0.6rem !important;
+                padding: 0.25rem 0.4rem !important;
+                line-height: 1 !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                max-width: 100% !important;
+                overflow: visible !important;
+            }
 
-    /* 8. Larger Data Rows, Dates, Scores & Status Badges */
-    #student-attendance-history-body tr,
-    #test-results-body tr {
-        height: 2.8rem !important;
-    }
+            .overflow-x-auto {
+                cursor: grab !important;
+                touch-action: pan-x !important;
+                -webkit-overflow-scrolling: touch !important;
+                scroll-behavior: smooth !important;
+                padding-bottom: 0.5rem !important;
+                border-radius: 0.5rem !important;
+            }
 
-    #student-attendance-history-body td,
-    #test-results-body td {
-        font-size: 0.78rem !important;
-        padding: 0.6rem 0.8rem !important;
-        white-space: nowrap !important;
-        vertical-align: middle !important;
-    }
+            .overflow-x-auto:active {
+                cursor: grabbing !important;
+            }
 
-    #test-results-body td.text-blue-300,
-    #student-attendance-history-body td.text-amber-400,
-    #student-attendance-history-body td.text-gray-300 {
-        font-size: 0.82rem !important;
-        font-weight: 800 !important;
-    }
+            .overflow-x-auto::-webkit-scrollbar {
+                height: 5px !important;
+            }
 
-    #test-results-body td span,
-    #student-attendance-history-body td span {
-        font-size: 0.7rem !important;
-        padding: 0.25rem 0.55rem !important;
-        border-radius: 0.375rem !important;
-        display: inline-block !important;
-    }
+            .overflow-x-auto::-webkit-scrollbar-track {
+                background: #0f172a !important;
+                border-radius: 10px !important;
+            }
 
-    .mposition {
-        position: absolute;
-        top: 15px !important;
-    }
-}
+            .overflow-x-auto::-webkit-scrollbar-thumb {
+                background: linear-gradient(90deg, #3b82f6, #10b981) !important;
+                border-radius: 10px !important;
+            }
 
+            #student-attendance-history-body tr,
+            #test-results-body tr {
+                height: 2.8rem !important;
+            }
 
+            #student-attendance-history-body td,
+            #test-results-body td {
+                font-size: 0.78rem !important;
+                padding: 0.6rem 0.8rem !important;
+                white-space: nowrap !important;
+                vertical-align: middle !important;
+            }
 
+            #test-results-body td.text-blue-300,
+            #student-attendance-history-body td.text-amber-400,
+            #student-attendance-history-body td.text-gray-300 {
+                font-size: 0.82rem !important;
+                font-weight: 800 !important;
+            }
+
+            #test-results-body td span,
+            #student-attendance-history-body td span {
+                font-size: 0.7rem !important;
+                padding: 0.25rem 0.55rem !important;
+                border-radius: 0.375rem !important;
+                display: inline-block !important;
+            }
+
+            .mposition {
+                position: absolute;
+                top: 15px !important;
+            }
+        }
     </style>
 </head>
 
@@ -505,6 +585,7 @@
                         class="text-amber-400 font-bold hover:underline">999moneysave.co.in</a>
                 </p>
             </div>
+
             <!-- ADMIN ACTIVE EXAM WEEK CONTROL BOX -->
             <div id="admin-week-control-box"
                 class="hidden bg-gray-750 p-2 rounded-lg border border-amber-400/80 flex items-center gap-2">
@@ -759,19 +840,14 @@
                             <i class="fa-solid fa-circle-notch text-blue-400"></i> Concentric Donut Breakdown
                         </span>
                         <div id="donut-legend-box" class="flex flex-wrap gap-2 text-2xs font-mono text-gray-300">
-                            <span
-                                class="flex items-center gap-1.5 bg-gray-800/90 px-2.5 py-1 rounded-lg border border-gray-700 shadow-sm">
-                                <span class="w-2.5 h-2.5 rounded-full bg-blue-500"></span> Week 1: <b
-                                    class="text-white">0</b>
-                            </span>
+                            <!-- Dynamic Donut Badges Rendered via JS -->
                         </div>
                         <p class="text-[10px] text-gray-400 italic">Overall student diagnostic score mapped in
                             multi-rings.</p>
                     </div>
-
                 </div>
 
-                <!-- 2. BOTTOM SECTION (Row 2 - 100% Width): Dynamic Score Pillars Engine -->
+                <!-- 2. BOTTOM SECTION (Row 2 - 100% Width): Dynamic Score Pillars Engine (GROUPED BY WEEK) -->
                 <div
                     class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/60 space-y-2 shadow-inner w-full backdrop-blur-md flex-1 flex flex-col justify-between">
                     <div class="flex justify-between items-center border-b border-gray-700/60 pb-1.5">
@@ -787,9 +863,9 @@
                         </div>
                     </div>
 
-                    <!-- Bars Container Expanded to Full Width -->
+                    <!-- Grouped Bars Container -->
                     <div id="weekly-vertical-bars"
-                        class="flex items-end justify-around h-36 xs:h-40 pt-3 pb-1 border-b border-gray-700/80 gap-3 w-full overflow-x-auto">
+                        class="flex items-end justify-start h-40 pt-2 pb-1 border-b border-gray-700/80 gap-4 w-full overflow-x-auto">
                         <span class="text-3xs text-gray-500 my-auto">Loading score pillars...</span>
                     </div>
                 </div>
@@ -839,7 +915,7 @@
                 <table class="w-full text-left text-2xs xs:text-xs">
                     <thead>
                         <tr class="bg-gray-700 text-gray-300">
-                            <th class="p-2 xs:p-3 rounded-l">Week</th>
+                            <th class="p-2 xs:p-3 rounded-l">Week / Attempt</th>
                             <th class="p-2 xs:p-3">Test Name</th>
                             <th class="p-2 xs:p-3">Score (100)</th>
                             <th class="p-2 xs:p-3">Status</th>
@@ -928,7 +1004,6 @@
 
         let currentActiveUser = null;
         let isAdminLoggedIn = false;
-        let myChart = null;
         let currentStudentPaymentHistory = [];
 
         // OCR Scanner Placeholder
@@ -962,31 +1037,7 @@
             }
         };
 
-        // Save Exam Config
-        window.saveDynamicExamConfig = async function () {
-            const jsonRaw = document.getElementById('admin-json-box').value.trim();
-            if (!jsonRaw) return;
-
-            try {
-                let parsed = JSON.parse(jsonRaw);
-                let activeWeek = parsed.setId ? parsed.setId.toString() : "1";
-
-                await setDoc(doc(db, "exam_config", `week_${activeWeek}_config`), {
-                    weekId: activeWeek,
-                    customData: parsed,
-                    updatedAt: new Date()
-                });
-
-                await setDoc(doc(db, "exam_config", "active_week_setting"), { activeWeek: activeWeek });
-                Swal.fire({ icon: 'success', title: `Week ${activeWeek} Deployed!`, timer: 1500, showConfirmButton: false });
-            } catch (e) {
-                Swal.fire({ icon: 'error', title: 'Invalid JSON', text: e.message });
-            }
-        };
-
-        // 🟢 FIXED ADMIN VIEW SETUP (Always displays Week 1 to Week 10 in Dropdown)
-
-        // 🟢 1. DYNAMIC ADMIN VIEW SETUP (Detects sets from questions.json & Firebase)
+        // 🟢 DYNAMIC ADMIN VIEW SETUP
         window.setupAdminView = async function () {
             const ctrlEl = document.getElementById('admin-controls');
             const payEl = document.getElementById('admin-payment-box');
@@ -1010,9 +1061,8 @@
             const activeWeekSelectEl = document.getElementById('admin-active-week-select');
             if (!activeWeekSelectEl) return;
 
-            let weekOptionsSet = new Set(["1"]); // Week 1 हमेशा डिफ़ॉल्ट रहेगा
+            let weekOptionsSet = new Set(["1"]);
 
-            // Step A: questions.json को सेफ तरीके से पढ़ें
             try {
                 const response = await fetch('questions.json');
                 if (response.ok) {
@@ -1029,7 +1079,6 @@
                 console.warn("questions.json dynamic read warning:", jsonErr);
             }
 
-            // Step B: Firebase से एक्टिव लॉक्ड वीक का स्टेटस खींचें
             let currentActiveWeek = "1";
             try {
                 const configRef = doc(db, "exam_config", "active_week_setting");
@@ -1042,18 +1091,16 @@
                 console.warn("Active week fetch warning:", e);
             }
 
-            // Step C: ड्रॉपडाउन में केवल उपलब्ध/डिप्लॉयड वीक्स को ही भरें
             let weekOptionsArray = Array.from(weekOptionsSet).sort((a, b) => parseInt(a) - parseInt(b));
 
             activeWeekSelectEl.innerHTML = weekOptionsArray.map(wId =>
                 `<option value="${wId}">Week ${wId}</option>`
             ).join('');
 
-            // जो हफ़्ता एक्टिव लॉक्ड है, उसे सेलेक्ट करें
             activeWeekSelectEl.value = currentActiveWeek;
         };
 
-        // 🟢 2. DYNAMIC EXAM DEPLOYER (Automatically adds newly created sets to dropdown)
+        // 🟢 SAVE DYNAMIC EXAM CONFIG
         window.saveDynamicExamConfig = async function () {
             const jsonRaw = document.getElementById('admin-json-box').value.trim();
             if (!jsonRaw) {
@@ -1069,7 +1116,6 @@
                 return;
             }
 
-            // JSON से setId / Week नंबर निकालें
             let activeWeek = "1";
             if (Array.isArray(parsedQuestions) && parsedQuestions.length > 0 && parsedQuestions[0].setId) {
                 activeWeek = parsedQuestions[0].setId.toString();
@@ -1095,7 +1141,6 @@
             try {
                 Swal.fire({ title: `Deploying Week ${activeWeek}...`, allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-                // Firebase में नया हफ़्ता डिप्लॉय करें
                 await setDoc(doc(db, "exam_config", `week_${activeWeek}_config`), {
                     weekId: activeWeek,
                     activeSections: activeSections,
@@ -1107,7 +1152,6 @@
                     activeWeek: activeWeek
                 });
 
-                // 🟢 डायनामिक रूप से नया डिप्लॉय हुआ हफ़्ता ड्रॉपडाउन में तुरंत जोड़ें
                 const activeWeekSelectEl = document.getElementById('admin-active-week-select');
                 if (activeWeekSelectEl) {
                     let optionExists = Array.from(activeWeekSelectEl.options).some(opt => opt.value == activeWeek);
@@ -1133,6 +1177,7 @@
                 Swal.fire({ icon: 'error', title: 'Save Failed', text: err.message, customClass: { popup: 'swal-mobile-size' } });
             }
         };
+
         window.handleLogin = function () {
             const emailInput = document.getElementById('login-email');
             const passInput = document.getElementById('login-pass');
@@ -1194,16 +1239,13 @@
             document.getElementById('disp-pass').innerText = currentActiveUser.pass;
             document.getElementById('profile-avatar').innerText = currentActiveUser.name.charAt(0).toUpperCase();
 
-            // Set Today's Date as Default for Payment
             const today = new Date().toISOString().split('T')[0];
             const payDateInp = document.getElementById('pay-date-input');
             if (payDateInp) payDateInp.value = today;
 
-            // Load Payments & Attendance
             await loadStudentPayments(currentActiveUser.id);
             loadStudentAttendanceHistory(currentActiveUser.id);
 
-            // Fetch Live Exam Results
             const tbody = document.getElementById('test-results-body');
             if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-400">Loading live scores...</td></tr>`;
 
@@ -1233,13 +1275,29 @@
                 console.error("Firebase fetch error:", err);
             }
 
+            // Attempt tracking logic
+            const weekAttemptTracker = {};
+            const processedResults = testResults.map(t => {
+                const weekKey = t.week || "Week 1";
+                weekAttemptTracker[weekKey] = (weekAttemptTracker[weekKey] || 0) + 1;
+                const attemptNum = weekAttemptTracker[weekKey];
+                const displayTag = attemptNum > 1 ? `${weekKey} (Try ${attemptNum})` : weekKey;
+
+                return {
+                    ...t,
+                    weekKey: weekKey,
+                    attemptNumber: attemptNum,
+                    displayLabel: displayTag
+                };
+            });
+
             if (tbody) {
-                if (testResults.length === 0) {
+                if (processedResults.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-yellow-300">No test taken yet. (Week 1 exam pending)</td></tr>`;
                 } else {
-                    tbody.innerHTML = testResults.map(t => `
+                    tbody.innerHTML = processedResults.map(t => `
                         <tr class="hover:bg-gray-750">
-                            <td class="p-2.5 font-bold text-amber-400">${t.week}</td>
+                            <td class="p-2.5 font-bold text-amber-400">${t.displayLabel}</td>
                             <td class="p-2.5">${t.title}</td>
                             <td class="p-2.5 font-mono font-bold text-blue-300">${t.score} / 100</td>
                             <td class="p-2.5"><span class="px-2 py-0.5 text-3xs font-bold rounded ${t.status === 'PASSED' ? 'bg-green-900/80 text-green-300' : 'bg-red-900/80 text-red-300'}">${t.status}</span></td>
@@ -1250,7 +1308,7 @@
             }
 
             setTimeout(() => {
-                renderChart(testResults);
+                renderChartGrouped(processedResults);
             }, 200);
         }
 
@@ -1386,8 +1444,8 @@
             }
         };
 
-        // 🟢 FULL-HEIGHT VERTICAL STACKED GRAPH ENGINE
-        function renderChart(testResults) {
+        // 🟢 RENDER GRAPH (NARROW VERTICAL BARS + W1 AT BOTTOM CENTER + CLEAR GAP FOR W2)
+        function renderChartGrouped(processedResults) {
             const ringOuter = document.getElementById('ring-outer');
             const ringMiddle = document.getElementById('ring-middle');
             const ringInner = document.getElementById('ring-inner');
@@ -1397,64 +1455,80 @@
 
             if (!avgScoreEl || !barsContainer) return;
 
-            if (!testResults || testResults.length === 0) {
+            if (!processedResults || processedResults.length === 0) {
                 avgScoreEl.innerText = "0%";
                 if (ringOuter) ringOuter.setAttribute("stroke-dasharray", "0, 100");
                 if (ringMiddle) ringMiddle.setAttribute("stroke-dasharray", "0, 100");
                 if (ringInner) ringInner.setAttribute("stroke-dasharray", "0, 100");
 
-                barsContainer.innerHTML = `<div class="text-3xs text-gray-500 my-auto text-center">No scores recorded yet.</div>`;
+                barsContainer.innerHTML = `<div class="text-3xs text-gray-500 my-auto text-center w-full">No scores recorded yet.</div>`;
                 return;
             }
 
-            // 1. Donut Rings Engine
+            // 1. Donut Ring Calculations
             let totalScoreSum = 0;
-            let scoresList = testResults.map(t => Math.round(parseFloat(t.score) || 0));
-
-            scoresList.forEach(s => totalScoreSum += s);
-            let avgScore = Math.round(totalScoreSum / scoresList.length);
+            processedResults.forEach(r => totalScoreSum += r.score);
+            let avgScore = Math.round(totalScoreSum / processedResults.length);
             avgScoreEl.innerText = `${avgScore}%`;
 
-            // Outer Ring (Week 1)
-            let scW1 = scoresList[0] || 0;
-            if (ringOuter) ringOuter.setAttribute("stroke-dasharray", `${scW1}, 100`);
+            const rings = [ringOuter, ringMiddle, ringInner];
+            rings.forEach(r => r && r.setAttribute("stroke-dasharray", "0, 100"));
 
-            // Middle Ring (Week 2)
-            let scW2 = scoresList[1] || 0;
-            if (ringMiddle) ringMiddle.setAttribute("stroke-dasharray", `${scW2}, 100`);
+            processedResults.slice(0, 3).forEach((r, idx) => {
+                if (rings[idx]) rings[idx].setAttribute("stroke-dasharray", `${r.score}, 100`);
+            });
 
-            // Inner Ring (Week 3)
-            let scW3 = scoresList[2] || 0;
-            if (ringInner) ringInner.setAttribute("stroke-dasharray", `${scW3}, 100`);
-
-            // Dynamic Donut Badges
             if (legendBox) {
                 const ringColors = ['bg-blue-500', 'bg-emerald-500', 'bg-amber-500'];
-                legendBox.innerHTML = scoresList.map((sc, i) => `
-            <span class="flex items-center gap-1.5 font-mono text-2xs bg-gray-800/90 px-2.5 py-1 rounded-lg border border-gray-700/80 shadow-sm">
-                <span class="w-2.5 h-2.5 rounded-full ${ringColors[i % 3]}"></span>
-                Week ${i + 1}: <b class="text-amber-300">${sc} / 100</b>
-            </span>
-        `).join('');
+                legendBox.innerHTML = processedResults.map((r, i) => `
+                    <span class="flex items-center gap-1.5 font-mono text-2xs bg-gray-800/90 px-2.5 py-1 rounded-lg border border-gray-700/80 shadow-sm">
+                        <span class="w-2.5 h-2.5 rounded-full ${ringColors[i % 3]}"></span>
+                        ${r.displayLabel}: <b class="text-amber-300">${r.score} / 100</b>
+                    </span>
+                `).join('');
             }
 
-            // 2. Pillars Engine (Full 100% Width & Height Fill)
-            barsContainer.innerHTML = testResults.map((t, idx) => {
-                let sc = Math.round(parseFloat(t.score) || 0);
-                let pass = sc >= 50;
-                let pillarStyle = pass ? "pillar-glow-pass" : "pillar-glow-fail";
+            // 2. Group Pillars By Week Key (Thin Bars + Centered Bottom Week Tag)
+            const groupedByWeek = {};
+            processedResults.forEach(r => {
+                if (!groupedByWeek[r.weekKey]) groupedByWeek[r.weekKey] = [];
+                groupedByWeek[r.weekKey].push(r);
+            });
+
+            barsContainer.innerHTML = Object.keys(groupedByWeek).map((weekName) => {
+                const attempts = groupedByWeek[weekName];
+
+                const pillarsHtml = attempts.map(item => {
+                    let sc = Math.round(item.score);
+                    let pass = sc >= 50;
+                    let pillarStyle = pass ? "pillar-glow-pass" : "pillar-glow-fail";
+
+                    return `
+                        <div class="flex flex-col items-center h-full justify-end w-7 space-y-1 shrink-0">
+                            <span class="text-[10px] font-black font-mono text-amber-300 drop-shadow">${sc}</span>
+                            <div class="w-full bg-gray-800/90 rounded-t-full overflow-hidden flex items-end h-full border border-gray-700/80 p-[1px] shadow-inner">
+                                <div class="w-full ${pillarStyle} rounded-t-full transition-all duration-1000 ease-out" style="height: ${Math.max(sc, 8)}%;"></div>
+                            </div>
+                            <span class="text-[9px] font-bold text-gray-400 font-mono text-center whitespace-nowrap">
+                                ${item.attemptNumber > 1 ? `Try ${item.attemptNumber}` : 'Try 1'}
+                            </span>
+                        </div>
+                    `;
+                }).join('');
 
                 return `
-            <div class="flex flex-col items-center h-full justify-end flex-1 max-w-[64px] space-y-1">
-                <span class="text-xs font-black font-mono text-amber-300 drop-shadow">${sc}</span>
-                <div class="w-full bg-gray-800/90 rounded-t-lg overflow-hidden flex items-end h-full border border-gray-700/80 p-0.5 shadow-inner">
-                    <div class="w-full ${pillarStyle} rounded-t transition-all duration-1000 ease-out" style="height: ${Math.max(sc, 8)}%;"></div>
-                </div>
-                <span class="text-2xs font-extrabold text-gray-300 truncate font-mono">${t.week || `Week ${idx + 1}`}</span>
-            </div>
-        `;
+                    <div class="flex flex-col items-center bg-gray-800/50 p-2 rounded-xl border border-gray-700/70 shadow-md shrink-0 space-y-1.5">
+                        <div class="flex items-end gap-2 h-28">
+                            ${pillarsHtml}
+                        </div>
+                        <span class="text-[10px] font-extrabold text-amber-400 font-mono uppercase tracking-wider pt-1 border-t border-gray-700/80 w-full text-center">
+                            ${weekName}
+                        </span>
+                    </div>
+                `;
             }).join('');
         }
+
         // 🟢 ATTENDANCE HISTORY FETCH
         async function loadStudentAttendanceHistory(studentId) {
             const tbody = document.getElementById('student-attendance-history-body');
@@ -1525,13 +1599,11 @@
                 return;
             }
 
-            // 1. Fetch Dynamic Data Elements
             const testResultsTable = document.getElementById('test-results-body') ? document.getElementById('test-results-body').innerHTML : '';
             const attendanceTable = document.getElementById('student-attendance-history-body') ? document.getElementById('student-attendance-history-body').innerHTML : '';
             const feesPaid = document.getElementById('disp-payment-amount') ? document.getElementById('disp-payment-amount').innerText : '₹0';
             const formattedPdfFileName = `${currentActiveUser.name.replace(/\s+/g, '_')}_Complete_Report.pdf`;
 
-            // 2. Build High-Quality HTML PDF Container
             const pdfContainer = document.createElement('div');
             pdfContainer.style.padding = "25px";
             pdfContainer.style.color = "#0f172a";
@@ -1581,7 +1653,7 @@
             <table style="width:100%; border-collapse:collapse; font-size:10px; text-align:left;" border="1" cellPadding="6" borderColor="#cbd5e1">
                 <thead>
                     <tr style="background:#1e40af; color:#ffffff; font-weight:bold;">
-                        <th style="padding:6px;">Week</th>
+                        <th style="padding:6px;">Week / Attempt</th>
                         <th style="padding:6px;">Test Suite Name</th>
                         <th style="padding:6px;">Score (100)</th>
                         <th style="padding:6px;">Status</th>
@@ -1644,6 +1716,7 @@
                 Swal.fire({ icon: 'error', title: 'PDF Generation Failed', text: err.message });
             });
         };
+
         document.addEventListener('DOMContentLoaded', () => {
             const loginBtn = document.getElementById('btn-login-submit');
             if (loginBtn) {
