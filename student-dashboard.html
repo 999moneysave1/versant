@@ -10,20 +10,19 @@
     <meta name="description"
         content="Take your online Versant English test now. Practice, test your skills, and get real-time analytics with Sarfraz Sir.">
 
-    <!-- 🟢 2. FAVICON TAGS (PNG format for max browser & iOS compatibility) -->
+    <!-- 🟢 2. FAVICON TAGS -->
     <link rel="icon" type="image/png" sizes="32x32" href="https://999moneysave.co.in/assets/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="https://999moneysave.co.in/assets/images/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://999moneysave.co.in/assets/images/apple-touch-icon.png">
 
-
     <!-- 🟢 STUDENT DASHBOARD PORTAL META TAGS -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://999moneysave1.github.io/versant/student-dashboard.html"> <!-- अपने सही डैशबोर्ड पेज का लिंक डालें -->
+    <meta property="og:url" content="https://999moneysave.co.in/dashboard.html">
     <meta property="og:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
     <meta property="og:description"
         content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
-    <meta property="og:image" content="https://999moneysave1.github.io/versant/og-banner-eews-responsive.png">
-    <meta property="og:image:secure_url" content="https://999moneysave1.github.io/versant/og-banner-eews-responsive.png">
+    <meta property="og:image" content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
+    <meta property="og:image:secure_url" content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -36,39 +35,37 @@
 
     <!-- 🟢 TWITTER / X CARD METADATA -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://999moneysave1.github.io/versant/student-dashboard.html">
+    <meta name="twitter:url" content="https://999moneysave.co.in/dashboard.html">
     <meta name="twitter:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
     <meta name="twitter:description"
         content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
-    <meta name="twitter:image" content="https://999moneysave.co.in/assets/images/og-banner-eews.png">
-
-
+    <meta name="twitter:image" content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
 
     <!-- CDN Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-
-    <!-- Schema.org Structured Data for Student Analytics Dashboard , add original link below under url and check by ctrl+click if working -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Pro Batch 1 Student Analytics Dashboard",
-  "description": "Student Performance Portal to view live test scores, diagnostic reports, and payment status.",
-  "url": "https://999moneysave1.github.io/versant/student-dashboard.html",
-  "applicationCategory": "BusinessApplication",
-  "browserRequirements": "Requires JavaScript. Requires HTML5.",
-  "provider": {
-    "@type": "EducationalOrganization",
-    "name": "Easy English with Sarfraz",
-    "url": "https://999moneysave.co.in"
-  }
-}
-</script>
+    <!-- Schema.org Structured Data for Student Analytics Dashboard -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Pro Batch 1 Student Analytics Dashboard",
+      "description": "Student Performance Portal to view live test scores, diagnostic reports, and payment status.",
+      "url": "https://999moneysave.co.in/dashboard.html",
+      "applicationCategory": "BusinessApplication",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "provider": {
+        "@type": "EducationalOrganization",
+        "name": "Easy English with Sarfraz",
+        "url": "https://999moneysave.co.in"
+      }
+    }
+    </script>
 
     <style>
         html,
@@ -326,8 +323,12 @@
             }
 
             #weekly-vertical-bars {
-                height: 7.5rem !important;
+                height: auto !important;
+                min-height: 10rem !important;
+                padding-top: 0.5rem !important;
+                padding-bottom: 0.5rem !important;
                 gap: 0.5rem !important;
+                align-items: flex-end !important;
             }
 
             .swal-mobile-size,
@@ -548,7 +549,7 @@
             <div class="space-y-3">
                 <div>
                     <label class="text-3xs text-gray-300 block mb-1">Email ID</label>
-                    <input type="email" id="login-email" placeholder="e.g. shahzanansari925@gmail.com"
+                    <input type="email" id="login-email" placeholder="e.g. mdkausen8100@gmail.com"
                         class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-xs text-white focus:outline-none focus:border-amber-400">
                 </div>
                 <div>
@@ -730,12 +731,34 @@
                     </button>
                 </div>
 
-                <!-- 🟢 UPDATED ADVANCED PAYMENT SECTION -->
+                <!-- 🟢 DYNAMIC FIREBASE STATUS & BAN DETAILS CARD (FIXED - NO HARDCODED ACTIVE) -->
+                <div id="admin-ban-control" class="bg-gray-750 p-2.5 rounded-lg border border-gray-600 space-y-2 mt-2">
+                    <div class="flex justify-between items-center">
+                        <div class="flex items-center gap-1.5 cursor-pointer" onclick="showBanDetailsInfo()" title="Click to view Ban Reasons & Timestamps">
+                            <span class="text-3xs text-gray-300 font-bold">Status:</span>
+                            <!-- Dynamic Badge Rendered via JS -->
+                            <span id="account-status-badge" class="px-2 py-0.5 rounded text-3xs font-extrabold bg-gray-700 text-gray-300 border border-gray-500/50 flex items-center gap-1">
+                                ● Loading...
+                            </span>
+                            <i class="fa-solid fa-circle-info text-3xs text-amber-400 hover:text-amber-300"></i>
+                        </div>
+
+                        <!-- Admin Unban / Ban Toggle Button -->
+                        <button id="btn-toggle-ban" onclick="toggleStudentBanStatus()" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow">
+                            🔒 Ban Account
+                        </button>
+                    </div>
+
+                    <p id="ban-hint-text" class="text-[9px] text-gray-400 italic hidden">
+                        💡 Click on Banned status to view ban reason & time details.
+                    </p>
+                </div>
+
+                <!-- UPDATED ADVANCED PAYMENT SECTION -->
                 <div class="bg-gray-750 p-3 rounded-lg border border-gray-600 space-y-2 mt-3">
                     <div class="flex justify-between items-center">
                         <span class="text-2xs font-bold text-amber-400"><i class="fa-solid fa-wallet mr-1"></i> Total
                             Fees Paid:</span>
-                        <!-- 🟢 Total Clickable Amount Button -->
                         <button onclick="openPaymentBreakupModal()"
                             class="text-xs font-bold text-green-400 font-mono bg-gray-800 hover:bg-gray-700 px-2 py-1 rounded border border-green-500/40 transition-all flex items-center gap-1 shadow">
                             <span id="disp-payment-amount">₹0</span>
@@ -779,16 +802,14 @@
                 </div>
             </div>
 
-            <!-- 🟢 ULTRA-MODERN FULL-HEIGHT GLASSMORPHISM ANALYTICS CONTAINER -->
+            <!-- ANALYTICS CONTAINER -->
             <div
                 class="md:col-span-2 bg-gradient-to-b from-gray-800 to-gray-900 p-4 rounded-xl border border-gray-700/80 shadow-2xl flex flex-col justify-between h-full min-h-[460px] space-y-3 relative overflow-hidden">
 
-                <!-- Top Decorative Glow Accent -->
                 <div
                     class="absolute -top-12 -right-12 w-32 h-32 bg-blue-500/10 rounded-full blur-2xl pointer-events-none">
                 </div>
 
-                <!-- Header Title -->
                 <div class="flex justify-between items-center border-b border-gray-700/80 pb-2">
                     <h3 class="text-xs xs:text-sm font-extrabold text-amber-400 flex items-center gap-2 tracking-wide">
                         <i class="fa-solid fa-chart-pie text-blue-400 text-sm"></i> PERFORMANCE ANALYTICS ENGINE
@@ -799,19 +820,15 @@
                     </span>
                 </div>
 
-                <!-- 1. TOP SECTION (Row 1 - 100% Width): Concentric Donut Ring Engine -->
                 <div
                     class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/60 flex flex-col sm:flex-row items-center justify-around gap-4 shadow-inner w-full backdrop-blur-md flex-1">
 
-                    <!-- SVG Concentric Rings Circle -->
                     <div class="relative w-36 h-36 xs:w-40 xs:h-40 flex items-center justify-center shrink-0">
                         <svg class="w-full h-full transform -rotate-90 filter drop-shadow-md" viewBox="0 0 42 42">
-                            <!-- Outer Track Backgrounds -->
                             <circle cx="21" cy="21" r="15.915" fill="none" stroke="#1e293b" stroke-width="2.5" />
                             <circle cx="21" cy="21" r="12" fill="none" stroke="#1e293b" stroke-width="2.5" />
                             <circle cx="21" cy="21" r="8.1" fill="none" stroke="#1e293b" stroke-width="2.5" />
 
-                            <!-- Dynamic Score Rings -->
                             <path id="ring-outer" class="transition-all duration-1000 ease-out"
                                 stroke-dasharray="0, 100" stroke-width="2.8" stroke-linecap="round" stroke="#3b82f6"
                                 fill="none"
@@ -824,30 +841,24 @@
                                 fill="none" d="M21 12.9 a 8.1 8.1 0 0 1 0 16.2 a 8.1 8.1 0 0 1 0 -16.2" />
                         </svg>
 
-                        <!-- Center Overall Average Text -->
                         <div class="absolute flex flex-col items-center justify-center text-center">
                             <span id="donut-avg-score"
                                 class="text-2xl font-black text-white font-mono leading-none tracking-tight">0%</span>
-                            <span class="text-[8px] text-gray-400 uppercase font-bold tracking-wider mt-1">Avg
-                                Score</span>
+                            <span class="text-[8px] text-gray-400 uppercase font-bold tracking-wider mt-1">Avg Score</span>
                         </div>
                     </div>
 
-                    <!-- Donut Legend & Score Breakdown -->
                     <div class="flex flex-col justify-center space-y-2 w-full sm:w-auto">
                         <span
                             class="text-[11px] text-amber-300 font-extrabold uppercase tracking-wider border-b border-gray-700/60 pb-1 flex items-center gap-1.5">
                             <i class="fa-solid fa-circle-notch text-blue-400"></i> Concentric Donut Breakdown
                         </span>
                         <div id="donut-legend-box" class="flex flex-wrap gap-2 text-2xs font-mono text-gray-300">
-                            <!-- Dynamic Donut Badges Rendered via JS -->
                         </div>
-                        <p class="text-[10px] text-gray-400 italic">Overall student diagnostic score mapped in
-                            multi-rings.</p>
+                        <p class="text-[10px] text-gray-400 italic">Overall student diagnostic score mapped in multi-rings.</p>
                     </div>
                 </div>
 
-                <!-- 2. BOTTOM SECTION (Row 2 - 100% Width): Dynamic Score Pillars Engine (GROUPED BY WEEK) -->
                 <div
                     class="bg-gray-900/80 p-3.5 rounded-xl border border-gray-700/60 space-y-2 shadow-inner w-full backdrop-blur-md flex-1 flex flex-col justify-between">
                     <div class="flex justify-between items-center border-b border-gray-700/60 pb-1.5">
@@ -863,9 +874,8 @@
                         </div>
                     </div>
 
-                    <!-- Grouped Bars Container -->
                     <div id="weekly-vertical-bars"
-                        class="flex items-end justify-start h-40 pt-2 pb-1 border-b border-gray-700/80 gap-4 w-full overflow-x-auto">
+                        class="flex items-end justify-start pt-2 pb-1 border-b border-gray-700/80 gap-4 w-full overflow-x-auto">
                         <span class="text-3xs text-gray-500 my-auto">Loading score pillars...</span>
                     </div>
                 </div>
@@ -880,10 +890,9 @@
                 <h3 class="text-xs xs:text-sm font-bold text-amber-400">
                     <i class="fa-solid fa-calendar-check mr-1.5"></i> Attendance & Test History Report
                 </h3>
-                <!-- 🟢 UPDATED COMPLETE DASHBOARD PDF BUTTON -->
                 <button onclick="generateCompleteDashboardPDF()"
                     class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-1.5 rounded text-3xs flex items-center gap-1.5 shadow-md transition-all">
-                    <i class="fa-brands fa-whatsapp text-xs"></i> Send Complete Dashboard PDF to WhatsApp
+                    <i class="fa-brands fa-whatsapp text-xs"></i> Send Complete Dashboard PDF to WhatsApp & Gmail
                 </button>
             </div>
 
@@ -899,7 +908,6 @@
                         </tr>
                     </thead>
                     <tbody id="student-attendance-history-body" class="divide-y divide-gray-700 text-gray-200">
-                        <!-- Dynamic Attendance Rows -->
                     </tbody>
                 </table>
             </div>
@@ -923,7 +931,6 @@
                         </tr>
                     </thead>
                     <tbody id="test-results-body" class="divide-y divide-gray-700 text-gray-200">
-                        <!-- Dynamic Test Rows Load Here -->
                     </tbody>
                 </table>
             </div>
@@ -959,7 +966,6 @@
                             </tr>
                         </thead>
                         <tbody id="payment-breakup-body" class="divide-y divide-gray-700 text-gray-200">
-                            <!-- Dynamic Payment History Rows Load Here -->
                         </tbody>
                     </table>
                 </div>
@@ -991,11 +997,14 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // Initialize EmailJS Engine
+        emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
+
         // PRO BATCH 1 STUDENTS LIST
         const proBatch1Students = [
             { id: "farhan", name: "Farhan Alam Ansari", father: "Firoj Alam", dob: "24/07/2013", doj: "21 July 2026", mobile: "9432843353", email: "salma7980389249@gmail.com", pass: "farhan123" },
             { id: "shahid", name: "Shahid Shah Noor", father: "Jamil Ahmad", dob: "27/05/2013", doj: "27-05-2026", mobile: "9431297344", email: "j.ahmad2020@gmail.com", pass: "shahid123" },
-            { id: "kausen", name: "MD KAUSEN", father: "MD IMTIYAJ", dob: "21/03/2009", doj: "18th May 2026", mobile: "8100351209", email: "mdkausen8100@gmail.com", pass: "kausen123" },
+            { id: "kausen", name: "Md Kausen", father: "MD IMTIYAJ", dob: "21/03/2009", doj: "18/05/2026", mobile: "8100351209", email: "mdkausen8100@gmail.com", pass: "kausen123" },
             { id: "shahzan", name: "Shahzan Ansari", father: "MD Shakil Ansari", dob: "25/06/2009", doj: "18/05/2026", mobile: "7479470888", email: "shahzanansari925@gmail.com", pass: "shahzan123" },
             { id: "saba", name: "Saba Parveen", father: "Abdul Nesar Adil", dob: "09/01/2002", doj: "07 July 2026", mobile: "6290559945", email: "sababauria2002@gmail.com", pass: "saba123" },
             { id: "afzal", name: "MD AFZAL ANSARI", father: "SHAHAZADA ANSARI", dob: "22/04/2010", doj: "10/05/2026", mobile: "8910956369", email: "mdarhan89109@gmail.com", pass: "afzal123" },
@@ -1005,8 +1014,94 @@
         let currentActiveUser = null;
         let isAdminLoggedIn = false;
         let currentStudentPaymentHistory = [];
+        let currentStudentBanMetadata = null;
 
-        // OCR Scanner Placeholder
+        // 🟢 1. FETCH BAN METADATA FROM FIREBASE (ID + EMAIL MATCHING)
+        async function fetchStudentBanData(studentId, studentEmail) {
+            let banDetails = { isBanned: false, reason: "N/A", timestamp: "N/A", bannedBy: "System/Admin" };
+            try {
+                const cleanEmail = studentEmail.trim().toLowerCase();
+
+                // Check 1: Student ID document
+                const idDocRef = doc(db, "user_status", studentId);
+                const idDocSnap = await getDoc(idDocRef);
+
+                if (idDocSnap.exists() && idDocSnap.data().isBanned === true) {
+                    const d = idDocSnap.data();
+                    return {
+                        isBanned: true,
+                        reason: d.banReason || "Security Hold / Administrative Lock",
+                        timestamp: d.bannedAt ? (d.bannedAt.toDate ? d.bannedAt.toDate().toLocaleString() : new Date(d.bannedAt).toLocaleString()) : "N/A",
+                        bannedBy: d.bannedBy || "Admin"
+                    };
+                }
+
+                // Check 2: Email document ID
+                const emailDocRef = doc(db, "user_status", cleanEmail);
+                const emailDocSnap = await getDoc(emailDocRef);
+
+                if (emailDocSnap.exists() && emailDocSnap.data().isBanned === true) {
+                    const d = emailDocSnap.data();
+                    return {
+                        isBanned: true,
+                        reason: d.banReason || "Administrative Lock / Policy Violation",
+                        timestamp: d.bannedAt ? (d.bannedAt.toDate ? d.bannedAt.toDate().toLocaleString() : new Date(d.bannedAt).toLocaleString()) : "N/A",
+                        bannedBy: d.bannedBy || "Admin"
+                    };
+                }
+
+                // Check 3: Query Email field inside collection
+                const q = query(collection(db, "user_status"), where("email", "==", cleanEmail));
+                const qSnap = await getDocs(q);
+
+                qSnap.forEach(docSnap => {
+                    const d = docSnap.data();
+                    if (d.isBanned === true) {
+                        banDetails = {
+                            isBanned: true,
+                            reason: d.banReason || "Account Suspended by Admin",
+                            timestamp: d.bannedAt ? (d.bannedAt.toDate ? d.bannedAt.toDate().toLocaleString() : new Date(d.bannedAt).toLocaleString()) : "N/A",
+                            bannedBy: d.bannedBy || "Admin"
+                        };
+                    }
+                });
+            } catch (err) {
+                console.warn("Error fetching ban metadata from Firebase:", err);
+            }
+            return banDetails;
+        }
+
+        // 🟢 2. SHOW BAN DETAILS POPUP UPON CLICKING BANNED BADGE
+        window.showBanDetailsInfo = function () {
+            if (!currentStudentBanMetadata || !currentStudentBanMetadata.isBanned) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Account Status: Active',
+                    text: 'This account is ACTIVE and has full access to tests.',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+                return;
+            }
+
+            Swal.fire({
+                icon: 'error',
+                title: '🚫 Ban Record Details',
+                html: `
+                    <div class="text-left text-xs space-y-2 bg-gray-900 p-3 rounded border border-red-500/40 mt-2 font-sans">
+                        <p><b>Student:</b> <span class="text-amber-300 font-bold">${currentActiveUser.name}</span></p>
+                        <p><b>Email:</b> <span class="text-gray-300 font-mono">${currentActiveUser.email}</span></p>
+                        <p><b>Status:</b> <span class="text-red-400 font-bold">⛔ BANNED / SUSPENDED</span></p>
+                        <hr class="border-gray-700">
+                        <p><b>Reason (Karan):</b> <br><span class="text-yellow-300 italic">"${currentStudentBanMetadata.reason}"</span></p>
+                        <p><b>Banned Time & Date:</b> <br><span class="text-blue-300 font-mono">${currentStudentBanMetadata.timestamp}</span></p>
+                        <p><b>Action Taken By:</b> <span class="text-gray-300">${currentStudentBanMetadata.bannedBy}</span></p>
+                    </div>
+                `,
+                customClass: { popup: 'swal-mobile-size' }
+            });
+        };
+
+        // OCR Scanner
         window.scanQuestionImage = async function () {
             const fileInput = document.getElementById('ocr-image-file');
             if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
@@ -1044,12 +1139,14 @@
             const credEl = document.getElementById('admin-cred-box');
             const weekEl = document.getElementById('admin-week-control-box');
             const qMgrEl = document.getElementById('admin-question-manager');
+            const toggleBtn = document.getElementById('btn-toggle-ban');
 
             if (ctrlEl) ctrlEl.classList.remove('hidden');
             if (payEl) payEl.classList.remove('hidden');
             if (credEl) credEl.classList.remove('hidden');
             if (weekEl) weekEl.classList.remove('hidden');
             if (qMgrEl) qMgrEl.classList.remove('hidden');
+            if (toggleBtn) toggleBtn.classList.remove('hidden');
 
             const selectEl = document.getElementById('admin-student-select');
             if (selectEl) {
@@ -1178,7 +1275,8 @@
             }
         };
 
-        window.handleLogin = function () {
+        // 🟢 LOGIN HANDLER WITH STRICT FIREBASE BAN CHECK
+        window.handleLogin = async function () {
             const emailInput = document.getElementById('login-email');
             const passInput = document.getElementById('login-pass');
 
@@ -1195,6 +1293,21 @@
 
             const matched = proBatch1Students.find(s => s.email.toLowerCase() === email && s.pass === pass);
             if (matched) {
+                // Fetch Ban Details from Firebase
+                const banData = await fetchStudentBanData(matched.id, matched.email);
+                if (banData.isBanned) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Account Suspended',
+                        html: `<div class="text-left text-xs space-y-1">
+                            <p class="text-red-400 font-bold">Your account is currently BANNED.</p>
+                            <p><b>Reason:</b> ${banData.reason}</p>
+                            <p class="text-gray-400 text-3xs">Contact Admin to unban.</p>
+                        </div>`,
+                        customClass: { popup: 'swal-mobile-size' }
+                    });
+                    return;
+                }
                 isAdminLoggedIn = false;
                 currentActiveUser = matched;
                 showDashboard();
@@ -1220,7 +1333,7 @@
             loadUserData();
         }
 
-        // 🟢 LOAD USER DATA & PAYMENT BREAKUP FROM FIREBASE
+        // 🟢 LOAD USER DATA & RENDER LIVE FIREBASE BAN STATUS
         async function loadUserData() {
             if (!currentActiveUser) return;
 
@@ -1243,31 +1356,56 @@
             const payDateInp = document.getElementById('pay-date-input');
             if (payDateInp) payDateInp.value = today;
 
+            // 🟢 LIVE FIREBASE BAN STATUS FETCH & BADGE RENDER (DYNAMIC)
+            currentStudentBanMetadata = await fetchStudentBanData(currentActiveUser.id, currentActiveUser.email);
+            const badge = document.getElementById('account-status-badge');
+            const btn = document.getElementById('btn-toggle-ban');
+            const hintText = document.getElementById('ban-hint-text');
+
+            if (badge && btn) {
+                if (currentStudentBanMetadata.isBanned) {
+                    badge.innerHTML = `🚫 Banned`;
+                    badge.className = "px-2 py-0.5 rounded text-3xs font-extrabold bg-red-900/90 text-red-200 border border-red-500 flex items-center gap-1 cursor-pointer animate-pulse";
+                    btn.innerText = "🔓 Unban Account";
+                    btn.className = "bg-green-600 hover:bg-green-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow";
+                    if (hintText) hintText.classList.remove('hidden');
+                } else {
+                    badge.innerHTML = `● Active`;
+                    badge.className = "px-2 py-0.5 rounded text-3xs font-extrabold bg-green-900/80 text-green-300 border border-green-500/50 flex items-center gap-1 cursor-pointer";
+                    btn.innerText = "🔒 Ban Account";
+                    btn.className = "bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow";
+                    if (hintText) hintText.classList.add('hidden');
+                }
+            }
+
             await loadStudentPayments(currentActiveUser.id);
             loadStudentAttendanceHistory(currentActiveUser.id);
 
+            // Fetch Live Scores from Firebase (Case Insensitive Email Match)
             const tbody = document.getElementById('test-results-body');
             if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-400">Loading live scores...</td></tr>`;
 
             let testResults = [];
             try {
                 const userEmailClean = currentActiveUser.email.trim().toLowerCase();
-                const q = query(collection(db, "test_results"), where("email", "==", userEmailClean));
+                const q = query(collection(db, "test_results"));
                 const querySnapshot = await getDocs(q);
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    const date = data.submittedAt ? new Date(data.submittedAt.toDate()).toLocaleString() : "N/A";
-                    let numericScore = parseFloat(data.score) || 0;
+                    if (data.email && data.email.trim().toLowerCase() === userEmailClean) {
+                        const date = data.submittedAt ? new Date(data.submittedAt.toDate()).toLocaleString() : "N/A";
+                        let numericScore = parseFloat(data.score) || 0;
 
-                    testResults.push({
-                        week: data.weekTag || "Week 1",
-                        title: "Versant Diagnostic Suite",
-                        score: numericScore,
-                        status: data.status,
-                        date: date,
-                        rawTime: data.submittedAt ? data.submittedAt.toDate().getTime() : 0
-                    });
+                        testResults.push({
+                            week: data.weekTag || "Week 1",
+                            title: "Versant Diagnostic Suite",
+                            score: numericScore,
+                            status: data.status,
+                            date: date,
+                            rawTime: data.submittedAt ? data.submittedAt.toDate().getTime() : 0
+                        });
+                    }
                 });
 
                 testResults.sort((a, b) => a.rawTime - b.rawTime);
@@ -1275,7 +1413,6 @@
                 console.error("Firebase fetch error:", err);
             }
 
-            // Attempt tracking logic
             const weekAttemptTracker = {};
             const processedResults = testResults.map(t => {
                 const weekKey = t.week || "Week 1";
@@ -1312,7 +1449,90 @@
             }, 200);
         }
 
-        // 🟢 LOAD STUDENT PAYMENTS AND COMPUTE AUTO SUM
+        // 🟢 3. BAN / UNBAN TOGGLE WITH CONFIRMATION MODAL & FIREBASE UPDATE
+        window.toggleStudentBanStatus = async function () {
+            if (!isAdminLoggedIn || !currentActiveUser) return;
+
+            const isCurrentlyBanned = currentStudentBanMetadata ? currentStudentBanMetadata.isBanned : false;
+            const cleanEmail = currentActiveUser.email.trim().toLowerCase();
+
+            if (!isCurrentlyBanned) {
+                // Prompt for Ban Reason
+                const { value: banReason } = await Swal.fire({
+                    title: `Ban ${currentActiveUser.name}?`,
+                    input: 'text',
+                    inputLabel: 'Enter Reason for Banning (Karan):',
+                    inputPlaceholder: 'e.g. Fees Pending / Rules Violation',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm Ban',
+                    confirmButtonColor: '#dc2626',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+
+                if (!banReason) return; // Action Cancelled
+
+                try {
+                    Swal.fire({ title: 'Updating Firebase...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    const banPayload = {
+                        isBanned: true,
+                        banReason: banReason,
+                        bannedAt: new Date(),
+                        bannedBy: "Admin",
+                        studentId: currentActiveUser.id,
+                        studentName: currentActiveUser.name,
+                        email: cleanEmail
+                    };
+
+                    await setDoc(doc(db, "user_status", currentActiveUser.id), banPayload, { merge: true });
+                    await setDoc(doc(db, "user_status", cleanEmail), banPayload, { merge: true });
+
+                    Swal.close();
+                    Swal.fire({ icon: 'success', title: 'Account Banned', text: `${currentActiveUser.name} has been banned in Firebase.`, customClass: { popup: 'swal-mobile-size' } });
+                    loadUserData();
+                } catch (err) {
+                    Swal.fire({ icon: 'error', title: 'Update Failed', text: err.message, customClass: { popup: 'swal-mobile-size' } });
+                }
+            } else {
+                // 🟢 UNBAN CONFIRMATION MODAL ("Are you sure you want to unban?")
+                const result = await Swal.fire({
+                    title: 'Unban Student Account?',
+                    text: `Are you sure you want to unban ${currentActiveUser.name}? They will be able to attempt exams immediately.`,
+                    icon: 'question',
+                    showCancelButton: true,
+                    confirmButtonColor: '#16a34a',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, Unban Student',
+                    cancelButtonText: 'Cancel',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+
+                if (result.isConfirmed) {
+                    try {
+                        Swal.fire({ title: 'Unbanning Account...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                        const unbanPayload = {
+                            isBanned: false,
+                            banReason: "",
+                            unbannedAt: new Date(),
+                            studentId: currentActiveUser.id,
+                            email: cleanEmail
+                        };
+
+                        await setDoc(doc(db, "user_status", currentActiveUser.id), unbanPayload, { merge: true });
+                        await setDoc(doc(db, "user_status", cleanEmail), unbanPayload, { merge: true });
+
+                        Swal.close();
+                        Swal.fire({ icon: 'success', title: 'Account Unbanned!', text: `${currentActiveUser.name} has been unbanned in Firebase.`, customClass: { popup: 'swal-mobile-size' } });
+                        loadUserData();
+                    } catch (err) {
+                        Swal.fire({ icon: 'error', title: 'Update Failed', text: err.message, customClass: { popup: 'swal-mobile-size' } });
+                    }
+                }
+            }
+        };
+
+        // LOAD STUDENT PAYMENTS
         async function loadStudentPayments(studentId) {
             currentStudentPaymentHistory = [];
             let totalSum = 0;
@@ -1335,7 +1555,7 @@
             if (dispAmt) dispAmt.innerText = `₹ ${totalSum}`;
         }
 
-        // 🟢 ADD NEW PAYMENT RECORD
+        // ADD NEW PAYMENT RECORD
         window.addNewPaymentRecord = async function () {
             if (!isAdminLoggedIn) return;
 
@@ -1376,7 +1596,7 @@
             }
         };
 
-        // 🟢 OPEN PAYMENT BREAKUP MODAL
+        // OPEN PAYMENT MODAL
         window.openPaymentBreakupModal = function () {
             const modal = document.getElementById('payment-modal');
             const tbody = document.getElementById('payment-breakup-body');
@@ -1422,7 +1642,7 @@
             modal.classList.remove('flex');
         };
 
-        // 🟢 DELETE PAYMENT ENTRY (Admin Only)
+        // DELETE PAYMENT ENTRY
         window.deletePaymentRecord = async function (index) {
             if (!isAdminLoggedIn) return;
 
@@ -1444,7 +1664,7 @@
             }
         };
 
-        // 🟢 RENDER GRAPH (NARROW VERTICAL BARS + W1 AT BOTTOM CENTER + CLEAR GAP FOR W2)
+        // RENDER GRAPH ENGINE
         function renderChartGrouped(processedResults) {
             const ringOuter = document.getElementById('ring-outer');
             const ringMiddle = document.getElementById('ring-middle');
@@ -1465,7 +1685,6 @@
                 return;
             }
 
-            // 1. Donut Ring Calculations
             let totalScoreSum = 0;
             processedResults.forEach(r => totalScoreSum += r.score);
             let avgScore = Math.round(totalScoreSum / processedResults.length);
@@ -1488,7 +1707,6 @@
                 `).join('');
             }
 
-            // 2. Group Pillars By Week Key (Thin Bars + Centered Bottom Week Tag)
             const groupedByWeek = {};
             processedResults.forEach(r => {
                 if (!groupedByWeek[r.weekKey]) groupedByWeek[r.weekKey] = [];
@@ -1504,12 +1722,12 @@
                     let pillarStyle = pass ? "pillar-glow-pass" : "pillar-glow-fail";
 
                     return `
-                        <div class="flex flex-col items-center h-full justify-end w-7 space-y-1 shrink-0">
-                            <span class="text-[10px] font-black font-mono text-amber-300 drop-shadow">${sc}</span>
+                        <div class="flex flex-col items-center h-full justify-end w-6 xs:w-7 space-y-1 shrink-0">
+                            <span class="text-[9px] xs:text-[10px] font-black font-mono text-amber-300 drop-shadow">${sc}</span>
                             <div class="w-full bg-gray-800/90 rounded-t-full overflow-hidden flex items-end h-full border border-gray-700/80 p-[1px] shadow-inner">
                                 <div class="w-full ${pillarStyle} rounded-t-full transition-all duration-1000 ease-out" style="height: ${Math.max(sc, 8)}%;"></div>
                             </div>
-                            <span class="text-[9px] font-bold text-gray-400 font-mono text-center whitespace-nowrap">
+                            <span class="text-[8px] xs:text-[9px] font-bold text-gray-400 font-mono text-center whitespace-nowrap">
                                 ${item.attemptNumber > 1 ? `Try ${item.attemptNumber}` : 'Try 1'}
                             </span>
                         </div>
@@ -1517,11 +1735,11 @@
                 }).join('');
 
                 return `
-                    <div class="flex flex-col items-center bg-gray-800/50 p-2 rounded-xl border border-gray-700/70 shadow-md shrink-0 space-y-1.5">
-                        <div class="flex items-end gap-2 h-28">
+                    <div class="flex flex-col items-center bg-gray-800/50 p-1.5 xs:p-2 rounded-xl border border-gray-700/70 shadow-md shrink-0 space-y-1.5">
+                        <div class="flex items-end gap-1.5 xs:gap-2 h-24 xs:h-28">
                             ${pillarsHtml}
                         </div>
-                        <span class="text-[10px] font-extrabold text-amber-400 font-mono uppercase tracking-wider pt-1 border-t border-gray-700/80 w-full text-center">
+                        <span class="text-[9px] xs:text-[10px] font-extrabold text-amber-400 font-mono uppercase tracking-wider pt-1 border-t border-gray-700/80 w-full text-center">
                             ${weekName}
                         </span>
                     </div>
@@ -1529,7 +1747,7 @@
             }).join('');
         }
 
-        // 🟢 ATTENDANCE HISTORY FETCH
+        // ATTENDANCE HISTORY
         async function loadStudentAttendanceHistory(studentId) {
             const tbody = document.getElementById('student-attendance-history-body');
             if (!tbody) return;
@@ -1592,7 +1810,7 @@
             }
         }
 
-        // 🟢 COMPLETE STUDENT ANALYTICS & ATTENDANCE PDF ENGINE
+        // PDF GENERATION & AUTOMATED EMAIL & WHATSAPP
         window.generateCompleteDashboardPDF = function () {
             if (!currentActiveUser) {
                 Swal.fire({ icon: 'warning', title: 'User Not Active', text: 'Please select a student first!' });
@@ -1611,7 +1829,6 @@
             pdfContainer.style.fontFamily = "Arial, sans-serif";
 
             pdfContainer.innerHTML = `
-        <!-- HEADER BRANDING -->
         <div style="text-align:center; border-bottom:3px solid #1d4ed8; padding-bottom:12px; margin-bottom:18px;">
             <h1 style="font-size:22px; color:#1e40af; font-weight:bold; margin:0; letter-spacing:0.5px;">PRO BATCH 1 - OFFICIAL ACADEMIC REPORT</h1>
             <p style="font-size:12px; color:#475569; margin:4px 0 0 0;">
@@ -1619,7 +1836,6 @@
             </p>
         </div>
 
-        <!-- STUDENT PROFILE & FEES CARD -->
         <div style="margin-bottom:18px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:8px; padding:12px;">
             <h3 style="font-size:13px; color:#1e40af; margin:0 0 8px 0; border-bottom:1px solid #e2e8f0; padding-bottom:4px; font-weight:bold;">
                 👤 STUDENT PROFILE & FEES SUMMARY
@@ -1645,7 +1861,6 @@
             </table>
         </div>
 
-        <!-- WEEKLY TEST RESULTS SECTION -->
         <div style="margin-bottom:18px;">
             <h3 style="font-size:13px; color:#1e40af; margin:0 0 8px 0; border-bottom:1px solid #cbd5e1; padding-bottom:4px; font-weight:bold;">
                 📝 LIVE WEEKLY TEST RESULTS
@@ -1666,7 +1881,6 @@
             </table>
         </div>
 
-        <!-- ATTENDANCE & FRIDAY TEST HISTORY SECTION -->
         <div style="margin-bottom:15px;">
             <h3 style="font-size:13px; color:#1e40af; margin:0 0 8px 0; border-bottom:1px solid #cbd5e1; padding-bottom:4px; font-weight:bold;">
                 📅 ATTENDANCE & FRIDAY TEST HISTORY
@@ -1687,13 +1901,12 @@
             </table>
         </div>
 
-        <!-- FOOTER VERIFICATION NOTE -->
         <div style="text-align:center; margin-top:20px; border-top:1px solid #e2e8f0; padding-top:10px; font-size:9px; color:#64748b;">
             This is a system-generated official report. Verified by <b>999moneysave.co.in Proctoring Portal</b>.
         </div>
     `;
 
-            Swal.fire({ title: 'Generating Complete PDF...', text: 'Capturing profile, test scores, and attendance...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Generating & Sending Report...', text: 'Delivering report card to Gmail and WhatsApp...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             const opt = {
                 margin: 0.3,
@@ -1703,13 +1916,25 @@
                 jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(pdfContainer).save().then(() => {
-                Swal.close();
-                let cleanMobile = currentActiveUser.mobile.replace(/\D/g, '');
-                if (cleanMobile.length === 10) cleanMobile = "91" + cleanMobile;
+            html2pdf().set(opt).from(pdfContainer).outputPdf('datauristring').then((pdfDataUri) => {
+                emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+                    to_email: currentActiveUser.email,
+                    student_name: currentActiveUser.name,
+                    pdf_attachment: pdfDataUri
+                }).then(() => {
+                    console.log("Email sent successfully via EmailJS!");
+                }).catch((emailErr) => {
+                    console.warn("EmailJS Dispatch Notice:", emailErr);
+                });
 
-                const msg = `Respected Parent, Here is the official Complete Performance & Attendance Report Card for ${currentActiveUser.name}.\n\nPowered by 999moneysave.co.in`;
-                window.open(`https://wa.me/${cleanMobile}?text=${encodeURIComponent(msg)}`, '_blank');
+                html2pdf().set(opt).from(pdfContainer).save().then(() => {
+                    Swal.close();
+                    let cleanMobile = currentActiveUser.mobile.replace(/\D/g, '');
+                    if (cleanMobile.length === 10) cleanMobile = "91" + cleanMobile;
+
+                    const msg = `Respected Parent, Here is the official Complete Performance & Attendance Report Card for ${currentActiveUser.name}.\n\nPowered by 999moneysave.co.in`;
+                    window.open(`https://wa.me/${cleanMobile}?text=${encodeURIComponent(msg)}`, '_blank');
+                });
             }).catch(err => {
                 console.error("PDF Export Error:", err);
                 Swal.close();
