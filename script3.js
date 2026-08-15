@@ -64,13 +64,14 @@ window.addEventListener('DOMContentLoaded', () => {
         .catch(err => console.error("Error loading JSON:", err));
 });
 
+// 🟢 FIXED: Priority Question Loader (Firebase First -> JSON Fallback)
 async function fetchActiveExamConfig() {
     try {
         const configRef = doc(db, "exam_config", "active_week_setting");
         const configSnap = await getDoc(configRef);
 
         if (configSnap.exists()) {
-            activeExamWeekNum = configSnap.data().activeWeek || "1";
+            activeExamWeekNum = (configSnap.data().activeWeek || "1").toString();
             selectedWeekTag = `Week ${activeExamWeekNum}`;
 
             const weekConfigRef = doc(db, "exam_config", `week_${activeExamWeekNum}_config`);
@@ -78,13 +79,9 @@ async function fetchActiveExamConfig() {
 
             if (weekConfigSnap.exists()) {
                 const wData = weekConfigSnap.data();
-                if (wData.activeSections) {
-                    currentExamConfig = wData.activeSections;
-                }
-                if (wData.customData) {
-                    let cData = wData.customData;
-                    activeSet = Array.isArray(cData) ? cData[0] : cData;
-                }
+                if (wData.activeSections) currentExamConfig = wData.activeSections;
+                if (wData.customData) activeSet = normalizeActiveSet(wData.customData);
+                console.log(`🟢 [PRIORITY 1] Loaded Firebase Custom Data for: ${selectedWeekTag}`);
             }
         }
     } catch (e) {
@@ -112,7 +109,6 @@ function hideAll() {
     });
 }
 
-// Helper: Ensure activeSet is correctly extracted as an Object (not Array)
 function normalizeActiveSet(dataSet) {
     if (!dataSet) return null;
     if (Array.isArray(dataSet)) {
@@ -121,7 +117,6 @@ function normalizeActiveSet(dataSet) {
     return dataSet;
 }
 
-// Dynamic Section Discovery Engine
 function getAvailableSections() {
     let activeSections = [];
     let setObj = normalizeActiveSet(activeSet);
@@ -279,7 +274,7 @@ function goToNextSectionInOrder() {
     }
 }
 
-// Hardware Diagnostics & OTP Verification
+// 🟢 UPDATED & FIXED: Hardware Diagnostics & Strict Dual-Collection Ban Sync
 window.goToHardwareCheck = async function () {
     const nameEl = document.getElementById('cand-name');
     const emailEl = document.getElementById('cand-email');
@@ -299,28 +294,34 @@ window.goToHardwareCheck = async function () {
     }
 
     const userDocId = email.replace(/[^a-zA-Z0-9]/g, "_");
-    const userRef = doc(db, "otp_attempts", userDocId);
-    let userSnap = null;
-    try { userSnap = await getDoc(userRef); } catch(e) {}
 
-    const now = Date.now();
-    let attempts = 0, blockUntil = 0, isBanned = false;
+    // Check Status in both Collections
+    let isBanned = false, banReason = "Excessive OTP Failures";
+    try {
+        const otpRef = doc(db, "otp_attempts", userDocId);
+        const otpSnap = await getDoc(otpRef);
+        if (otpSnap.exists() && otpSnap.data().isBanned === true) {
+            isBanned = true;
+            banReason = otpSnap.data().banReason || banReason;
+        }
 
-    if (userSnap && userSnap.exists()) {
-        const data = userSnap.data();
-        attempts = data.attempts || 0;
-        blockUntil = data.blockUntil || 0;
-        isBanned = data.isBanned || false;
+        const userStatusRef = doc(db, "user_status", email);
+        const userStatusSnap = await getDoc(userStatusRef);
+        if (userStatusSnap.exists() && userStatusSnap.data().isBanned === true) {
+            isBanned = true;
+            banReason = userStatusSnap.data().banReason || banReason;
+        }
+    } catch (e) {
+        console.warn("Ban check warning:", e);
     }
 
     if (isBanned) {
-        Swal.fire({ icon: 'error', title: 'Account Blocked', text: 'Aapka account repeatedly wrong OTP ki wajah se blocked hai.', customClass: { popup: 'swal-mobile-size' } });
-        return;
-    }
-
-    if (now < blockUntil) {
-        const remainingMins = Math.ceil((blockUntil - now) / (1000 * 60));
-        Swal.fire({ icon: 'warning', title: 'Lockout Active', text: `Aap ${remainingMins} minute baad hi try kar sakte hain.`, customClass: { popup: 'swal-mobile-size' } });
+        Swal.fire({
+            icon: 'error',
+            title: 'Account Blocked',
+            text: `Aapka account block hai. Karan: "${banReason}". Kripya Admin se sampark karein!`,
+            customClass: { popup: 'swal-mobile-size' }
+        });
         return;
     }
 
@@ -350,6 +351,7 @@ window.goToHardwareCheck = async function () {
         });
 };
 
+// 🟢 UPDATED & FIXED: OTP Verification Engine with Automatic Dashboard Sync & Notification
 window.promptOTPVerification = async function () {
     if (window.isOTPVerified) {
         Swal.fire({ icon: 'info', title: 'Verified', text: 'Aapka OTP pehle hi verify ho chuka hai!', customClass: { popup: 'swal-mobile-size' } });
@@ -360,11 +362,11 @@ window.promptOTPVerification = async function () {
     const name = document.getElementById('cand-name').value.trim();
     const userDocId = email.replace(/[^a-zA-Z0-9]/g, "_");
     const userRef = doc(db, "otp_attempts", userDocId);
+
     let userSnap = null;
-    try { userSnap = await getDoc(userRef); } catch(e) {}
+    try { userSnap = await getDoc(userRef); } catch (e) { }
 
     let attempts = userSnap && userSnap.exists() ? (userSnap.data().attempts || 0) : 0;
-    let totalFailCycles = userSnap && userSnap.exists() ? (userSnap.data().totalFailCycles || 0) : 0;
 
     const { value: userOTP } = await Swal.fire({
         title: `Enter 6-Digit OTP (Attempt ${attempts + 1}/3)`,
@@ -380,26 +382,57 @@ window.promptOTPVerification = async function () {
     if (userOTP) {
         if (userOTP.trim() === window.generatedOTP) {
             window.isOTPVerified = true;
-            await setDoc(userRef, { attempts: 0, blockUntil: 0, isBanned: false, totalFailCycles: 0, lastSuccess: serverTimestamp() });
+            // Clear Ban and Attempts in Firebase
+            await setDoc(userRef, { attempts: 0, isBanned: false, lastSuccess: serverTimestamp() }, { merge: true });
+            await setDoc(doc(db, "user_status", email), { isBanned: false }, { merge: true });
+
             Swal.fire({ icon: 'success', title: 'Success!', text: 'OTP verified successfully!', timer: 1500, showConfirmButton: false });
             window.checkProceed();
         } else {
             attempts++;
             if (attempts >= 3) {
-                totalFailCycles++;
-                const now = Date.now();
-                if (totalFailCycles >= 2) {
-                    await setDoc(userRef, { attempts: 3, isBanned: true, totalFailCycles, lastUpdated: serverTimestamp() });
-                    Swal.fire({ icon: 'error', title: 'Account Banned', text: 'Max attempts exceeded. Account blocked.', customClass: { popup: 'swal-mobile-size' } });
-                    notifyAdminBan(name, email);
-                } else {
-                    const lockTime = now + (60 * 60 * 1000);
-                    await setDoc(userRef, { attempts, blockUntil: lockTime, isBanned: false, totalFailCycles, lastUpdated: serverTimestamp() });
-                    Swal.fire({ icon: 'error', title: '1 Hour Lockout', text: '3 galat OTP attempts. Try again in 1 hour.', customClass: { popup: 'swal-mobile-size' } });
-                }
+                const banReason = "3 wrong OTP Attempts Inputted";
+
+
+                const banTimeISO = new Date().toISOString(); // Current Exact Time & Date
+
+                // 1. Sync Ban to `otp_attempts`
+                await setDoc(userRef, {
+                    attempts: attempts,
+                    isBanned: true,
+                    banReason: banReason,
+                    bannedAt: banTimeISO,
+                    email: email,
+                    name: name
+                }, { merge: true });
+
+                // 2. Sync Ban to `user_status` (Dashboard Match)
+                await setDoc(doc(db, "user_status", email), {
+                    isBanned: true,
+                    banReason: banReason,
+                    bannedAt: banTimeISO,
+                    bannedBy: "System (OTP Security)",
+                    email: email,
+                    studentName: name
+                }, { merge: true });
+
+                // 3. Send Notification to Admin Dashboard
+                notifyAdminBan(name, email, banReason);
+
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Account Locked & Banned',
+                    text: 'Aapne 3 baar galat OTP dala hai. Aapka account lock ho gaya hai aur Dashboard par report kar diya gaya hai.',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
             } else {
-                await setDoc(userRef, { attempts, isBanned: false, totalFailCycles, lastUpdated: serverTimestamp() }, { merge: true });
-                Swal.fire({ icon: 'error', title: 'Wrong OTP', text: `Galat OTP! Remaining attempts: ${3 - attempts}`, customClass: { popup: 'swal-mobile-size' } });
+                await setDoc(userRef, { attempts: attempts }, { merge: true });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Wrong OTP',
+                    text: `Galat OTP! Remaining attempts: ${3 - attempts}`,
+                    customClass: { popup: 'swal-mobile-size' }
+                });
             }
         }
     }
@@ -422,13 +455,15 @@ async function sendOTPViaEmail(userEmail, userName, otp) {
     });
 }
 
-async function notifyAdminBan(userName, userEmail) {
+// 🟢 NOTIFY ADMIN ON DASHBOARD
+async function notifyAdminBan(userName, userEmail, reason) {
     try {
         await addDoc(collection(db, "banned_notifications"), {
             name: userName,
-            email: userEmail,
-            reason: "Exceeded max OTP attempts",
-            timestamp: serverTimestamp()
+            email: userEmail.toLowerCase(),
+            reason: reason || "3 Incorrect OTP Attempts",
+            timestamp: serverTimestamp(),
+            status: "UNREAD"
         });
     } catch (e) {
         console.error("Admin notification error", e);
@@ -582,7 +617,6 @@ window.checkProceed = function () {
     }
 };
 
-// 🟢 SAFE QUESTION DISPLAY & NAVIGATION ENGINE
 function showSingleObjQuestion() {
     let setObj = normalizeActiveSet(activeSet);
     if (!setObj || !setObj.obj || currentObjIdx >= setObj.obj.length) {
@@ -867,17 +901,15 @@ function validateGrammarlyStyle(text) {
 
     return { isValid: penaltyPct < 0.20, penaltyPct: Math.min(0.50, penaltyPct) };
 }
-// 🟢 FIXED EVALUATION ENGINE: "Best of Two" (Similarity vs Keyword) & Copy-Paste Protection
+
 function evaluateBestOfTwoSpecial(userAnswer, correctAnswer, keywords, baseMaxMarks, promptQuestion = "") {
     userAnswer = (userAnswer || "").trim();
     correctAnswer = (correctAnswer || "").trim();
 
-    // 1. अगर कोई उत्तर नहीं दिया
     if (!userAnswer) {
         return { finalScore: 0, methodUsed: "No Answer Provided" };
     }
 
-    // 2. 🟢 COPY-PASTE CHECK: अगर प्रश्न को ही उत्तर में कॉपी-पेस्ट कर दिया है (Keywords ignored)
     if (promptQuestion && promptQuestion.length > 10) {
         const copySimPct = getSimilarityPercentage(userAnswer, promptQuestion);
         if (copySimPct >= 65) {
@@ -891,9 +923,6 @@ function evaluateBestOfTwoSpecial(userAnswer, correctAnswer, keywords, baseMaxMa
     const normUser = userAnswer.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, ' ').trim();
     const normCorrect = correctAnswer.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, ' ').trim();
 
-    // ==========================================
-    // METHOD A: DIRECT SIMILARITY MATCH (0-100)
-    // ==========================================
     const exactSimPct = getSimilarityPercentage(normUser, normCorrect);
     let simScorePct = 0;
 
@@ -901,11 +930,8 @@ function evaluateBestOfTwoSpecial(userAnswer, correctAnswer, keywords, baseMaxMa
     else if (exactSimPct >= 90) simScorePct = 90;
     else if (exactSimPct >= 80) simScorePct = 80;
     else if (exactSimPct >= 70) simScorePct = 70;
-    else simScorePct = Math.round(exactSimPct); // Below 70, give exact raw similarity %
+    else simScorePct = Math.round(exactSimPct);
 
-    // ==========================================
-    // METHOD B: KEYWORD MATCHING ENGINE (0-100)
-    // ==========================================
     const userWords = normUser.split(/\s+/);
     const matchedKeywords = keywords.filter(word =>
         userWords.includes(word.toLowerCase()) || normUser.includes(word.toLowerCase())
@@ -919,9 +945,6 @@ function evaluateBestOfTwoSpecial(userAnswer, correctAnswer, keywords, baseMaxMa
     else if (keywordMatchPct >= 40) keyScorePct = 50;
     else keyScorePct = 0;
 
-    // ==========================================
-    // 🟢 "BEST OF TWO" SELECTION LOGIC
-    // ==========================================
     let rawScorePct = 0;
     let evalMethod = "";
 
@@ -933,9 +956,6 @@ function evaluateBestOfTwoSpecial(userAnswer, correctAnswer, keywords, baseMaxMa
         evalMethod = `Keyword Match Won (${matchedKeywords.length}/${keywords.length} Keywords)`;
     }
 
-    // ==========================================
-    // GRAMMAR ERROR CHECK & PENALTY DEDUCTION
-    // ==========================================
     const grammarResult = validateGrammarlyStyle(userAnswer);
     if (rawScorePct > 0 && grammarResult.penaltyPct > 0) {
         const penaltyAmount = rawScorePct * grammarResult.penaltyPct;
@@ -946,8 +966,7 @@ function evaluateBestOfTwoSpecial(userAnswer, correctAnswer, keywords, baseMaxMa
     const finalMarks = Math.round(((rawScorePct / 100) * baseMaxMarks) * 10) / 10;
     return { finalScore: finalMarks, methodUsed: evalMethod };
 }
-// Result Compilation & Automatic 100-Score Scaling
-// 🟢 RESULT COMPILATION & PDF GENERATION (WITH QUESTION, CANDIDATE ANS & CORRECT ANS)
+
 async function finishTest() {
     window.isTestActive = false;
     clearInterval(timerInterval);
@@ -966,7 +985,6 @@ async function finishTest() {
     const cfg = currentExamConfig || {};
 
     if (setObj) {
-        // 1. Objective Grammar
         if (cfg.secA !== false && setObj.obj && setObj.obj.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreA = 0, detailsA = "";
@@ -986,7 +1004,6 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: OBJECTIVE GRAMMAR (${scoreA} / ${setObj.obj.length * 1.5} Marks)</div>${detailsA}`;
         }
 
-        // 2. Email Writing
         if (cfg.secB !== false && setObj.email && setObj.email.question) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             const userEmail = document.getElementById('ans-email') ? document.getElementById('ans-email').value : "";
@@ -1003,7 +1020,6 @@ async function finishTest() {
                 </div>`;
         }
 
-        // 3. Typing
         if (cfg.secC !== false && setObj.typing && setObj.typing.trim().length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreC = finalAcc >= 20 ? Math.round((finalAcc / 100) * 10 + (Math.min(finalWPM, 40) / 40) * 5) : 0;
@@ -1017,7 +1033,6 @@ async function finishTest() {
                 </div>`;
         }
 
-        // 4. Read Aloud
         if (cfg.secD !== false && setObj.voiceD && setObj.voiceD.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreD = 0, detailsD = "";
@@ -1037,7 +1052,6 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: READ ALOUD (${scoreD} / ${setObj.voiceD.length * 3} Marks)</div>${detailsD}`;
         }
 
-        // 5. Memory Passage
         if (cfg.secE !== false && setObj.passagesE && setObj.passagesE.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreE = 0, detailsE = "";
@@ -1060,7 +1074,6 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: MEMORY RECONSTRUCTION (${scoreE} / 15 Marks)</div>${detailsE}`;
         }
 
-        // 6. Listen & Repeat
         if (cfg.secF !== false && setObj.audioPromptsF && setObj.audioPromptsF.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreF = 0, detailsF = "";
@@ -1080,7 +1093,6 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: LISTEN & REPEAT (${scoreF} / ${setObj.audioPromptsF.length * 2} Marks)</div>${detailsF}`;
         }
 
-        // 7. Story Response
         if (cfg.secG !== false && setObj.storyG && setObj.storyG.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let totalGScore = 0, detailsG = "";
@@ -1102,7 +1114,6 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: STORY RESPONSES (${totalGScore} / 15 Marks)</div>${detailsG}`;
         }
 
-        // 8. True / False Section
         if (cfg.secTF !== false && setObj.trueFalse && setObj.trueFalse.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreTF = 0, detailsTF = "";
@@ -1122,7 +1133,6 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: TRUE / FALSE (${scoreTF} / ${setObj.trueFalse.length * 2} Marks)</div>${detailsTF}`;
         }
 
-        // 9. Fill in the Blanks Section
         if (cfg.secFIB !== false && setObj.fillBlanks && setObj.fillBlanks.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreFIB = 0, detailsFIB = "";
