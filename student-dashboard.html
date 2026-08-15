@@ -15,40 +15,32 @@
     <link rel="icon" type="image/png" sizes="16x16" href="https://999moneysave.co.in/assets/images/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://999moneysave.co.in/assets/images/apple-touch-icon.png">
 
-    <!-- 🟢 1. BASIC META TAGS (Student Dashboard) -->
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://999moneysave.co.in/dashboard.html">
-<meta property="og:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
-<meta property="og:description" content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
-<meta property="og:site_name" content="Easy English with Sarfraz">
-<meta property="og:locale" content="en_US">
+    <!-- 🟢 STUDENT DASHBOARD PORTAL META TAGS -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://999moneysave.co.in/dashboard.html">
+    <meta property="og:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
+    <meta property="og:description"
+        content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
+    <meta property="og:image" content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
+    <meta property="og:image:secure_url"
+        content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Easy English with Sarfraz Dashboard Portal Banner">
+    <meta property="og:site_name" content="Easy English with Sarfraz">
+    <meta property="og:locale" content="en_US">
 
-<!-- 🟢 2. PRIMARY LARGE BANNER (Facebook & LinkedIn ke liye 1200x630 Image) -->
-<meta property="og:image" content="https://999moneysave1.github.io/versant/og-banner-eews-responsive.png">
-<meta property="og:image:secure_url" content="https://999moneysave1.github.io/versant/og-banner-eews-responsive.png">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="Easy English with Sarfraz Dashboard Portal Banner">
+    <!-- 🟢 AUTHOR CREDIT -->
+    <meta name="author" content="Easy English with Sarfraz">
 
-<!-- 🟢 3. SECONDARY SMALL SQUARE THUMBNAIL (WhatsApp ke liye Square Image) -->
-<meta property="og:image" content="https://999moneysave1.github.io/versant/og-thumb-square.png">
-<meta property="og:image:secure_url" content="https://999moneysave1.github.io/versant/og-thumb-square.png">
-<meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="250">
-<meta property="og:image:height" content="250">
-<meta property="og:image:alt" content="Easy English with Sarfraz Logo">
-
-<!-- 🟢 4. TWITTER / X LARGE BANNER METADATA -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:url" content="https://999moneysave.co.in/student-dashboard.html">
-<meta name="twitter:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
-<meta name="twitter:description" content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
-<meta name="twitter:image" content="https://999moneysave1.github.io/versant/og-banner-eews-responsive.png">
-
-
-<!-- 🟢 AUTHOR CREDIT -->
-<meta name="author" content="Easy English with Sarfraz">
+    <!-- 🟢 TWITTER / X CARD METADATA -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="https://999moneysave.co.in/dashboard.html">
+    <meta name="twitter:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
+    <meta name="twitter:description"
+        content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
+    <meta name="twitter:image" content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
 
     <!-- CDN Libraries -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -621,6 +613,19 @@
                 🚪 Logout
             </button>
         </header>
+        <!-- 🟢 ADMIN LOCKOUT NOTIFICATION ALERT BANNER -->
+        <div id="admin-notification-banner"
+            class="hidden bg-red-950/80 border border-red-500 p-3 rounded-xl shadow-lg space-y-1">
+            <div class="flex justify-between items-center">
+                <span class="text-xs font-bold text-red-300 flex items-center gap-2">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-400 animate-bounce"></i>
+                    NEW ACCOUNT LOCKOUT NOTIFICATION(S)
+                </span>
+                <span id="notif-count-badge"
+                    class="bg-red-600 text-white text-[10px] font-extrabold px-2 py-0.5 rounded-full">0</span>
+            </div>
+            <div id="notif-details-list" class="text-2xs text-gray-300 space-y-1 pt-1"></div>
+        </div>
 
         <!-- ADMIN ADVANCED QUESTION & SECTION MANAGER -->
         <div id="admin-question-manager" class="hidden bg-gray-750 p-3 rounded-xl border border-amber-500/50 space-y-3">
@@ -713,9 +718,20 @@
                             Email:</span>
                         <span class="font-mono text-gray-200 truncate max-w-[140px]" id="disp-email">--</span>
                     </div>
-                    <div class="flex justify-between border-b border-gray-700/50 pb-1.5">
+                    <div class="flex justify-between items-center border-b border-gray-700/50 pb-1.5">
                         <span class="text-gray-400"><i class="fa-solid fa-key text-amber-400 mr-1"></i> Pass:</span>
-                        <span class="font-mono text-amber-300" id="disp-pass">--</span>
+                        <div class="flex items-center gap-2">
+                            <span class="font-mono text-amber-300 font-bold tracking-widest text-xs"
+                                id="disp-pass">••••••••</span>
+                            <button type="button" onclick="togglePasswordVisibility()" title="Show/Hide Password"
+                                class="text-[11px] bg-gray-700 hover:bg-gray-600 text-gray-300 px-1.5 py-0.5 rounded border border-gray-600 transition-all">
+                                <i id="pass-toggle-icon" class="fa-solid fa-eye"></i>
+                            </button>
+                            <button onclick="openChangePasswordModal()"
+                                class="text-[10px] bg-blue-600 hover:bg-blue-700 text-white font-bold px-2 py-0.5 rounded transition-all shadow">
+                                ✏️ Change
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -740,20 +756,23 @@
                     </button>
                 </div>
 
-                <!-- 🟢 DYNAMIC FIREBASE STATUS & BAN DETAILS CARD (FIXED - NO HARDCODED ACTIVE) -->
+                <!-- 🟢 DYNAMIC FIREBASE STATUS & BAN DETAILS CARD -->
                 <div id="admin-ban-control" class="bg-gray-750 p-2.5 rounded-lg border border-gray-600 space-y-2 mt-2">
                     <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-1.5 cursor-pointer" onclick="showBanDetailsInfo()" title="Click to view Ban Reasons & Timestamps">
+                        <div class="flex items-center gap-1.5 cursor-pointer" onclick="showBanDetailsInfo()"
+                            title="Click to view Ban Reasons & Timestamps">
                             <span class="text-3xs text-gray-300 font-bold">Status:</span>
                             <!-- Dynamic Badge Rendered via JS -->
-                            <span id="account-status-badge" class="px-2 py-0.5 rounded text-3xs font-extrabold bg-gray-700 text-gray-300 border border-gray-500/50 flex items-center gap-1">
+                            <span id="account-status-badge"
+                                class="px-2 py-0.5 rounded text-3xs font-extrabold bg-gray-700 text-gray-300 border border-gray-500/50 flex items-center gap-1">
                                 ● Loading...
                             </span>
                             <i class="fa-solid fa-circle-info text-3xs text-amber-400 hover:text-amber-300"></i>
                         </div>
 
                         <!-- Admin Unban / Ban Toggle Button -->
-                        <button id="btn-toggle-ban" onclick="toggleStudentBanStatus()" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow">
+                        <button id="btn-toggle-ban" onclick="toggleStudentBanStatus()"
+                            class="hidden bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow">
                             🔒 Ban Account
                         </button>
                     </div>
@@ -853,7 +872,8 @@
                         <div class="absolute flex flex-col items-center justify-center text-center">
                             <span id="donut-avg-score"
                                 class="text-2xl font-black text-white font-mono leading-none tracking-tight">0%</span>
-                            <span class="text-[8px] text-gray-400 uppercase font-bold tracking-wider mt-1">Avg Score</span>
+                            <span class="text-[8px] text-gray-400 uppercase font-bold tracking-wider mt-1">Avg
+                                Score</span>
                         </div>
                     </div>
 
@@ -864,7 +884,8 @@
                         </span>
                         <div id="donut-legend-box" class="flex flex-wrap gap-2 text-2xs font-mono text-gray-300">
                         </div>
-                        <p class="text-[10px] text-gray-400 italic">Overall student diagnostic score mapped in multi-rings.</p>
+                        <p class="text-[10px] text-gray-400 italic">Overall student diagnostic score mapped in
+                            multi-rings.</p>
                     </div>
                 </div>
 
@@ -1006,6 +1027,9 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // ADMIN EMAIL CONSTANTS (BCC Copy Email Target)
+        const ADMIN_BCC_EMAIL = "salma7980389249@gmail.com";
+
         // Initialize EmailJS Engine
         emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
 
@@ -1017,65 +1041,59 @@
             { id: "shahzan", name: "Shahzan Ansari", father: "MD Shakil Ansari", dob: "25/06/2009", doj: "18/05/2026", mobile: "7479470888", email: "shahzanansari925@gmail.com", pass: "shahzan123" },
             { id: "saba", name: "Saba Parveen", father: "Abdul Nesar Adil", dob: "09/01/2002", doj: "07 July 2026", mobile: "6290559945", email: "sababauria2002@gmail.com", pass: "saba123" },
             { id: "afzal", name: "MD AFZAL ANSARI", father: "SHAHAZADA ANSARI", dob: "22/04/2010", doj: "10/05/2026", mobile: "8910956369", email: "mdarhan89109@gmail.com", pass: "afzal123" },
-            { id: "nasim", name: "MD NASIM", father: "MD SHAFIQ", dob: "15/08/2008", doj: "12/05/2026", mobile: "7003249051", email: "mohnasim760@gmail.com", pass: "nasim123" }
+            { id: "nasim", name: "MD NASIM", father: "MD SHAFIQ", dob: "15/08/2008", doj: "12/05/2026", mobile: "7003249051", email: "mohnasim760@gmail.com", pass: "nasim123" },
+            { id: "ayan", name: "Md Ayan", father: "Md Samim", dob: "13/08/2010", doj: "10/05/2026", mobile: "6290013121", email: "ayan.5.ayyuuu@gmail.com", pass: "ayan123" }
         ];
-
         let currentActiveUser = null;
         let isAdminLoggedIn = false;
         let currentStudentPaymentHistory = [];
         let currentStudentBanMetadata = null;
 
-        // 🟢 1. FETCH BAN METADATA FROM FIREBASE (ID + EMAIL MATCHING)
+
+        // 🟢 DUAL-COLLECTION FETCH BAN METADATA (WITH DATE/TIME FIX)
         async function fetchStudentBanData(studentId, studentEmail) {
             let banDetails = { isBanned: false, reason: "N/A", timestamp: "N/A", bannedBy: "System/Admin" };
+
+            // Helper function to safely format Date
+            const formatBanDate = (rawDate) => {
+                if (!rawDate) return new Date().toLocaleString();
+                if (typeof rawDate === 'string') return new Date(rawDate).toLocaleString();
+                if (rawDate.toDate) return rawDate.toDate().toLocaleString();
+                if (rawDate.seconds) return new Date(rawDate.seconds * 1000).toLocaleString();
+                return new Date(rawDate).toLocaleString();
+            };
+
             try {
                 const cleanEmail = studentEmail.trim().toLowerCase();
+                const userDocId = cleanEmail.replace(/[^a-zA-Z0-9]/g, "_");
 
-                // Check 1: Student ID document
-                const idDocRef = doc(db, "user_status", studentId);
-                const idDocSnap = await getDoc(idDocRef);
-
-                if (idDocSnap.exists() && idDocSnap.data().isBanned === true) {
-                    const d = idDocSnap.data();
+                // Check 1: otp_attempts Collection
+                const otpRef = doc(db, "otp_attempts", userDocId);
+                const otpSnap = await getDoc(otpRef);
+                if (otpSnap.exists() && otpSnap.data().isBanned === true) {
+                    const d = otpSnap.data();
                     return {
                         isBanned: true,
-                        reason: d.banReason || "Security Hold / Administrative Lock",
-                        timestamp: d.bannedAt ? (d.bannedAt.toDate ? d.bannedAt.toDate().toLocaleString() : new Date(d.bannedAt).toLocaleString()) : "N/A",
-                        bannedBy: d.bannedBy || "Admin"
+                        reason: d.banReason || "3 Incorrect OTP Attempts",
+                        timestamp: formatBanDate(d.bannedAt),
+                        bannedBy: "System (OTP Security)"
                     };
                 }
 
-                // Check 2: Email document ID
-                const emailDocRef = doc(db, "user_status", cleanEmail);
-                const emailDocSnap = await getDoc(emailDocRef);
-
-                if (emailDocSnap.exists() && emailDocSnap.data().isBanned === true) {
-                    const d = emailDocSnap.data();
+                // Check 2: user_status Collection
+                const statusRef = doc(db, "user_status", cleanEmail);
+                const statusSnap = await getDoc(statusRef);
+                if (statusSnap.exists() && statusSnap.data().isBanned === true) {
+                    const d = statusSnap.data();
                     return {
                         isBanned: true,
-                        reason: d.banReason || "Administrative Lock / Policy Violation",
-                        timestamp: d.bannedAt ? (d.bannedAt.toDate ? d.bannedAt.toDate().toLocaleString() : new Date(d.bannedAt).toLocaleString()) : "N/A",
+                        reason: d.banReason || "Account Suspended by Admin",
+                        timestamp: formatBanDate(d.bannedAt),
                         bannedBy: d.bannedBy || "Admin"
                     };
                 }
-
-                // Check 3: Query Email field inside collection
-                const q = query(collection(db, "user_status"), where("email", "==", cleanEmail));
-                const qSnap = await getDocs(q);
-
-                qSnap.forEach(docSnap => {
-                    const d = docSnap.data();
-                    if (d.isBanned === true) {
-                        banDetails = {
-                            isBanned: true,
-                            reason: d.banReason || "Account Suspended by Admin",
-                            timestamp: d.bannedAt ? (d.bannedAt.toDate ? d.bannedAt.toDate().toLocaleString() : new Date(d.bannedAt).toLocaleString()) : "N/A",
-                            bannedBy: d.bannedBy || "Admin"
-                        };
-                    }
-                });
             } catch (err) {
-                console.warn("Error fetching ban metadata from Firebase:", err);
+                console.warn("Error fetching ban status:", err);
             }
             return banDetails;
         }
@@ -1300,6 +1318,35 @@
                 return;
             }
 
+
+            // 🟢 LOAD ADMIN LOCKOUT NOTIFICATIONS
+            async function loadAdminBanNotifications() {
+                if (!isAdminLoggedIn) return;
+                try {
+                    const notifBanner = document.getElementById('admin-notification-banner');
+                    const notifBadge = document.getElementById('notif-count-badge');
+                    const notifList = document.getElementById('notif-details-list');
+
+                    const qSnap = await getDocs(collection(db, "banned_notifications"));
+                    if (!qSnap.empty) {
+                        notifBanner.classList.remove('hidden');
+                        notifBadge.innerText = qSnap.size;
+
+                        let htmlList = "";
+                        qSnap.forEach(d => {
+                            const data = d.data();
+                            htmlList += `<div class="bg-red-900/60 p-2 rounded border border-red-700/50">
+                    <b>${data.name}</b> (${data.email}) - <span class="text-amber-300">${data.reason}</span>
+                </div>`;
+                        });
+                        notifList.innerHTML = htmlList;
+                    }
+                } catch (e) {
+                    console.warn("Error loading ban notifications", e);
+                }
+            }
+
+
             const matched = proBatch1Students.find(s => s.email.toLowerCase() === email && s.pass === pass);
             if (matched) {
                 // Fetch Ban Details from Firebase
@@ -1342,55 +1389,206 @@
             loadUserData();
         }
 
-        // 🟢 LOAD USER DATA & RENDER LIVE FIREBASE BAN STATUS
+
+        // 🟢 Password Toggle Variables
+        let isPasswordVisible = false;
+        let currentRawPassword = "";
+
+        // 1. Eye Icon Button Click Handler
+        window.togglePasswordVisibility = function () {
+            const passEl = document.getElementById('disp-pass');
+            const iconEl = document.getElementById('pass-toggle-icon');
+
+            if (!passEl || !iconEl) return;
+
+            isPasswordVisible = !isPasswordVisible;
+
+            if (isPasswordVisible) {
+                passEl.innerText = currentRawPassword || "N/A";
+                passEl.classList.remove('tracking-widest');
+                iconEl.className = "fa-solid fa-eye-slash text-amber-400";
+            } else {
+                passEl.innerText = "••••••••";
+                passEl.classList.add('tracking-widest');
+                iconEl.className = "fa-solid fa-eye text-gray-300";
+            }
+        };
+
+        // 2. Fetch Latest Password from Firebase
+        async function getLatestStudentPassword(studentId, defaultPass) {
+            try {
+                const credRef = doc(db, "student_credentials", studentId);
+                const credSnap = await getDoc(credRef);
+                if (credSnap.exists() && credSnap.data().password) {
+                    return credSnap.data().password;
+                }
+            } catch (e) {
+                console.warn("Password fetch warning:", e);
+            }
+            return defaultPass;
+        }
+
+        // 3. Change Password Modal
+        window.openChangePasswordModal = async function () {
+            if (!currentActiveUser) return;
+
+            const { value: newPassword } = await Swal.fire({
+                title: '🔑 Change Your Password',
+                input: 'text',
+                inputLabel: `Set desired password for ${currentActiveUser.name}:`,
+                inputPlaceholder: 'Enter new password (min 4 chars)',
+                showCancelButton: true,
+                confirmButtonText: 'Update Password',
+                confirmButtonColor: '#16a34a',
+                customClass: { popup: 'swal-mobile-size' },
+                inputValidator: (value) => {
+                    if (!value || value.trim().length < 4) {
+                        return 'Password must be at least 4 characters long!';
+                    }
+                }
+            });
+
+            if (newPassword) {
+                const cleanPass = newPassword.trim();
+                try {
+                    Swal.fire({ title: 'Updating Password...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                    await setDoc(doc(db, "student_credentials", currentActiveUser.id), {
+                        studentId: currentActiveUser.id,
+                        studentName: currentActiveUser.name,
+                        email: currentActiveUser.email,
+                        password: cleanPass,
+                        updatedAt: new Date(),
+                        updatedBy: isAdminLoggedIn ? "Admin" : "Student"
+                    }, { merge: true });
+
+                    currentActiveUser.pass = cleanPass;
+                    currentRawPassword = cleanPass;
+
+                    Swal.close();
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Password Updated!',
+                        text: 'Your new password is active.',
+                        customClass: { popup: 'swal-mobile-size' }
+                    });
+
+                    isPasswordVisible = false;
+                    const passEl = document.getElementById('disp-pass');
+                    const iconEl = document.getElementById('pass-toggle-icon');
+                    if (passEl) { passEl.innerText = "••••••••"; passEl.classList.add('tracking-widest'); }
+                    if (iconEl) { iconEl.className = "fa-solid fa-eye text-gray-300"; }
+
+                } catch (err) {
+                    console.error("Password save error:", err);
+                    Swal.fire({ icon: 'error', title: 'Update Failed', text: err.message, customClass: { popup: 'swal-mobile-size' } });
+                }
+            }
+        };
+
         async function loadUserData() {
             if (!currentActiveUser) return;
 
-            document.getElementById('disp-name').innerText = currentActiveUser.name;
-            document.getElementById('disp-father').innerText = currentActiveUser.father;
-            document.getElementById('disp-dob').innerText = currentActiveUser.dob;
-            document.getElementById('disp-doj').innerText = currentActiveUser.doj;
+            // 1. Live Dynamic Password Fetch
+            let livePassword = currentActiveUser.pass;
+            try {
+                if (typeof getLatestStudentPassword === 'function') {
+                    livePassword = await getLatestStudentPassword(currentActiveUser.id, currentActiveUser.pass);
+                }
+            } catch (e) {
+                console.warn("Password fetch bypass:", e);
+            }
+
+            currentActiveUser.pass = livePassword;
+            currentRawPassword = livePassword;
+
+            // 2. DOM Profile Elements Safely Fill Karein
+            const setSafeText = (id, txt) => {
+                const el = document.getElementById(id);
+                if (el) el.innerText = txt || "--";
+            };
+
+            setSafeText('disp-name', currentActiveUser.name);
+            setSafeText('disp-father', currentActiveUser.father);
+            setSafeText('disp-dob', currentActiveUser.dob);
+            setSafeText('disp-doj', currentActiveUser.doj);
+            setSafeText('disp-email', currentActiveUser.email);
+            setSafeText('disp-pass', "••••••••");
+
+            // Password Reset State
+            isPasswordVisible = false;
+            const passEl = document.getElementById('disp-pass');
+            const iconEl = document.getElementById('pass-toggle-icon');
+            if (passEl) passEl.classList.add('tracking-widest');
+            if (iconEl) iconEl.className = "fa-solid fa-eye text-gray-300";
 
             const mobLink = document.getElementById('disp-mobile-link');
             if (mobLink) {
-                mobLink.innerText = currentActiveUser.mobile;
-                mobLink.href = `tel:${currentActiveUser.mobile}`;
+                mobLink.innerText = currentActiveUser.mobile || "--";
+                mobLink.href = `tel:${currentActiveUser.mobile || ''}`;
             }
 
-            document.getElementById('disp-email').innerText = currentActiveUser.email;
-            document.getElementById('disp-pass').innerText = currentActiveUser.pass;
-            document.getElementById('profile-avatar').innerText = currentActiveUser.name.charAt(0).toUpperCase();
+            const profileAv = document.getElementById('profile-avatar');
+            if (profileAv && currentActiveUser.name) {
+                profileAv.innerText = currentActiveUser.name.charAt(0).toUpperCase();
+            }
 
-            const today = new Date().toISOString().split('T')[0];
-            const payDateInp = document.getElementById('pay-date-input');
-            if (payDateInp) payDateInp.value = today;
-
-            // 🟢 LIVE FIREBASE BAN STATUS FETCH & BADGE RENDER (DYNAMIC)
-            currentStudentBanMetadata = await fetchStudentBanData(currentActiveUser.id, currentActiveUser.email);
-            const badge = document.getElementById('account-status-badge');
-            const btn = document.getElementById('btn-toggle-ban');
-            const hintText = document.getElementById('ban-hint-text');
-
-            if (badge && btn) {
-                if (currentStudentBanMetadata.isBanned) {
-                    badge.innerHTML = `🚫 Banned`;
-                    badge.className = "px-2 py-0.5 rounded text-3xs font-extrabold bg-red-900/90 text-red-200 border border-red-500 flex items-center gap-1 cursor-pointer animate-pulse";
-                    btn.innerText = "🔓 Unban Account";
-                    btn.className = "bg-green-600 hover:bg-green-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow";
-                    if (hintText) hintText.classList.remove('hidden');
+            // 3. Status Badge & Cursor Logic
+            try {
+                if (typeof fetchStudentBanData === 'function') {
+                    currentStudentBanMetadata = await fetchStudentBanData(currentActiveUser.id, currentActiveUser.email);
                 } else {
-                    badge.innerHTML = `● Active`;
-                    badge.className = "px-2 py-0.5 rounded text-3xs font-extrabold bg-green-900/80 text-green-300 border border-green-500/50 flex items-center gap-1 cursor-pointer";
-                    btn.innerText = "🔒 Ban Account";
-                    btn.className = "bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow";
-                    if (hintText) hintText.classList.add('hidden');
+                    currentStudentBanMetadata = { isBanned: false };
                 }
+
+                const badge = document.getElementById('account-status-badge');
+                const btn = document.getElementById('btn-toggle-ban');
+                const hintText = document.getElementById('ban-hint-text');
+
+                if (badge) {
+                    if (typeof isAdminLoggedIn !== 'undefined' && isAdminLoggedIn) {
+                        badge.style.cursor = "pointer";
+                        badge.onclick = () => {
+                            if (typeof window.showBanDetailsInfo === 'function') window.showBanDetailsInfo();
+                        };
+                        if (hintText && currentStudentBanMetadata.isBanned) hintText.classList.remove('hidden');
+                    } else {
+                        badge.style.cursor = "not-allowed";
+                        badge.onclick = null;
+                        badge.title = "Account Status Managed by Admin";
+                        if (hintText) hintText.classList.add('hidden');
+                    }
+
+                    if (currentStudentBanMetadata && currentStudentBanMetadata.isBanned) {
+                        badge.innerHTML = `🚫 Banned`;
+                        badge.className = "px-2 py-0.5 rounded text-3xs font-extrabold bg-red-900/90 text-red-200 border border-red-500 flex items-center gap-1 animate-pulse";
+                        if (btn) {
+                            btn.innerText = "🔓 Unban Account";
+                            btn.className = "bg-green-600 hover:bg-green-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow";
+                        }
+                    } else {
+                        badge.innerHTML = `● Active`;
+                        badge.className = "px-2 py-0.5 rounded text-3xs font-extrabold bg-green-900/80 text-green-300 border border-green-500/50 flex items-center gap-1";
+                        if (btn) {
+                            btn.innerText = "🔒 Ban Account";
+                            btn.className = "bg-red-600 hover:bg-red-700 text-white font-bold px-2 py-1 rounded text-3xs transition-all shadow";
+                        }
+                    }
+                }
+            } catch (banErr) {
+                console.warn("Ban status render bypassed:", banErr);
             }
 
-            await loadStudentPayments(currentActiveUser.id);
-            loadStudentAttendanceHistory(currentActiveUser.id);
+            // 4. Safe Load Payments & Attendance
+            try {
+                if (typeof loadStudentPayments === 'function') await loadStudentPayments(currentActiveUser.id);
+            } catch (e) { console.warn("Payments load warning:", e); }
 
-            // Fetch Live Scores from Firebase (Case Insensitive Email Match)
+            try {
+                if (typeof loadStudentAttendanceHistory === 'function') loadStudentAttendanceHistory(currentActiveUser.id, currentActiveUser.email);
+            } catch (e) { console.warn("Attendance load warning:", e); }
+
+            // 🟢 5. MISSING CODE ADDED: FIREBASE SCORES FETCH ENGINE (Case-Insensitive Match)
             const tbody = document.getElementById('test-results-body');
             if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-400">Loading live scores...</td></tr>`;
 
@@ -1402,6 +1600,7 @@
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
+                    // Clean Email Matching (Purana aur Naya Dono Data Fetch Hoga)
                     if (data.email && data.email.trim().toLowerCase() === userEmailClean) {
                         const date = data.submittedAt ? new Date(data.submittedAt.toDate()).toLocaleString() : "N/A";
                         let numericScore = parseFloat(data.score) || 0;
@@ -1422,6 +1621,7 @@
                 console.error("Firebase fetch error:", err);
             }
 
+            // Attempt Process Tracker
             const weekAttemptTracker = {};
             const processedResults = testResults.map(t => {
                 const weekKey = t.week || "Week 1";
@@ -1437,82 +1637,76 @@
                 };
             });
 
+            // Table UI Render
             if (tbody) {
                 if (processedResults.length === 0) {
-                    tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-yellow-300">No test taken yet. (Week 1 exam pending)</td></tr>`;
+                    tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-yellow-300">No test taken yet for this account.</td></tr>`;
                 } else {
                     tbody.innerHTML = processedResults.map(t => `
-                        <tr class="hover:bg-gray-750">
-                            <td class="p-2.5 font-bold text-amber-400">${t.displayLabel}</td>
-                            <td class="p-2.5">${t.title}</td>
-                            <td class="p-2.5 font-mono font-bold text-blue-300">${t.score} / 100</td>
-                            <td class="p-2.5"><span class="px-2 py-0.5 text-3xs font-bold rounded ${t.status === 'PASSED' ? 'bg-green-900/80 text-green-300' : 'bg-red-900/80 text-red-300'}">${t.status}</span></td>
-                            <td class="p-2.5 text-gray-400 text-3xs">${t.date}</td>
-                        </tr>
-                    `).join('');
+                <tr class="hover:bg-gray-750">
+                    <td class="p-2.5 font-bold text-amber-400">${t.displayLabel}</td>
+                    <td class="p-2.5">${t.title}</td>
+                    <td class="p-2.5 font-mono font-bold text-blue-300">${t.score} / 100</td>
+                    <td class="p-2.5"><span class="px-2 py-0.5 text-3xs font-bold rounded ${t.status === 'PASSED' ? 'bg-green-900/80 text-green-300' : 'bg-red-900/80 text-red-300'}">${t.status}</span></td>
+                    <td class="p-2.5 text-gray-400 text-3xs">${t.date}</td>
+                </tr>
+            `).join('');
                 }
             }
 
+            // Chart Pillars Engine Render
             setTimeout(() => {
-                renderChartGrouped(processedResults);
+                if (typeof renderChartGrouped === 'function') {
+                    renderChartGrouped(processedResults);
+                }
             }, 200);
         }
-
-        // 🟢 3. BAN / UNBAN TOGGLE WITH CONFIRMATION MODAL & FIREBASE UPDATE
+        // 🟢 DUAL-COLLECTION UNBAN ENGINE (100% FIXED)
         window.toggleStudentBanStatus = async function () {
             if (!isAdminLoggedIn || !currentActiveUser) return;
 
             const isCurrentlyBanned = currentStudentBanMetadata ? currentStudentBanMetadata.isBanned : false;
             const cleanEmail = currentActiveUser.email.trim().toLowerCase();
+            const userDocId = cleanEmail.replace(/[^a-zA-Z0-9]/g, "_");
 
             if (!isCurrentlyBanned) {
-                // Prompt for Ban Reason
+                // BAN STUDENT
                 const { value: banReason } = await Swal.fire({
                     title: `Ban ${currentActiveUser.name}?`,
                     input: 'text',
-                    inputLabel: 'Enter Reason for Banning (Karan):',
-                    inputPlaceholder: 'e.g. Fees Pending / Rules Violation',
+                    inputLabel: 'Enter Reason for Banning:',
+                    inputPlaceholder: 'e.g. Fees Pending / Security Lock',
                     showCancelButton: true,
                     confirmButtonText: 'Confirm Ban',
                     confirmButtonColor: '#dc2626',
                     customClass: { popup: 'swal-mobile-size' }
                 });
 
-                if (!banReason) return; // Action Cancelled
+                if (!banReason) return;
 
                 try {
                     Swal.fire({ title: 'Updating Firebase...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-                    const banPayload = {
-                        isBanned: true,
-                        banReason: banReason,
-                        bannedAt: new Date(),
-                        bannedBy: "Admin",
-                        studentId: currentActiveUser.id,
-                        studentName: currentActiveUser.name,
-                        email: cleanEmail
-                    };
+                    const banPayload = { isBanned: true, banReason: banReason, bannedAt: new Date(), bannedBy: "Admin", email: cleanEmail };
 
-                    await setDoc(doc(db, "user_status", currentActiveUser.id), banPayload, { merge: true });
+                    // Write to both collections
                     await setDoc(doc(db, "user_status", cleanEmail), banPayload, { merge: true });
+                    await setDoc(doc(db, "otp_attempts", userDocId), { isBanned: true, attempts: 3, banReason: banReason }, { merge: true });
 
                     Swal.close();
-                    Swal.fire({ icon: 'success', title: 'Account Banned', text: `${currentActiveUser.name} has been banned in Firebase.`, customClass: { popup: 'swal-mobile-size' } });
+                    Swal.fire({ icon: 'success', title: 'Account Banned', customClass: { popup: 'swal-mobile-size' } });
                     loadUserData();
                 } catch (err) {
                     Swal.fire({ icon: 'error', title: 'Update Failed', text: err.message, customClass: { popup: 'swal-mobile-size' } });
                 }
             } else {
-                // 🟢 UNBAN CONFIRMATION MODAL ("Are you sure you want to unban?")
+                // UNBAN STUDENT
                 const result = await Swal.fire({
                     title: 'Unban Student Account?',
                     text: `Are you sure you want to unban ${currentActiveUser.name}? They will be able to attempt exams immediately.`,
                     icon: 'question',
                     showCancelButton: true,
                     confirmButtonColor: '#16a34a',
-                    cancelButtonColor: '#6b7280',
-                    confirmButtonText: 'Yes, Unban Student',
-                    cancelButtonText: 'Cancel',
                     customClass: { popup: 'swal-mobile-size' }
                 });
 
@@ -1520,19 +1714,12 @@
                     try {
                         Swal.fire({ title: 'Unbanning Account...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-                        const unbanPayload = {
-                            isBanned: false,
-                            banReason: "",
-                            unbannedAt: new Date(),
-                            studentId: currentActiveUser.id,
-                            email: cleanEmail
-                        };
-
-                        await setDoc(doc(db, "user_status", currentActiveUser.id), unbanPayload, { merge: true });
-                        await setDoc(doc(db, "user_status", cleanEmail), unbanPayload, { merge: true });
+                        // 🟢 UNBAN FROM BOTH COLLECTIONS
+                        await setDoc(doc(db, "user_status", cleanEmail), { isBanned: false, banReason: "" }, { merge: true });
+                        await setDoc(doc(db, "otp_attempts", userDocId), { isBanned: false, attempts: 0, banReason: "" }, { merge: true });
 
                         Swal.close();
-                        Swal.fire({ icon: 'success', title: 'Account Unbanned!', text: `${currentActiveUser.name} has been unbanned in Firebase.`, customClass: { popup: 'swal-mobile-size' } });
+                        Swal.fire({ icon: 'success', title: 'Account Unbanned!', text: `${currentActiveUser.name} can now login and attempt tests.`, customClass: { popup: 'swal-mobile-size' } });
                         loadUserData();
                     } catch (err) {
                         Swal.fire({ icon: 'error', title: 'Update Failed', text: err.message, customClass: { popup: 'swal-mobile-size' } });
@@ -1819,7 +2006,7 @@
             }
         }
 
-        // PDF GENERATION & AUTOMATED EMAIL & WHATSAPP
+        // 🟢 PDF GENERATION & AUTOMATED EMAIL (WITH ADMIN BCC COPY) & WHATSAPP
         window.generateCompleteDashboardPDF = function () {
             if (!currentActiveUser) {
                 Swal.fire({ icon: 'warning', title: 'User Not Active', text: 'Please select a student first!' });
@@ -1926,8 +2113,10 @@
             };
 
             html2pdf().set(opt).from(pdfContainer).outputPdf('datauristring').then((pdfDataUri) => {
+                // 🟢 DISPATCH EMAIL TO STUDENT AND ADMIN BCC COPY
                 emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
                     to_email: currentActiveUser.email,
+                    bcc_email: ADMIN_BCC_EMAIL, // Admin Copy Sent Always
                     student_name: currentActiveUser.name,
                     pdf_attachment: pdfDataUri
                 }).then(() => {
@@ -1961,6 +2150,9 @@
                 });
             }
         });
+
+
+
     </script>
 </body>
 
