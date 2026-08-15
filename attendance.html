@@ -8,12 +8,12 @@
 
     <!-- 🟢 STUDENT ATTENDANCE PORTAL META TAGS -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://999moneysave1.github.io/versant/attendance.html">
+    <meta property="og:url" content="https://999moneysave.co.in/attendance.html">
     <meta property="og:title" content="📅 Student Attendance Portal | Easy English with Sarfraz">
     <meta property="og:description"
         content="📊 Track daily class attendance, check weekly attendance %, and view Friday test attendance history for Pro Batch 1.">
     <meta property="og:image" content="https://999moneysave.co.in/assets/images/og-banner-eews.png">
-    <meta property="og:image:secure_url" content="https://999moneysave.co.in/assets/images/og-banner-large.png">
+    <meta property="og:image:secure_url" content="https://999moneysave.co.in/assets/images/og-banner-eews.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
@@ -30,7 +30,7 @@
     <meta name="twitter:title" content="📅 Student Attendance Portal | Easy English with Sarfraz">
     <meta name="twitter:description"
         content="📊 Track daily class attendance, check weekly attendance %, and view Friday test attendance history for Pro Batch 1.">
-    <meta name="twitter:image" content="https://999moneysave.co.in/assets/images/og-banner-large.png">
+    <meta name="twitter:image" content="https://999moneysave.co.in/assets/images/og-banner-eews.png">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -42,13 +42,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <!-- Schema.org Structured Data for Attendance Portal, add original link below under url and check by ctrl+click if working -->
-<script type="application/ld+json">
+    <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "WebPage",
   "name": "Student Attendance & History Portal",
   "description": "Official Student Attendance Tracking System for Pro Batch 1 classes and weekly test participation.",
-  "url": "https://999moneysave1.github.io/versant/attendance.html",
+  "url": "https://999moneysave.co.in/attendance.html",
   "isPartOf": {
     "@type": "WebSite",
     "name": "Easy English with Sarfraz",
@@ -321,16 +321,16 @@
         const db = getFirestore(app);
 
         // Default Initial Pro Batch 1 Students List
-        let proBatch1Students = [
-            { id: "farhan", name: "Farhan Alam Ansari", father: "Firoj Alam", dob: "2013-07-24", doj: "2026-07-21", mobile: "9432843353", email: "salma7980389249@gmail.com", pass: "farhan123" },
-            { id: "shahid", name: "Shahid Shah Noor", father: "Jamil Ahmad", dob: "2013-05-27", doj: "2026-05-27", mobile: "9431297344", email: "j.ahmad2020@gmail.com", pass: "shahid123" },
-            { id: "kausen", name: "MD KAUSEN", father: "MD IMTIYAJ", dob: "2009-03-21", doj: "2026-05-18", mobile: "8100351209", email: "mdkausen8100@gmail.com", pass: "kausen123" },
-            { id: "shahzan", name: "Shahzan Ansari", father: "MD Shakil Ansari", dob: "2009-06-25", doj: "2026-05-18", mobile: "7479470888", email: "shahzanansari925@gmail.com", pass: "shahzan123" },
-            { id: "saba", name: "Saba Parveen", father: "Abdul Nesar Adil", dob: "2002-01-09", doj: "2026-07-07", mobile: "6290559945", email: "sababauria2002@gmail.com", pass: "saba123" },
-            { id: "afzal", name: "MD AFZAL ANSARI", father: "SHAHAZADA ANSARI", dob: "2010-04-22", doj: "2026-05-10", mobile: "8910956369", email: "mdarhan89109@gmail.com", pass: "afzal123" },
-            { id: "nasim", name: "MD NASIM", father: "MD SHAFIQ", dob: "2008-08-15", doj: "2026-05-12", mobile: "7003249051", email: "mohnasim760@gmail.com", pass: "nasim123" }
+        const proBatch1Students = [
+            { id: "farhan", name: "Farhan Alam Ansari", father: "Firoj Alam", dob: "24/07/2013", doj: "21 July 2026", mobile: "9432843353", email: "salma7980389249@gmail.com", pass: "farhan123" },
+            { id: "shahid", name: "Shahid Shah Noor", father: "Jamil Ahmad", dob: "27/05/2013", doj: "27-05-2026", mobile: "9431297344", email: "j.ahmad2020@gmail.com", pass: "shahid123" },
+            { id: "kausen", name: "Md Kausen", father: "MD IMTIYAJ", dob: "21/03/2009", doj: "18/05/2026", mobile: "8100351209", email: "mdkausen8100@gmail.com", pass: "kausen123" },
+            { id: "shahzan", name: "Shahzan Ansari", father: "MD Shakil Ansari", dob: "25/06/2009", doj: "18/05/2026", mobile: "7479470888", email: "shahzanansari925@gmail.com", pass: "shahzan123" },
+            { id: "saba", name: "Saba Parveen", father: "Abdul Nesar Adil", dob: "09/01/2002", doj: "07 July 2026", mobile: "6290559945", email: "sababauria2002@gmail.com", pass: "saba123" },
+            { id: "afzal", name: "MD AFZAL ANSARI", father: "SHAHAZADA ANSARI", dob: "22/04/2010", doj: "10/05/2026", mobile: "8910956369", email: "mdarhan89109@gmail.com", pass: "afzal123" },
+            { id: "nasim", name: "MD NASIM", father: "MD SHAFIQ", dob: "15/08/2008", doj: "12/05/2026", mobile: "7003249051", email: "mohnasim760@gmail.com", pass: "nasim123" },
+            { id: "ayan", name: "Md Ayan", father: "Md Samim", dob: "13/08/2010", doj: "10/05/2026", mobile: "6290013121", email: "ayan.5.ayyuuu@gmail.com", pass: "ayan123" }
         ];
-
         const daysList = ['mon', 'tue', 'wed', 'thu', 'fri'];
         let currentWeekAttendance = {};
 
