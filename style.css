@@ -168,3 +168,11 @@ div.swal2-container.swal2-center {
     border: 1px solid #f59e0b !important; /* Gold Border */
     color: #ffffff !important;
 }
+
+
+.fade-out {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    transition: opacity 0.8s ease-out, visibility 0.8s ease-out !important;
+}
+
