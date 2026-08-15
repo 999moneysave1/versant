@@ -83,7 +83,200 @@
     { "q": "4. _____, we should always be honest.", "ans": "Above all" },
     { "q": "5. _____, the two students solved the problem in the same way.", "ans": "Similarly" }
   ]
-}
+},
+
+  {
+    "setId": 2,
+    "obj": [
+      {
+        "q": "1. How _____ is your school  your house?",
+        "opts": ["far/from", "many/for", "far/form"],
+        "ans": "far/from"
+      },
+      {
+        "q": "2. It is _____ six kilometres. Which sentence is correct?",
+        "opts": [
+          "It is about six kilometres.",
+          "It are in six kilometres.",
+          "It is approx six kilometre."
+        ],
+        "ans": "It is about six kilometres."
+      },
+      {
+        "q": "3. Regular verbs usually form the past by adding _____ to the base form.",
+        "opts": ["-ed", "-ing", "-en"],
+        "ans": "-ed"
+      },
+      {
+        "q": "4. If a regular verb ends in 'e', what do we usually add?",
+        "opts": ["-d", "-ed", "-ing"],
+        "ans": "-d"
+      },
+      {
+        "q": "5. What happens to 'y' in a verb ending with Consonant + y?",
+        "opts": [
+          "y changes to i + ed",
+          "y remains unchanged + ed",
+          "y changes to e + d"
+        ],
+        "ans": "y changes to i + ed"
+      },
+      {
+        "q": "6. Which verb follows the CVC rule?",
+        "opts": [
+          "stop → stopped",
+          "walk → walked",
+          "look → looked"
+        ],
+        "ans": "stop → stopped"
+      },
+      {
+        "q": "7. Which is the correct V1, V2, V3 form?",
+        "opts": [
+          "Begin – Began – Begun",
+          "Begin – Begun – Began",
+          "Began – Begin – Begun"
+        ],
+        "ans": "Begin – Began – Begun"
+      },
+      {
+        "q": "8. Which pattern is used in Begin – Began – Begun?",
+        "opts": [
+          "i → a → u",
+          "No Change",
+          "-d → -t"
+        ],
+        "ans": "i → a → u"
+      },
+      {
+        "q": "9. In the pronunciation guide, the word 'nation' is given as an example of which sound?",
+        "opts": ["SH sound", "J sound", "R sound"],
+        "ans": "SH sound"
+      },
+      {
+        "q": "10. Which pronunciation statement is correct?",
+        "opts": [
+          "ZH is a voiced sound and the throat vibrates.",
+          "SH is a voiced sound and the throat vibrates.",
+          "R is pronounced by touching the tongue to the roof."
+        ],
+        "ans": "ZH is a voiced sound and the throat vibrates."
+      }
+    ],
+    "email": {
+      "question": "Write a short note on your school.",
+      "correctAnswer": "My school is about six kilometres from my house. I go to school regularly and enjoy learning new things. My school is an important part of my daily life. I like studying there and spending time with my teachers and friends. I am happy to be a student of my school.",
+      "keywords": [
+        "school",
+        "six kilometres",
+        "house",
+        "go to school",
+        "learning",
+        "teachers",
+        "friends",
+        "student"
+      ]
+    },
+    "typing": "My school is about six kilometres from my house. I go to school regularly and enjoy learning new things. My school is an important part of my daily life. I like studying there and spending time with my teachers and friends.",
+    "voiceD": [
+      "How far is your school from your house?",
+      "It is about six kilometres.",
+      "Regular verbs usually take -ed in the past.",
+      "Begin, Began, Begun.",
+      "Nation and communication have the SH sound."
+    ],
+    "passagesE": [
+      "My school is about six kilometres from my house.",
+      "Regular verbs usually follow spelling rules when forming the past tense.",
+      "If a verb ends in e, simply add d, such as like → liked.",
+      "If a verb ends in consonant + y, change y to i and add ed, such as try → tried.",
+      "Irregular verbs do not follow the regular -ed rule."
+    ],
+    "audioPromptsF": [
+      "How far is your school from your house?",
+      "It is about six kilometres.",
+      "Stop becomes stopped under the CVC rule.",
+      "Drink, Drank, Drunk.",
+      "SH is unvoiced, while ZH is voiced."
+    ],
+    "storyG": [
+      {
+        "id": 1,
+        "question": "What is the difference between regular and irregular verbs? Explain the four regular verb spelling rules and the six irregular verb patterns given in the lesson, with examples.",
+        "correctAnswer": "Regular verbs generally follow the -ed or -d spelling rules when forming the past tense, while irregular verbs do not follow the regular -ed rule and may change their spelling or remain the same. Regular verbs have four spelling rules. Pattern 1 is the General Rule, where -ed is added to most verbs, such as work → worked, look → looked, start → started, walk → walked, and help → helped. Pattern 2 is the Ends in 'e' rule, where only -d is added, such as like → liked, love → loved, arrive → arrived, and dance → danced. Pattern 3 is the Consonant + y rule, where y changes to i and -ed is added, such as try → tried, cry → cried, study → studied, and carry → carried. If a verb has vowel + y, the y remains unchanged, as in play → played. Pattern 4 is the CVC rule, where the final consonant is doubled before -ed, such as stop → stopped, hop → hopped, plan → planned, and rob → robbed. Irregular verbs are taught through six patterns in the lesson. Pattern 1 is i → a → u, such as begin → began → begun, drink → drank → drunk, and sing → sang → sung. Pattern 2 is -ought / -aught, such as think → thought → thought and catch → caught → caught. Pattern 3 is No Change, where all three forms remain the same, such as cut → cut → cut, put → put → put, and hit → hit → hit. Pattern 4 is ow/aw → ew → own/awn, such as know → knew → known, grow → grew → grown, and throw → threw → thrown. Pattern 5 is V3 में -en / -n जुड़ना, such as break → broke → broken, speak → spoke → spoken, write → wrote → written, and take → took → taken. Pattern 6 is -d का -t बनना / अंत में -t लगना, such as send → sent → sent, build → built → built, sleep → slept → slept, and feel → felt → felt. Therefore, the main difference is that regular verbs follow predictable spelling rules, while irregular verbs use different patterns or changes.",
+        "keywords": [
+          "Regular verbs",
+          "Irregular verbs",
+          "-ed",
+          "-d",
+          "General Rule",
+          "Ends in e",
+          "Consonant + y",
+          "CVC Rule",
+          "i → a → u",
+          "-ought / -aught",
+          "No Change",
+          "ow/aw → ew → own/awn",
+          "V3 में -en / -n",
+          "-d का -t",
+          "V1",
+          "V2",
+          "V3",
+          "Begin Began Begun",
+          "Think Thought Thought",
+          "Cut Cut Cut",
+          "Know Knew Known",
+          "Write Wrote Written",
+          "Send Sent Sent"
+        ]
+      }
+    ],
+    "trueFalse": [
+      {
+        "q": "1. A regular verb generally follows the -ed or -d spelling rules in the past tense.",
+        "ans": "True"
+      },
+      {
+        "q": "2. In the Consonant + y rule, y changes to i before adding -ed.",
+        "ans": "True"
+      },
+      {
+        "q": "3. Stop → stopped follows the CVC rule.",
+        "ans": "True"
+      },
+      {
+        "q": "4. Begin → Began → Begun is an irregular verb pattern.",
+        "ans": "True"
+      },
+      {
+        "q": "5. SH is a voiced sound with throat vibration.",
+        "ans": "False"
+      }
+    ],
+    "fillBlanks": [
+      {
+        "q": "1. My school is about _____ kilometres from my house.",
+        "ans": "six"
+      },
+      {
+        "q": "2. Most regular verbs take _____ in the past tense.",
+        "ans": "-ed"
+      },
+      {
+        "q": "3. If a verb ends in 'e', we usually add only _____.",
+        "ans": "-d"
+      },
+      {
+        "q": "4. Begin → Began → _____",
+        "ans": "Begun"
+      },
+      {
+        "q": "5. Write → Wrote → _____",
+        "ans": "Written"
+      }
+    ]
+  }
+
 
 
 ]
