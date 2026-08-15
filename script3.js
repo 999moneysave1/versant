@@ -64,25 +64,32 @@ window.addEventListener('DOMContentLoaded', () => {
         .catch(err => console.error("Error loading JSON:", err));
 });
 
-// 🟢 FIXED: Priority Question Loader (Firebase First -> JSON Fallback)
+// Priority Question Loader (Firebase First -> JSON Fallback)
 async function fetchActiveExamConfig() {
     try {
-        const configRef = doc(db, "exam_config", "active_week_setting");
-        const configSnap = await getDoc(configRef);
+        const urlParams = new URLSearchParams(window.location.search);
+        let targetWeek = urlParams.get('week');
 
-        if (configSnap.exists()) {
-            activeExamWeekNum = (configSnap.data().activeWeek || "1").toString();
-            selectedWeekTag = `Week ${activeExamWeekNum}`;
-
-            const weekConfigRef = doc(db, "exam_config", `week_${activeExamWeekNum}_config`);
-            const weekConfigSnap = await getDoc(weekConfigRef);
-
-            if (weekConfigSnap.exists()) {
-                const wData = weekConfigSnap.data();
-                if (wData.activeSections) currentExamConfig = wData.activeSections;
-                if (wData.customData) activeSet = normalizeActiveSet(wData.customData);
-                console.log(`🟢 [PRIORITY 1] Loaded Firebase Custom Data for: ${selectedWeekTag}`);
+        if (!targetWeek) {
+            const configRef = doc(db, "exam_config", "active_week_setting");
+            const configSnap = await getDoc(configRef);
+            if (configSnap.exists()) {
+                activeExamWeekNum = (configSnap.data().activeWeek || "1").toString();
             }
+        } else {
+            activeExamWeekNum = targetWeek.toString();
+        }
+
+        selectedWeekTag = `Week ${activeExamWeekNum}`;
+
+        const weekConfigRef = doc(db, "exam_config", `week_${activeExamWeekNum}_config`);
+        const weekConfigSnap = await getDoc(weekConfigRef);
+
+        if (weekConfigSnap.exists()) {
+            const wData = weekConfigSnap.data();
+            if (wData.activeSections) currentExamConfig = wData.activeSections;
+            if (wData.customData) activeSet = normalizeActiveSet(wData.customData);
+            console.log(`🟢 Loaded Firebase Configuration for: ${selectedWeekTag}`);
         }
     } catch (e) {
         console.error("Config fetch error:", e);
@@ -117,6 +124,7 @@ function normalizeActiveSet(dataSet) {
     return dataSet;
 }
 
+// 🟢 DYNAMIC SECTION BUILDER (Skipped sections won't break Sequence A, B, C...)
 function getAvailableSections() {
     let activeSections = [];
     let setObj = normalizeActiveSet(activeSet);
@@ -142,7 +150,7 @@ function getAvailableSections() {
         activeSections.push({ key: 'audioPromptsF', name: 'Listen & Repeat Speaking' });
 
     if (currentExamConfig.secG && setObj.storyG && setObj.storyG.length > 0)
-        activeSections.push({ key: 'storyG', name: 'Essay & Story Response' });
+        activeSections.push({ key: 'storyG', name: 'Long Essay & Story Response' });
 
     if (currentExamConfig.secTF && setObj.trueFalse && setObj.trueFalse.length > 0)
         activeSections.push({ key: 'trueFalse', name: 'True / False Diagnostics' });
@@ -155,13 +163,20 @@ function getAvailableSections() {
 
 window.startFullAssessment = async function () {
     try {
-        const configRef = doc(db, "exam_config", "active_week_setting");
-        const configSnap = await getDoc(configRef);
+        const urlParams = new URLSearchParams(window.location.search);
+        let targetWeek = urlParams.get('week');
 
-        if (configSnap.exists()) {
-            activeExamWeekNum = configSnap.data().activeWeek || "1";
-            selectedWeekTag = `Week ${activeExamWeekNum}`;
+        if (!targetWeek) {
+            const configRef = doc(db, "exam_config", "active_week_setting");
+            const configSnap = await getDoc(configRef);
+            if (configSnap.exists()) {
+                activeExamWeekNum = configSnap.data().activeWeek || "1";
+            }
+        } else {
+            activeExamWeekNum = targetWeek;
         }
+
+        selectedWeekTag = `Week ${activeExamWeekNum}`;
 
         const weekConfigRef = doc(db, "exam_config", `week_${activeExamWeekNum}_config`);
         const weekConfigSnap = await getDoc(weekConfigRef);
@@ -169,9 +184,7 @@ window.startFullAssessment = async function () {
         if (weekConfigSnap.exists()) {
             const wData = weekConfigSnap.data();
             if (wData.activeSections) currentExamConfig = wData.activeSections;
-            if (wData.customData) {
-                activeSet = normalizeActiveSet(wData.customData);
-            }
+            if (wData.customData) activeSet = normalizeActiveSet(wData.customData);
         }
 
         if (!activeSet && questionPool && questionPool.length > 0) {
@@ -197,7 +210,7 @@ window.startFullAssessment = async function () {
     currentSectionIndex = 0;
 
     if (activeSectionList.length === 0) {
-        alert("No active test sections found for this test! Please check Admin Settings.");
+        alert("No active test sections enabled for this exam! Please check Admin Settings.");
         return;
     }
 
@@ -207,11 +220,11 @@ window.startFullAssessment = async function () {
 function loadCurrentInstructionSection() {
     hideAll();
     const currentSec = activeSectionList[currentSectionIndex];
-    const displayLabel = String.fromCharCode(65 + currentSectionIndex);
+    const displayLabel = String.fromCharCode(65 + currentSectionIndex); // Sequential Label A, B, C, D...
 
     document.getElementById('screen-instruction').classList.remove('hidden');
     document.getElementById('inst-title').innerText = `Section ${displayLabel}: ${currentSec.name}`;
-    document.getElementById('inst-example').innerText = `Please review instructions for ${currentSec.name}`;
+    document.getElementById('inst-example').innerText = `Please review the instructions for ${currentSec.name}.`;
     speak(`Section ${displayLabel} is ${currentSec.name}. Read the instructions carefully.`);
 }
 
@@ -237,7 +250,7 @@ window.startActivePart = function () {
     } else if (currentSec.key === 'email') {
         document.getElementById('part-b').classList.remove('hidden');
         document.getElementById('qb-email-prompt').innerText = setObj.email.question;
-        startTimer(600, () => window.submitEmailAndNext());
+        startTimer(600, () => window.submitEmailAndNext()); // 10 Minutes (600s)
     } else if (currentSec.key === 'typing') {
         document.getElementById('part-c').classList.remove('hidden');
         document.getElementById('qc-typing').innerText = setObj.typing;
@@ -274,7 +287,7 @@ function goToNextSectionInOrder() {
     }
 }
 
-// 🟢 UPDATED & FIXED: Hardware Diagnostics & Strict Dual-Collection Ban Sync
+// Hardware Diagnostics
 window.goToHardwareCheck = async function () {
     const nameEl = document.getElementById('cand-name');
     const emailEl = document.getElementById('cand-email');
@@ -295,7 +308,6 @@ window.goToHardwareCheck = async function () {
 
     const userDocId = email.replace(/[^a-zA-Z0-9]/g, "_");
 
-    // Check Status in both Collections
     let isBanned = false, banReason = "Excessive OTP Failures";
     try {
         const otpRef = doc(db, "otp_attempts", userDocId);
@@ -351,7 +363,7 @@ window.goToHardwareCheck = async function () {
         });
 };
 
-// 🟢 UPDATED & FIXED: OTP Verification Engine with Automatic Dashboard Sync & Notification
+// OTP Verification Engine
 window.promptOTPVerification = async function () {
     if (window.isOTPVerified) {
         Swal.fire({ icon: 'info', title: 'Verified', text: 'Aapka OTP pehle hi verify ho chuka hai!', customClass: { popup: 'swal-mobile-size' } });
@@ -382,7 +394,6 @@ window.promptOTPVerification = async function () {
     if (userOTP) {
         if (userOTP.trim() === window.generatedOTP) {
             window.isOTPVerified = true;
-            // Clear Ban and Attempts in Firebase
             await setDoc(userRef, { attempts: 0, isBanned: false, lastSuccess: serverTimestamp() }, { merge: true });
             await setDoc(doc(db, "user_status", email), { isBanned: false }, { merge: true });
 
@@ -392,11 +403,8 @@ window.promptOTPVerification = async function () {
             attempts++;
             if (attempts >= 3) {
                 const banReason = "3 wrong OTP Attempts Inputted";
+                const banTimeISO = new Date().toISOString();
 
-
-                const banTimeISO = new Date().toISOString(); // Current Exact Time & Date
-
-                // 1. Sync Ban to `otp_attempts`
                 await setDoc(userRef, {
                     attempts: attempts,
                     isBanned: true,
@@ -406,7 +414,6 @@ window.promptOTPVerification = async function () {
                     name: name
                 }, { merge: true });
 
-                // 2. Sync Ban to `user_status` (Dashboard Match)
                 await setDoc(doc(db, "user_status", email), {
                     isBanned: true,
                     banReason: banReason,
@@ -416,13 +423,12 @@ window.promptOTPVerification = async function () {
                     studentName: name
                 }, { merge: true });
 
-                // 3. Send Notification to Admin Dashboard
                 notifyAdminBan(name, email, banReason);
 
                 Swal.fire({
                     icon: 'error',
                     title: 'Account Locked & Banned',
-                    text: 'Aapne 3 baar galat OTP dala hai. Aapka account lock ho gaya hai aur Dashboard par report kar diya gaya hai.',
+                    text: 'Aapne 3 baar galat OTP dala hai. Aapka account lock ho gaya hai.',
                     customClass: { popup: 'swal-mobile-size' }
                 });
             } else {
@@ -455,7 +461,6 @@ async function sendOTPViaEmail(userEmail, userName, otp) {
     });
 }
 
-// 🟢 NOTIFY ADMIN ON DASHBOARD
 async function notifyAdminBan(userName, userEmail, reason) {
     try {
         await addDoc(collection(db, "banned_notifications"), {
@@ -681,16 +686,23 @@ window.saveAndNextD = function () {
     }
 };
 
+// 🟢 20 SECONDS PASSAGE MEMORIZATION TIMER & HIDE
 function showSingleEQuestion() {
     let setObj = normalizeActiveSet(activeSet);
     if (!setObj || !setObj.passagesE || currentEIdx >= setObj.passagesE.length) { goToNextSectionInOrder(); return; }
     document.getElementById('qe-counter').innerText = `Passage ${currentEIdx + 1} of ${setObj.passagesE.length}`;
     document.getElementById('ans-passage-e').value = "";
+
     const textEl = document.getElementById('qe-display-text');
     textEl.innerText = setObj.passagesE[currentEIdx];
     textEl.classList.remove('fade-out');
+    textEl.style.display = "block";
 
-    setTimeout(() => { textEl.classList.add('fade-out'); }, 8000);
+    // 🟢 20 Seconds Timer to Hide Passage Text
+    setTimeout(() => {
+        textEl.classList.add('fade-out');
+    }, 20000);
+
     startTimer(60, () => window.saveAndNextE());
 }
 
@@ -726,17 +738,18 @@ window.saveAndNextF = function () {
     }
 };
 
+// 🟢 10 MINUTES TIMER FOR STORY QUESTION (600s)
 function showSingleGQuestion() {
     let setObj = normalizeActiveSet(activeSet);
     if (!setObj || !setObj.storyG || currentGIdx >= setObj.storyG.length) { goToNextSectionInOrder(); return; }
     const qG = setObj.storyG[currentGIdx];
     document.getElementById('qg-counter').innerText = `Question ${currentGIdx + 1} of ${setObj.storyG.length}`;
-    document.getElementById('qg-prompt-title').innerText = `Q${currentGIdx + 1}. Story Task`;
+    document.getElementById('qg-prompt-title').innerText = `Q${currentGIdx + 1}. Long Essay & Story Task`;
     document.getElementById('qg-prompt-desc').innerText = qG.question;
     document.getElementById('ans-story-g').value = "";
 
     document.getElementById('btn-next-g').innerText = (currentGIdx === setObj.storyG.length - 1) ? "Next Section" : "Next Question";
-    startTimer(300, () => window.saveAndNextG());
+    startTimer(600, () => window.saveAndNextG()); // 10 Minutes
 }
 
 window.saveAndNextG = function () {
@@ -848,7 +861,6 @@ function startTimer(seconds, onTimeout) {
     }, 1000);
 }
 
-// Evaluation Logic
 window.trackTyping = function () {
     let setObj = normalizeActiveSet(activeSet);
     const typed = (document.getElementById('ans-typing') ? document.getElementById('ans-typing').value : "").trim();
@@ -967,13 +979,14 @@ function evaluateBestOfTwoSpecial(userAnswer, correctAnswer, keywords, baseMaxMa
     return { finalScore: finalMarks, methodUsed: evalMethod };
 }
 
+// 🟢 FINISH TEST ENGINE: 100% AUTOMATIC ADAPTIVE SCALING & CLEAN LABELS
 async function finishTest() {
     window.isTestActive = false;
     clearInterval(timerInterval);
     hideAll();
     document.getElementById('screen-result').classList.remove('hidden');
 
-    const candName = document.getElementById('cand-name').value.trim();
+    const candName = (document.getElementById('cand-name').value.trim()).toUpperCase();
     const candEmail = document.getElementById('cand-email').value.trim();
 
     let setObj = normalizeActiveSet(activeSet);
@@ -985,13 +998,14 @@ async function finishTest() {
     const cfg = currentExamConfig || {};
 
     if (setObj) {
+        // Part A: Objective Grammar (1 Mark Each)
         if (cfg.secA !== false && setObj.obj && setObj.obj.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreA = 0, detailsA = "";
             setObj.obj.forEach((item, i) => {
                 const userAns = userObjAnswers[i] || "Not Answered";
                 const isCorr = userAns === item.ans;
-                if (isCorr) scoreA += 1.5;
+                if (isCorr) scoreA += 1;
                 detailsA += `
                     <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
                         <p style="margin:2px 0;"><b>Q${i + 1}:</b> ${item.q}</p>
@@ -1000,18 +1014,19 @@ async function finishTest() {
                     </div>`;
             });
             rawObtainedScore += scoreA;
-            rawMaxTotalScore += (setObj.obj.length * 1.5);
-            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: OBJECTIVE GRAMMAR (${scoreA} / ${setObj.obj.length * 1.5} Marks)</div>${detailsA}`;
+            rawMaxTotalScore += setObj.obj.length;
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: OBJECTIVE GRAMMAR (${scoreA} / ${setObj.obj.length} Marks)</div>${detailsA}`;
         }
 
+        // Part B: Email Writing (10 Marks)
         if (cfg.secB !== false && setObj.email && setObj.email.question) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             const userEmail = document.getElementById('ans-email') ? document.getElementById('ans-email').value : "";
-            const evalB = evaluateBestOfTwoSpecial(userEmail, setObj.email.correctAnswer, setObj.email.keywords, 15, setObj.email.question);
+            const evalB = evaluateBestOfTwoSpecial(userEmail, setObj.email.correctAnswer, setObj.email.keywords, 10, setObj.email.question);
             rawObtainedScore += evalB.finalScore;
-            rawMaxTotalScore += 15;
+            rawMaxTotalScore += 10;
             fullReportHtml += `
-                <div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: EMAIL WRITING (${evalB.finalScore} / 15 Marks)</div>
+                <div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: EMAIL WRITING (${evalB.finalScore} / 10 Marks)</div>
                 <div style="border-bottom:1px solid #e2e8f0; padding:8px 0;">
                     <p style="margin:4px 0;"><b>Question Prompt:</b> ${setObj.email.question}</p>
                     <p style="margin:4px 0;"><b>Candidate Response:</b> ${userEmail || 'No response'}</p>
@@ -1020,6 +1035,7 @@ async function finishTest() {
                 </div>`;
         }
 
+        // Part C: Typing Test (15 Marks)
         if (cfg.secC !== false && setObj.typing && setObj.typing.trim().length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreC = finalAcc >= 20 ? Math.round((finalAcc / 100) * 10 + (Math.min(finalWPM, 40) / 40) * 5) : 0;
@@ -1033,6 +1049,7 @@ async function finishTest() {
                 </div>`;
         }
 
+        // Part D: Read Aloud (3 Marks Each)
         if (cfg.secD !== false && setObj.voiceD && setObj.voiceD.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreD = 0, detailsD = "";
@@ -1052,10 +1069,11 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: READ ALOUD (${scoreD} / ${setObj.voiceD.length * 3} Marks)</div>${detailsD}`;
         }
 
+        // Part E: Memory Passage (2 Marks Each)
         if (cfg.secE !== false && setObj.passagesE && setObj.passagesE.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreE = 0, detailsE = "";
-            const perQMax = 15 / setObj.passagesE.length;
+            const perQMax = 10 / setObj.passagesE.length;
             setObj.passagesE.forEach((orig, i) => {
                 const rec = (userEAnswers[i] || "").trim();
                 const simPct = getSimilarityPercentage(rec, orig);
@@ -1070,10 +1088,11 @@ async function finishTest() {
                     </div>`;
             });
             rawObtainedScore += scoreE;
-            rawMaxTotalScore += 15;
-            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: MEMORY RECONSTRUCTION (${scoreE} / 15 Marks)</div>${detailsE}`;
+            rawMaxTotalScore += 10;
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: MEMORY RECONSTRUCTION (${scoreE} / 10 Marks)</div>${detailsE}`;
         }
 
+        // Part F: Listen & Repeat (2 Marks Each)
         if (cfg.secF !== false && setObj.audioPromptsF && setObj.audioPromptsF.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreF = 0, detailsF = "";
@@ -1093,10 +1112,11 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: LISTEN & REPEAT (${scoreF} / ${setObj.audioPromptsF.length * 2} Marks)</div>${detailsF}`;
         }
 
+        // Part G: Story / Long Question (10 Marks)
         if (cfg.secG !== false && setObj.storyG && setObj.storyG.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let totalGScore = 0, detailsG = "";
-            const perQMax = 15 / setObj.storyG.length;
+            const perQMax = 10 / setObj.storyG.length;
             setObj.storyG.forEach((qG, i) => {
                 const ansG = userGAnswers[i] || "";
                 const evalG = evaluateBestOfTwoSpecial(ansG, qG.correctAnswer, qG.keywords, perQMax, qG.question);
@@ -1110,10 +1130,11 @@ async function finishTest() {
                     </div>`;
             });
             rawObtainedScore += totalGScore;
-            rawMaxTotalScore += 15;
-            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: STORY RESPONSES (${totalGScore} / 15 Marks)</div>${detailsG}`;
+            rawMaxTotalScore += 10;
+            fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: STORY RESPONSES (${totalGScore} / 10 Marks)</div>${detailsG}`;
         }
 
+        // Part TF: True / False (2 Marks Each)
         if (cfg.secTF !== false && setObj.trueFalse && setObj.trueFalse.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreTF = 0, detailsTF = "";
@@ -1133,6 +1154,7 @@ async function finishTest() {
             fullReportHtml += `<div style="background:#1e40af; color:#fff; padding:6px 10px; font-weight:bold; margin-top:15px; border-radius:4px;">SECTION ${secLabel}: TRUE / FALSE (${scoreTF} / ${setObj.trueFalse.length * 2} Marks)</div>${detailsTF}`;
         }
 
+        // Part FIB: Fill in the Blanks (2 Marks Each)
         if (cfg.secFIB !== false && setObj.fillBlanks && setObj.fillBlanks.length > 0) {
             const secLabel = String.fromCharCode(65 + sectionDisplayCounter++);
             let scoreFIB = 0, detailsFIB = "";
@@ -1153,6 +1175,7 @@ async function finishTest() {
         }
     }
 
+    // 🟢 100% AUTOMATIC ADAPTIVE SCALING
     let finalScaled100Score = rawMaxTotalScore > 0 ? Math.round((rawObtainedScore / rawMaxTotalScore) * 100) : 0;
     const passStatus = finalScaled100Score >= 50 ? "PASSED" : "FAILED";
     const formattedPdfFileName = `${candName}_wrc_result.pdf`;
@@ -1208,33 +1231,3 @@ async function finishTest() {
 window.downloadDetailedPDF = function () {
     Swal.fire({ icon: 'info', title: 'Scorecard PDF', text: 'Aapka scorecard PDF download ho gaya hai.', customClass: { popup: 'swal-mobile-size' } });
 };
-
-async function loadTestQuestions() {
-    // 1. Check if specific week passed in URL (?week=2)
-    const urlParams = new URLSearchParams(window.location.search);
-    let targetWeek = urlParams.get('week');
-
-    // 2. If not in URL, get global active week from Firebase
-    if (!targetWeek) {
-        try {
-            const activeSnap = await getDoc(doc(db, "exam_config", "active_week_setting"));
-            if (activeSnap.exists() && activeSnap.data().activeWeek) {
-                targetWeek = activeSnap.data().activeWeek.toString();
-            }
-        } catch (e) {
-            targetWeek = "1";
-        }
-    }
-
-    // 3. Fetch specific questions for that week
-    try {
-        const res = await fetch('questions.json');
-        const questionsList = await res.json();
-        if (Array.isArray(questionsList)) {
-            return questionsList.find(q => q.setId == targetWeek) || questionsList[0];
-        }
-        return questionsList;
-    } catch (err) {
-        console.error("Failed to load questions:", err);
-    }
-}
