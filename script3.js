@@ -1208,3 +1208,33 @@ async function finishTest() {
 window.downloadDetailedPDF = function () {
     Swal.fire({ icon: 'info', title: 'Scorecard PDF', text: 'Aapka scorecard PDF download ho gaya hai.', customClass: { popup: 'swal-mobile-size' } });
 };
+
+async function loadTestQuestions() {
+    // 1. Check if specific week passed in URL (?week=2)
+    const urlParams = new URLSearchParams(window.location.search);
+    let targetWeek = urlParams.get('week');
+
+    // 2. If not in URL, get global active week from Firebase
+    if (!targetWeek) {
+        try {
+            const activeSnap = await getDoc(doc(db, "exam_config", "active_week_setting"));
+            if (activeSnap.exists() && activeSnap.data().activeWeek) {
+                targetWeek = activeSnap.data().activeWeek.toString();
+            }
+        } catch (e) {
+            targetWeek = "1";
+        }
+    }
+
+    // 3. Fetch specific questions for that week
+    try {
+        const res = await fetch('questions.json');
+        const questionsList = await res.json();
+        if (Array.isArray(questionsList)) {
+            return questionsList.find(q => q.setId == targetWeek) || questionsList[0];
+        }
+        return questionsList;
+    } catch (err) {
+        console.error("Failed to load questions:", err);
+    }
+}
