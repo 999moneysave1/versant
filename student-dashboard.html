@@ -677,6 +677,43 @@
             </button>
         </div>
 
+        <!-- 🟢 STUDENT DYNAMIC TEST SELECTOR & LOCK SYSTEM -->
+        <div id="student-exam-selector-card"
+            class="bg-gray-800 p-3.5 xs:p-4 rounded-xl border border-blue-500/40 shadow-lg space-y-3">
+            <div
+                class="flex flex-col xs:flex-row justify-between items-start xs:items-center gap-2 border-b border-gray-700 pb-2">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-graduation-cap text-amber-400 text-base"></i>
+                    <h3 class="text-xs xs:text-sm font-bold text-white">🎯 Your Available Tests</h3>
+                </div>
+                <span id="active-exam-badge"
+                    class="text-[10px] bg-blue-900/80 text-blue-300 border border-blue-500/40 px-2.5 py-0.5 rounded-full font-mono font-bold">
+                    Live Week: Week 1
+                </span>
+            </div>
+
+            <div class="flex flex-col sm:flex-row items-center gap-3">
+                <div class="w-full sm:flex-1">
+                    <label class="text-3xs text-gray-300 block mb-1 font-bold">Select Week to Attempt:</label>
+                    <select id="student-week-select"
+                        class="w-full bg-gray-700 border border-gray-600 rounded p-2 text-xs text-amber-300 font-bold focus:outline-none focus:border-amber-400">
+                        <option value="">Loading tests...</option>
+                    </select>
+                </div>
+
+                <div class="w-full sm:w-auto pt-2 sm:pt-4">
+                    <button id="btn-start-student-exam" onclick="startSelectedStudentTest()"
+                        class="w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded text-xs transition-all shadow flex items-center justify-center gap-1.5">
+                        <i class="fa-solid fa-play text-xs"></i> 🚀 Start Test
+                    </button>
+                </div>
+            </div>
+
+            <p id="student-test-status-msg" class="text-[10px] text-gray-400 italic">
+                💡 Completed weeks are automatically locked to prevent duplicate attempts.
+            </p>
+        </div>
+
         <!-- Profile & Payment Section -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 xs:gap-6">
 
@@ -1302,6 +1339,166 @@
             }
         };
 
+        // 🟢 1. DYNAMIC ADMIN ACTIVE WEEK LOCK (Direct File + Firebase Sync)
+        window.saveActiveExamWeekByAdmin = async function () {
+            const selectEl = document.getElementById('admin-active-week-select');
+            if (!selectEl) return;
+
+            const selectedWeek = selectEl.value;
+
+            try {
+                Swal.fire({
+                    title: `Activating Week ${selectedWeek}...`,
+                    text: 'Fetching questions and deploying active exam...',
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+
+                // Fetch Questions from local questions.json if not already in DB
+                let weekQuestions = null;
+                try {
+                    const res = await fetch('questions.json');
+                    if (res.ok) {
+                        const allData = await res.json();
+                        if (Array.isArray(allData)) {
+                            weekQuestions = allData.find(item => item.setId == selectedWeek) || allData[0];
+                        } else if (allData.setId == selectedWeek) {
+                            weekQuestions = allData;
+                        }
+                    }
+                } catch (e) {
+                    console.warn("Local JSON fetch notice:", e);
+                }
+
+                // 1. Save Active Week Setting
+                await setDoc(doc(db, "exam_config", "active_week_setting"), {
+                    activeWeek: selectedWeek,
+                    updatedAt: new Date()
+                }, { merge: true });
+
+                // 2. If questions found in JSON, auto-deploy to week config
+                if (weekQuestions) {
+                    await setDoc(doc(db, "exam_config", `week_${selectedWeek}_config`), {
+                        weekId: selectedWeek,
+                        customData: weekQuestions,
+                        updatedAt: new Date()
+                    }, { merge: true });
+                }
+
+                Swal.close();
+                Swal.fire({
+                    icon: 'success',
+                    title: `Week ${selectedWeek} Activated!`,
+                    text: `Portal is now actively serving Week ${selectedWeek} questions.`,
+                    timer: 2000,
+                    showConfirmButton: false,
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+
+                // Refresh UI
+                if (typeof loadUserData === 'function') loadUserData();
+
+            } catch (err) {
+                console.error("Error setting active week:", err);
+                Swal.close();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Activation Failed',
+                    text: err.message,
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+            }
+        };
+
+        // 🟢 2. POPULATE STUDENT AVAILABLE TESTS & AUTO-DISABLE ATTEMPTED WEEKS
+        async function renderStudentAvailableTests(studentEmail, takenWeeksList = []) {
+            const selectEl = document.getElementById('student-week-select');
+            const badgeEl = document.getElementById('active-exam-badge');
+            const btnStart = document.getElementById('btn-start-student-exam');
+            if (!selectEl) return;
+
+            // A. Get Global Active Week from Firebase
+            let activeWeek = "1";
+            try {
+                const snap = await getDoc(doc(db, "exam_config", "active_week_setting"));
+                if (snap.exists() && snap.data().activeWeek) {
+                    activeWeek = snap.data().activeWeek.toString();
+                }
+            } catch (e) {
+                console.warn("Active week read warn:", e);
+            }
+
+            if (badgeEl) badgeEl.innerText = `Admin Active: Week ${activeWeek}`;
+
+            // B. Get all available weeks from questions.json
+            let totalWeeks = ["1", "2"];
+            try {
+                const res = await fetch('questions.json');
+                if (res.ok) {
+                    const data = await res.json();
+                    if (Array.isArray(data)) {
+                        totalWeeks = data.map(item => item.setId.toString());
+                    }
+                }
+            } catch (e) {
+                console.warn("JSON week read warn:", e);
+            }
+
+            // C. Clean completed weeks array
+            const takenCleanSet = new Set(takenWeeksList.map(w => w.toString().toLowerCase().replace(/[^0-9]/g, '')));
+
+            let htmlOptions = "";
+            let firstAvailableWeek = null;
+
+            totalWeeks.forEach(wId => {
+                const isCompleted = takenCleanSet.has(wId.toString());
+                if (isCompleted) {
+                    // Completed test -> Disabled
+                    htmlOptions += `<option value="${wId}" disabled class="bg-gray-800 text-gray-500 font-normal">🔒 Week ${wId} (Completed / Locked)</option>`;
+                } else {
+                    // Not completed -> Enabled
+                    if (!firstAvailableWeek) firstAvailableWeek = wId;
+                    const isLive = (wId === activeWeek);
+                    htmlOptions += `<option value="${wId}" ${isLive ? 'selected' : ''} class="bg-gray-700 text-green-300 font-bold">✨ Week ${wId} ${isLive ? '(Active Exam)' : '(Available)'}</option>`;
+                }
+            });
+
+            selectEl.innerHTML = htmlOptions;
+
+            // Handle Start Button state
+            if (!firstAvailableWeek && totalWeeks.length > 0) {
+                if (btnStart) {
+                    btnStart.disabled = true;
+                    btnStart.className = "w-full sm:w-auto bg-gray-700 text-gray-400 font-bold px-4 py-2 rounded text-xs cursor-not-allowed";
+                    btnStart.innerHTML = `<i class="fa-solid fa-lock mr-1"></i> All Tests Completed`;
+                }
+            } else {
+                if (btnStart) {
+                    btnStart.disabled = false;
+                    btnStart.className = "w-full sm:w-auto bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded text-xs transition-all shadow flex items-center justify-center gap-1.5";
+                    btnStart.innerHTML = `<i class="fa-solid fa-play text-xs"></i> 🚀 Start Test`;
+                }
+                if (firstAvailableWeek && !selectEl.value) {
+                    selectEl.value = firstAvailableWeek;
+                }
+            }
+        }
+
+        // 🟢 3. STUDENT START TEST ACTION HANDLER
+        window.startSelectedStudentTest = function () {
+            const selectEl = document.getElementById('student-week-select');
+            if (!selectEl || !selectEl.value) {
+                Swal.fire({ icon: 'warning', title: 'No Test Selected', text: 'Please select an available test week!' });
+                return;
+            }
+
+            const chosenWeek = selectEl.value;
+            const studentEmail = currentActiveUser ? encodeURIComponent(currentActiveUser.email) : "";
+
+            // Redirect to index.html with chosen week
+            window.location.href = `index.html?week=${chosenWeek}&email=${studentEmail}`;
+        };
+
         // 🟢 LOGIN HANDLER WITH STRICT FIREBASE BAN CHECK
         window.handleLogin = async function () {
             const emailInput = document.getElementById('login-email');
@@ -1592,6 +1789,8 @@
             const tbody = document.getElementById('test-results-body');
             if (tbody) tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-gray-400">Loading live scores...</td></tr>`;
 
+
+
             let testResults = [];
             try {
                 const userEmailClean = currentActiveUser.email.trim().toLowerCase();
@@ -1600,7 +1799,6 @@
 
                 querySnapshot.forEach((docSnap) => {
                     const data = docSnap.data();
-                    // Clean Email Matching (Purana aur Naya Dono Data Fetch Hoga)
                     if (data.email && data.email.trim().toLowerCase() === userEmailClean) {
                         const date = data.submittedAt ? new Date(data.submittedAt.toDate()).toLocaleString() : "N/A";
                         let numericScore = parseFloat(data.score) || 0;
@@ -1621,7 +1819,7 @@
                 console.error("Firebase fetch error:", err);
             }
 
-            // Attempt Process Tracker
+            // 1. Process Results First
             const weekAttemptTracker = {};
             const processedResults = testResults.map(t => {
                 const weekKey = t.week || "Week 1";
@@ -1637,7 +1835,17 @@
                 };
             });
 
-            // Table UI Render
+            // 🟢 2. YAHAN LAGAYEIN: Render Available Tests (processedResults banne ke baad)
+            try {
+                const takenWeeks = processedResults.map(r => r.weekKey || r.week);
+                if (typeof renderStudentAvailableTests === 'function') {
+                    await renderStudentAvailableTests(currentActiveUser.email, takenWeeks);
+                }
+            } catch (testErr) {
+                console.warn("Test selector render warning:", testErr);
+            }
+
+            // 3. Table UI Render
             if (tbody) {
                 if (processedResults.length === 0) {
                     tbody.innerHTML = `<tr><td colspan="5" class="p-3 text-center text-yellow-300">No test taken yet for this account.</td></tr>`;
@@ -1653,6 +1861,7 @@
             `).join('');
                 }
             }
+
 
             // Chart Pillars Engine Render
             setTimeout(() => {
@@ -2153,8 +2362,11 @@
 
 
 
+
+
+
+
     </script>
-     <script type="module" src="security.js"></script>
 </body>
 
 </html>
