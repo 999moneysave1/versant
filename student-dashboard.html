@@ -579,7 +579,6 @@
         <!-- Header Branding & Logout -->
         <header
             class="flex flex-col xs:flex-row justify-between items-center bg-gray-800 p-3 xs:p-4 rounded-xl border border-gray-700 gap-3">
-            <!-- 🟢 CENTERED / HEADER BRANDING LINK -->
             <div class="text-center xs:text-left">
                 <h1 class="text-base xs:text-xl sm:text-2xl font-bold text-blue-400">🎓 Pro Batch 1 Analytics</h1>
                 <p class="text-3xs xs:text-xs text-gray-400">
@@ -606,6 +605,23 @@
                 <select id="admin-student-select" onchange="switchStudentView()"
                     class="w-full xs:w-64 bg-gray-700 border border-amber-400 rounded p-1.5 text-xs text-amber-300 font-semibold cursor-pointer">
                 </select>
+            </div>
+
+            <!-- 🟢 ADMIN & ATTENDANCE SECURE ACCESS BUTTONS -->
+            <div class="flex items-center gap-2 flex-wrap">
+                <!-- Attendance Portal -->
+                <button onclick="requestAdminAccess('attendance.html')"
+                    class="bg-blue-600 hover:bg-blue-700 text-white border border-blue-400/40 text-3xs xs:text-xs font-bold px-3 py-1.5 rounded-lg shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-calendar-check text-amber-300"></i>
+                    <span>Attendance Portal</span>
+                </button>
+
+                <!-- Admin Results -->
+                <button onclick="requestAdminAccess('admin.html')"
+                    class="bg-purple-600 hover:bg-purple-700 text-white border border-purple-400/40 text-3xs xs:text-xs font-bold px-3 py-1.5 rounded-lg shadow transition-all flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-chart-line text-amber-300"></i>
+                    <span>Admin Records</span>
+                </button>
             </div>
 
             <button onclick="handleLogout()"
@@ -1047,11 +1063,7 @@
 
     <!-- Firebase SDK Setup & Main JavaScript Engine -->
     <script type="module">
-        // 🛑 Admin Session Guard: Bina login ke aane par wapas Main Page fenk dega
-        if (!sessionStorage.getItem("ADMIN_AUTH_TOKEN")) {
-            alert("Unauthorized Access! Please login from the main portal.");
-            window.location.href = "index.html";
-        }
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -1069,11 +1081,133 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+
+        // 🟢 YAHAN PASTE KAREIN (Direct paste below getFirestore) 👇
+
+        // 🔐 SHA-256 Helper
+        async function sha256(message) {
+            const msgBuffer = new TextEncoder().encode(message);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // 🛡️ Secure Gatekeeper: Admin & Attendance Login Check
+        window.requestAdminAccess = async function (targetUrl) {
+            const { value: pass } = await Swal.fire({
+                title: '🔒 Admin Authentication',
+                text: 'Enter Master Admin Password to access this section:',
+                input: 'password',
+                inputPlaceholder: '••••••••',
+                showCancelButton: true,
+                confirmButtonText: 'Verify & Enter',
+                confirmButtonColor: '#2563eb',
+                footer: '<button onclick="openAdminPasswordResetFlow()" style="color:#60a5fa; background:none; border:none; cursor:pointer; font-size:12px; text-decoration:underline;">Forgot Master Password?</button>',
+                customClass: { popup: 'swal-mobile-size' }
+            });
+
+            if (!pass) return;
+
+            const inputHash = await sha256(pass.trim());
+
+            // 🟢 SHA-256 Hash of 'eewsa999' (Matches Firebase default)
+            let targetHash = "21481b953dcf2d78f237bf66ecff7ea4819e917d23fc245f7be815049449fdf7";
+
+            try {
+                const snap = await getDoc(doc(db, "system_metadata", "admin_auth"));
+                if (snap.exists() && snap.data().passHash) {
+                    targetHash = snap.data().passHash;
+                }
+            } catch (e) {
+                console.warn("Auth check warning:", e);
+            }
+
+            // Direct String Check ya Hash Match dono se verify hoga
+            if (inputHash === targetHash || pass.trim() === "eewsa999") {
+                sessionStorage.setItem("ADMIN_AUTH_TOKEN", "VERIFIED_" + Date.now());
+                window.location.href = targetUrl;
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Access Denied',
+                    text: 'Incorrect Master Password! Access restricted to Admin only.',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
+            }
+        };
+
+        // 🔄 Registered Email pe Reset OTP bhejne ka system
+        const REGISTERED_ADMIN_EMAIL = "eewsa999@gmail.com";
+
+        window.openAdminPasswordResetFlow = async function () {
+            const { value: emailInput } = await Swal.fire({
+                title: '🔐 Reset Admin Password',
+                input: 'email',
+                inputLabel: 'Enter Registered Admin Email:',
+                inputPlaceholder: 'Your Reg. Email',
+                showCancelButton: true,
+                confirmButtonText: 'Send PIN',
+                customClass: { popup: 'swal-mobile-size' }
+            });
+
+            if (!emailInput) return;
+
+            if (emailInput.trim().toLowerCase() !== REGISTERED_ADMIN_EMAIL.toLowerCase()) {
+                Swal.fire({ icon: 'error', title: 'Unauthorized', text: 'This email is not registered for recovery!' });
+                return;
+            }
+
+            const resetPin = Math.floor(100000 + Math.random() * 900000).toString();
+            Swal.fire({ title: 'Sending PIN...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            try {
+                await emailjs.send("service_jbqilad", "template_qzb1uuf", {
+                    to_name: "Admin",
+                    to_email: REGISTERED_ADMIN_EMAIL,
+                    otp_code: resetPin
+                });
+
+                Swal.close();
+                const { value: enteredPin } = await Swal.fire({
+                    title: 'Enter 6-Digit PIN',
+                    text: `PIN sent to ${REGISTERED_ADMIN_EMAIL}`,
+                    input: 'text',
+                    showCancelButton: true
+                });
+
+                if (enteredPin && enteredPin.trim() === resetPin) {
+                    const { value: newPassword } = await Swal.fire({
+                        title: 'New Master Password',
+                        input: 'password',
+                        inputPlaceholder: 'Min 6 characters',
+                        showCancelButton: true,
+                        inputValidator: (v) => (!v || v.length < 6) ? 'Min 6 characters required' : null
+                    });
+
+                    if (newPassword) {
+                        const newHash = await sha256(newPassword.trim());
+                        await setDoc(doc(db, "system_metadata", "admin_auth"), {
+                            passHash: newHash,
+                            email: REGISTERED_ADMIN_EMAIL,
+                            updatedAt: serverTimestamp()
+                        }, { merge: true });
+
+                        Swal.fire({ icon: 'success', title: 'Password Updated!', text: 'Your new Master Password is active.' });
+                    }
+                } else {
+                    Swal.fire({ icon: 'error', title: 'Invalid PIN' });
+                }
+            } catch (err) {
+                Swal.fire({ icon: 'error', title: 'Failed', text: err.message });
+            }
+        };
+
         // ADMIN EMAIL CONSTANTS (BCC Copy Email Target)
-        const ADMIN_BCC_EMAIL = "salma7980389249@gmail.com";
+        const ADMIN_BCC_EMAIL = "eewsa999@gmail.com";
+
+
 
         // Initialize EmailJS Engine
-        emailjs.init("YOUR_EMAILJS_PUBLIC_KEY");
+        emailjs.init("aujPO4y_cTu20LjZa");
 
         // PRO BATCH 1 STUDENTS LIST
         const proBatch1Students = [
@@ -1506,6 +1640,40 @@
         };
 
         // 🟢 LOGIN HANDLER WITH STRICT FIREBASE BAN CHECK
+        // 🔐 SHA-256 Encryptor Helper
+        async function getHash(str) {
+            const buffer = new TextEncoder().encode(str);
+            const hash = await crypto.subtle.digest('SHA-256', buffer);
+            return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        // 🟢 LOAD ADMIN LOCKOUT NOTIFICATIONS
+        async function loadAdminBanNotifications() {
+            if (!isAdminLoggedIn) return;
+            try {
+                const notifBanner = document.getElementById('admin-notification-banner');
+                const notifBadge = document.getElementById('notif-count-badge');
+                const notifList = document.getElementById('notif-details-list');
+
+                const qSnap = await getDocs(collection(db, "banned_notifications"));
+                if (!qSnap.empty) {
+                    notifBanner.classList.remove('hidden');
+                    notifBadge.innerText = qSnap.size;
+
+                    let htmlList = "";
+                    qSnap.forEach(d => {
+                        const data = d.data();
+                        htmlList += `<div class="bg-red-900/60 p-2 rounded border border-red-700/50">
+                    <b>${data.name}</b> (${data.email}) - <span class="text-amber-300">${data.reason}</span>
+                </div>`;
+                    });
+                    notifList.innerHTML = htmlList;
+                }
+            } catch (e) {
+                console.warn("Error loading ban notifications", e);
+            }
+        }
+
         window.handleLogin = async function () {
             const emailInput = document.getElementById('login-email');
             const passInput = document.getElementById('login-pass');
@@ -1513,42 +1681,18 @@
             const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
             const pass = passInput ? passInput.value.trim() : "";
 
-            if (pass === "admin123") {
+            // 🔒 Encrypted Check: 'eewsa999' का SHA-256 Hash
+            const enteredHash = await getHash(pass);
+            const ADMIN_HASH = "21481b953dcf2d78f237bf66ecff7ea4819e917d23fc245f7be815049449fdf7";
+
+            if (enteredHash === ADMIN_HASH) {
                 isAdminLoggedIn = true;
                 currentActiveUser = proBatch1Students[0];
                 window.setupAdminView();
                 showDashboard();
+                loadAdminBanNotifications();
                 return;
             }
-
-
-            // 🟢 LOAD ADMIN LOCKOUT NOTIFICATIONS
-            async function loadAdminBanNotifications() {
-                if (!isAdminLoggedIn) return;
-                try {
-                    const notifBanner = document.getElementById('admin-notification-banner');
-                    const notifBadge = document.getElementById('notif-count-badge');
-                    const notifList = document.getElementById('notif-details-list');
-
-                    const qSnap = await getDocs(collection(db, "banned_notifications"));
-                    if (!qSnap.empty) {
-                        notifBanner.classList.remove('hidden');
-                        notifBadge.innerText = qSnap.size;
-
-                        let htmlList = "";
-                        qSnap.forEach(d => {
-                            const data = d.data();
-                            htmlList += `<div class="bg-red-900/60 p-2 rounded border border-red-700/50">
-                    <b>${data.name}</b> (${data.email}) - <span class="text-amber-300">${data.reason}</span>
-                </div>`;
-                        });
-                        notifList.innerHTML = htmlList;
-                    }
-                } catch (e) {
-                    console.warn("Error loading ban notifications", e);
-                }
-            }
-
 
             const matched = proBatch1Students.find(s => s.email.toLowerCase() === email && s.pass === pass);
             if (matched) {
@@ -1559,10 +1703,10 @@
                         icon: 'error',
                         title: 'Account Suspended',
                         html: `<div class="text-left text-xs space-y-1">
-                            <p class="text-red-400 font-bold">Your account is currently BANNED.</p>
-                            <p><b>Reason:</b> ${banData.reason}</p>
-                            <p class="text-gray-400 text-3xs">Contact Admin to unban.</p>
-                        </div>`,
+                    <p class="text-red-400 font-bold">Your account is currently BANNED.</p>
+                    <p><b>Reason:</b> ${banData.reason}</p>
+                    <p class="text-gray-400 text-3xs">Contact Admin to unban.</p>
+                </div>`,
                         customClass: { popup: 'swal-mobile-size' }
                     });
                     return;
@@ -1571,7 +1715,12 @@
                 currentActiveUser = matched;
                 showDashboard();
             } else {
-                Swal.fire({ icon: 'error', title: 'Login Failed', text: 'Invalid Email ID or Password!', customClass: { popup: 'swal-mobile-size' } });
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Failed',
+                    text: 'Invalid Email ID or Password!',
+                    customClass: { popup: 'swal-mobile-size' }
+                });
             }
         };
 
@@ -2329,7 +2478,7 @@
 
             html2pdf().set(opt).from(pdfContainer).outputPdf('datauristring').then((pdfDataUri) => {
                 // 🟢 DISPATCH EMAIL TO STUDENT AND ADMIN BCC COPY
-                emailjs.send("YOUR_SERVICE_ID", "YOUR_TEMPLATE_ID", {
+                emailjs.send("service_jbqilad", "template_qzb1uuf", {
                     to_email: currentActiveUser.email,
                     bcc_email: ADMIN_BCC_EMAIL, // Admin Copy Sent Always
                     student_name: currentActiveUser.name,
@@ -2373,6 +2522,8 @@
 
 
     </script>
+
+    <!-- <script src="security.js"></script> -->
 </body>
 
 </html>
