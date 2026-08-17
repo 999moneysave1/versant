@@ -1234,7 +1234,7 @@ async function finishTest() {
                 <p style="margin-bottom: 4px;"><b>Regards,</b></p>
                 <p style="margin: 0; color: #1e40af; font-weight: bold;">Easy English with Sarfraz</p>
                 <p style="margin: 4px 0 0 0;">
-                    📞 <b>Contact / WhatsApp:</b> 
+                    📞 <b>Contact / WhatsApp:</b>
                     <a href="tel:+917324930960" style="color: #2563eb; font-weight: bold; text-decoration: underline;">
                         +91 7324930960
                     </a>
