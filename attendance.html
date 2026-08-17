@@ -24,6 +24,7 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
+
     <style>
         html,
         body {
@@ -44,14 +45,11 @@
             font-size: 0.72rem;
             line-height: 0.95rem;
         }
-
-        .swal-mobile-size {
-            width: 92% !important;
-            max-width: 380px !important;
-            padding: 1rem !important;
+         .swal-mobile-size {
             background: #0f172a !important;
             color: #fff !important;
         }
+
     </style>
 </head>
 
@@ -258,11 +256,29 @@
 
     <!-- Firebase Script Engine -->
     <script type="module">
-        // 🛑 Admin Session Guard: Bina login ke aane par wapas Main Page fenk dega
-        if (!sessionStorage.getItem("ADMIN_AUTH_TOKEN")) {
-            alert("Unauthorized Access! Please login from the main portal.");
-            window.location.href = "index.html";
+        const token = sessionStorage.getItem("ADMIN_AUTH_TOKEN");
+        if (!token || !token.startsWith("VERIFIED_")) {
+            // Main content ko hide karein, body ko nahi
+            const mainContainer = document.querySelector("main");
+            if (mainContainer) mainContainer.style.display = "none";
+
+            Swal.fire({
+                icon: 'error',
+                title: 'Access Denied!',
+                text: 'Please verify admin password from Dashboard.',
+                confirmButtonText: 'Go to Dashboard',
+                confirmButtonColor: '#2563eb',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                customClass: { popup: 'swal-mobile-size' }
+            }).then(() => {
+                window.location.href = "dashboard.html";
+            });
+
+            // Aage ka koi bhi Firebase ya initialization code na chale
+            throw new Error("Admin Access Denied: Redirecting to dashboard...");
         }
+
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -728,6 +744,8 @@
             window.loadWeekAttendance();
         });
     </script>
+    <script src="security.js"></script>
+
 </body>
 
 </html>
