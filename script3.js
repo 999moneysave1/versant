@@ -1202,11 +1202,10 @@ async function finishTest() {
     } catch (downloadErr) {
         console.error("PDF Download Error:", downloadErr);
     }
-
     try {
         await addDoc(collection(db, "test_results"), {
-            name: candName,
-            email: candEmail,
+            name: (candName || "").trim().toUpperCase(),
+            email: (candEmail || "").trim().toLowerCase(),
             score: finalScaled100Score,
             status: passStatus,
             weekTag: selectedWeekTag,
@@ -1221,7 +1220,30 @@ async function finishTest() {
             method: 'POST',
             mode: 'no-cors',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name: candName, email: candEmail, score: `${finalScaled100Score} / 100`, status: passStatus, reportHtml: fullReportHtml, pdfFileName: formattedPdfFileName })
+            body: JSON.stringify({
+                name: candName,
+                email: candEmail,
+                score: `${finalScaled100Score} / 100`,
+                status: passStatus,
+                emailSubject: `${candName} (${passStatus}) - Versant Test Result`,
+                emailBody: `
+            <div style="font-family: Arial, sans-serif; font-size: 14px; color: #333; line-height: 1.6;">
+                <p>Hello <b>${candName}</b>,</p>
+                <p>Please find attached your official Versant English Test Assessment Report and Diagnostic Summary.</p>
+                <br>
+                <p style="margin-bottom: 4px;"><b>Regards,</b></p>
+                <p style="margin: 0; color: #1e40af; font-weight: bold;">Easy English with Sarfraz</p>
+                <p style="margin: 4px 0 0 0;">
+                    📞 <b>Contact / WhatsApp:</b> 
+                    <a href="tel:+917324930960" style="color: #2563eb; font-weight: bold; text-decoration: underline;">
+                        +91 7324930960
+                    </a>
+                </p>
+            </div>
+        `,
+                reportHtml: fullReportHtml,
+                pdfFileName: formattedPdfFileName
+            })
         });
     } catch (e) {
         console.error("Google Script Error:", e);
