@@ -1047,6 +1047,11 @@
 
     <!-- Firebase SDK Setup & Main JavaScript Engine -->
     <script type="module">
+        // 🛑 Admin Session Guard: Bina login ke aane par wapas Main Page fenk dega
+        if (!sessionStorage.getItem("ADMIN_AUTH_TOKEN")) {
+            alert("Unauthorized Access! Please login from the main portal.");
+            window.location.href = "index.html";
+        }
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
@@ -1079,7 +1084,8 @@
             { id: "saba", name: "Saba Parveen", father: "Abdul Nesar Adil", dob: "09/01/2002", doj: "07 July 2026", mobile: "6290559945", email: "sababauria2002@gmail.com", pass: "saba123" },
             { id: "afzal", name: "MD AFZAL ANSARI", father: "SHAHAZADA ANSARI", dob: "22/04/2010", doj: "10/05/2026", mobile: "8910956369", email: "mdarhan89109@gmail.com", pass: "afzal123" },
             { id: "nasim", name: "MD NASIM", father: "MD SHAFIQ", dob: "15/08/2008", doj: "12/05/2026", mobile: "7003249051", email: "mohnasim760@gmail.com", pass: "nasim123" },
-            { id: "ayan", name: "Md Ayan", father: "Md Samim", dob: "13/08/2010", doj: "10/05/2026", mobile: "6290013121", email: "ayan.5.ayyuuu@gmail.com", pass: "ayan123" }
+            { id: "ayan", name: "Md Ayan", father: "Md Samim", dob: "13/08/2010", doj: "10/05/2026", mobile: "6290013121", email: "ayan.5.ayyuuu@gmail.com", pass: "ayan123" },
+            { id: "saif", name: "Md Saif", father: "Md Samim", dob: "13/08/1995", doj: "10/05/2026", mobile: "7324930960", email: "999moneysave1@gmail.com", pass: "saif123" }
         ];
         let currentActiveUser = null;
         let isAdminLoggedIn = false;
