@@ -45,11 +45,11 @@
             font-size: 0.72rem;
             line-height: 0.95rem;
         }
-         .swal-mobile-size {
+
+        .swal-mobile-size {
             background: #0f172a !important;
             color: #fff !important;
         }
-
     </style>
 </head>
 
@@ -354,19 +354,20 @@
                 Swal.fire({ icon: 'error', title: 'Error', text: err.message });
             }
         };
-
+        // 1. 9 छात्रों की मास्टर लिस्ट को सुरक्षित लोड करना
         async function fetchStudentsList() {
             try {
                 const docRef = doc(db, "system_metadata", "students_list");
                 const docSnap = await getDoc(docRef);
-                if (docSnap.exists() && docSnap.data().students) {
+                if (docSnap.exists() && docSnap.data().students && docSnap.data().students.length >= 9) {
                     proBatch1Students = docSnap.data().students;
                 }
             } catch (err) {
-                console.warn("Could not fetch remote students list:", err);
+                console.warn("Students list fetch notice:", err);
             }
         }
 
+        // 2. Firebase से Week 1, Week 2 का असली डेटा फेच करना
         window.loadWeekAttendance = async function () {
             await fetchStudentsList();
 
@@ -376,14 +377,16 @@
             const startDateInp = document.getElementById('attendance-start-date');
             const endDateInp = document.getElementById('attendance-end-date');
 
-            tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading Week ${selectedWeek} records...</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-gray-400"><i class="fa-solid fa-spinner fa-spin mr-2"></i> Loading Week ${selectedWeek} records from Firebase...</td></tr>`;
 
+            // डिफॉल्ट टेम्पलेट बनाना
             currentWeekAttendance = {};
             proBatch1Students.forEach(s => {
                 currentWeekAttendance[s.id] = { mon: 'P', tue: 'P', wed: 'P', thu: 'P', fri: 'P' };
             });
 
             try {
+                // 🟢 Firebase के weekly_attendance कलेक्शन से पुराना डेटा फेच करना
                 const docRef = doc(db, "weekly_attendance", `week_${selectedWeek}`);
                 const docSnap = await getDoc(docRef);
 
@@ -393,10 +396,9 @@
                     if (endDateInp) endDateInp.value = data.endDate || "";
 
                     if (data.records) {
+                        // पुराने सेव किए गए रिकॉर्ड्स को लोड करना
                         Object.keys(data.records).forEach(sid => {
-                            if (currentWeekAttendance[sid]) {
-                                currentWeekAttendance[sid] = { ...currentWeekAttendance[sid], ...data.records[sid] };
-                            }
+                            currentWeekAttendance[sid] = { ...currentWeekAttendance[sid], ...data.records[sid] };
                         });
                     }
                 } else {
@@ -410,7 +412,6 @@
             renderRosterTable();
             updateAttendanceStats();
         };
-
         window.loadDayView = function () {
             renderRosterTable();
             updateAttendanceStats();
