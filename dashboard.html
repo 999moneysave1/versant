@@ -1067,6 +1067,28 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getFirestore, collection, getDocs, query, where, doc, getDoc, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+        // 🟢 Firebase से लेटेस्ट छात्रों की लिस्ट (शोएब सहित) लोड करने का फ़ंक्शन
+        async function syncStudentsListFromFirebase() {
+            try {
+                const docRef = doc(db, "system_metadata", "students_list");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().students && docSnap.data().students.length > 0) {
+                    proBatch1Students = docSnap.data().students;
+
+                    // अगर एडमिन ड्रॉपडाउन मौजूद है, तो उसे नए छात्रों के साथ री-रेंडर करें
+                    const selectEl = document.getElementById('admin-student-select');
+                    if (selectEl) {
+                        selectEl.innerHTML = proBatch1Students.map(s =>
+                            `<option value="${s.id}">👤 ${s.name} (${s.email})</option>`
+                        ).join('');
+                        if (currentActiveUser) selectEl.value = currentActiveUser.id;
+                    }
+                }
+            } catch (err) {
+                console.warn("Could not sync remote students list:", err);
+            }
+        }
+
         // Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyAZtEP3pUWHLUMQhV-c6SnaQT4TFiOYb74",
@@ -1210,7 +1232,7 @@
         emailjs.init("aujPO4y_cTu20LjZa");
 
         // PRO BATCH 1 STUDENTS LIST
-        const proBatch1Students = [
+        let proBatch1Students = [
             { id: "farhan", name: "Farhan Alam Ansari", father: "Firoj Alam", dob: "24/07/2013", doj: "21 July 2026", mobile: "9432843353", email: "salma7980389249@gmail.com", pass: "farhan123" },
             { id: "shahid", name: "Shahid Shah Noor", father: "Jamil Ahmad", dob: "27/05/2013", doj: "27-05-2026", mobile: "9431297344", email: "j.ahmad2020@gmail.com", pass: "shahid123" },
             { id: "kausen", name: "Md Kausen", father: "MD IMTIYAJ", dob: "21/03/2009", doj: "18/05/2026", mobile: "8100351209", email: "mdkausen8100@gmail.com", pass: "kausen123" },
@@ -1338,6 +1360,7 @@
 
         // 🟢 DYNAMIC ADMIN VIEW SETUP
         window.setupAdminView = async function () {
+            await syncStudentsListFromFirebase();
             const ctrlEl = document.getElementById('admin-controls');
             const payEl = document.getElementById('admin-payment-box');
             const credEl = document.getElementById('admin-cred-box');
@@ -1675,38 +1698,46 @@
         }
 
         window.handleLogin = async function () {
+            await syncStudentsListFromFirebase(); // 👈 ताज़ा लिस्ट चेक करेगा
             const emailInput = document.getElementById('login-email');
             const passInput = document.getElementById('login-pass');
 
-            const email = emailInput ? emailInput.value.trim().toLowerCase() : "";
+            const loginId = emailInput ? emailInput.value.trim().toLowerCase() : "";
             const pass = passInput ? passInput.value.trim() : "";
 
-            // 🔒 Encrypted Check: 'eewsa999' का SHA-256 Hash
-            const enteredHash = await getHash(pass);
-            const ADMIN_HASH = "21481b953dcf2d78f237bf66ecff7ea4819e917d23fc245f7be815049449fdf7";
-
-            if (enteredHash === ADMIN_HASH) {
+            // 👑 1. Master Admin Direct Login (Username: admin/sarfraz aur Password: eewsa999/admin123)
+            if (
+                pass === "eewsa999" ||
+                pass === "admin123" ||
+                loginId === "admin" ||
+                loginId === "sarfraz" ||
+                loginId === "eewsa999@gmail.com"
+            ) {
                 isAdminLoggedIn = true;
                 currentActiveUser = proBatch1Students[0];
+                sessionStorage.setItem("ADMIN_AUTH_TOKEN", "VERIFIED_" + Date.now());
                 window.setupAdminView();
                 showDashboard();
                 loadAdminBanNotifications();
                 return;
             }
 
-            const matched = proBatch1Students.find(s => s.email.toLowerCase() === email && s.pass === pass);
+            // 🎓 2. Student Login (Email ID ya Short ID + Password)
+            const matched = proBatch1Students.find(s =>
+                (s.email.toLowerCase() === loginId || s.id.toLowerCase() === loginId) && s.pass === pass
+            );
+
             if (matched) {
-                // Fetch Ban Details from Firebase
                 const banData = await fetchStudentBanData(matched.id, matched.email);
-                if (banData.isBanned) {
+                if (banData && banData.isBanned) {
                     Swal.fire({
                         icon: 'error',
                         title: 'Account Suspended',
                         html: `<div class="text-left text-xs space-y-1">
-                    <p class="text-red-400 font-bold">Your account is currently BANNED.</p>
-                    <p><b>Reason:</b> ${banData.reason}</p>
-                    <p class="text-gray-400 text-3xs">Contact Admin to unban.</p>
-                </div>`,
+                            <p class="text-red-400 font-bold">Your account is currently BANNED.</p>
+                            <p><b>Reason:</b> ${banData.reason}</p>
+                            <p class="text-gray-400 text-3xs">Contact Admin to unban.</p>
+                        </div>`,
                         customClass: { popup: 'swal-mobile-size' }
                     });
                     return;
@@ -1718,11 +1749,12 @@
                 Swal.fire({
                     icon: 'error',
                     title: 'Login Failed',
-                    text: 'Invalid Email ID or Password!',
+                    text: 'Invalid User ID/Email or Password!',
                     customClass: { popup: 'swal-mobile-size' }
                 });
             }
         };
+
 
         window.switchStudentView = function () {
             const selectedId = document.getElementById('admin-student-select').value;
@@ -1735,12 +1767,12 @@
             document.getElementById('login-modal').classList.remove('hidden');
         };
 
-        function showDashboard() {
+        async function showDashboard() {
+            await syncLatestStudentsList(); // 👈 अटेंडेंस का नया नाम लोड करेगा
             document.getElementById('login-modal').classList.add('hidden');
             document.getElementById('dashboard-content').classList.remove('hidden');
             loadUserData();
         }
-
 
         // 🟢 Password Toggle Variables
         let isPasswordVisible = false;
@@ -1837,6 +1869,26 @@
                 }
             }
         };
+        // dashboard.html में इसे जोड़ें ताकि अटेंडेंस से बदला नाम यहाँ तुरंत आ जाए
+        async function syncLatestStudentsList() {
+            try {
+                const docRef = doc(db, "system_metadata", "students_list");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists() && docSnap.data().students) {
+                    proBatch1Students = docSnap.data().students;
+                    // अगर एडमिन ड्रॉपडाउन खुला है तो उसे भी री-रेंडर करें
+                    const selectEl = document.getElementById('admin-student-select');
+                    if (selectEl) {
+                        selectEl.innerHTML = proBatch1Students.map(s =>
+                            `<option value="${s.id}">👤 ${s.name} (${s.email})</option>`
+                        ).join('');
+                        if (currentActiveUser) selectEl.value = currentActiveUser.id;
+                    }
+                }
+            } catch (err) {
+                console.warn("Could not sync remote students list:", err);
+            }
+        }
 
         async function loadUserData() {
             if (!currentActiveUser) return;
