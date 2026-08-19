@@ -2,63 +2,59 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- 🟢 1. BASIC SEO & TITLE TAGS -->
-    <title>Versant English Test | Easy English with Sarfraz</title>
-    <meta name="title" content="Versant English Test | Easy English with Sarfraz">
-    <meta name="description"
-        content="Take your online Versant English test now. Practice, test your skills, and get real-time analytics with Sarfraz Sir.">
+  <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <!-- 🟢 2. FAVICON TAGS -->
+    <!-- 🟢 1. BASIC SEO & TITLE TAGS -->
+    <title>📊 Pro Batch 1 | Student Analytics & Report Portal - Easy English with Sarfraz</title>
+    <meta name="title" content="📊 Pro Batch 1 | Student Analytics & Report Portal - Easy English with Sarfraz">
+    <meta name="description" content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
+    <meta name="author" content="Easy English with Sarfraz">
+
+    <!-- 🟢 2. FAVICONS -->
     <link rel="icon" type="image/png" sizes="32x32" href="https://999moneysave.co.in/assets/images/favicon-32x32.png">
     <link rel="icon" type="image/png" sizes="16x16" href="https://999moneysave.co.in/assets/images/favicon-16x16.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://999moneysave.co.in/assets/images/apple-touch-icon.png">
 
-    <!-- 🟢 STUDENT DASHBOARD PORTAL META TAGS -->
+    <!-- 🟢 3. OPEN GRAPH (FACEBOOK / LINKEDIN / WHATSAPP) -->
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://999moneysave.co.in/dashboard.html">
+    <meta property="og:url" content="https://999moneysave.co.in/versant/dashboard.html">
     <meta property="og:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
-    <meta property="og:description"
-        content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
-    <meta property="og:image" content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
-    <meta property="og:image:secure_url"
-        content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
+    <meta property="og:description" content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
+    <meta property="og:image" content="https://999moneysave1.github.io/versant/assets/images/og-banner-large.png">
+    <meta property="og:image:secure_url" content="https://999moneysave1.github.io/versant/assets/images/og-banner-large.png">
     <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Easy English with Sarfraz Dashboard Portal Banner">
+    <meta property="og:image:alt" content="Easy English with Sarfraz Dashboard Preview">
     <meta property="og:site_name" content="Easy English with Sarfraz">
-    <meta property="og:locale" content="en_US">
 
-    <!-- 🟢 AUTHOR CREDIT -->
-    <meta name="author" content="Easy English with Sarfraz">
-
-    <!-- 🟢 TWITTER / X CARD METADATA -->
+    <!-- 🟢 4. TWITTER CARD -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="https://999moneysave.co.in/dashboard.html">
+    <meta name="twitter:url" content="https://999moneysave.co.in/versant/dashboard.html">
     <meta name="twitter:title" content="📊 Pro Batch 1 | Student Analytics & Report Portal">
-    <meta name="twitter:description"
-        content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
-    <meta name="twitter:image" content="https://999moneysave.co.in/assets/images/og-banner-eews-responsive.png">
+    <meta name="twitter:description" content="🎓 Login to view your Weekly Test Results, Performance Analytics, Class Attendance, and Fee Reports.">
+    <meta name="twitter:image" content="https://999moneysave1.github.io/versant/assets/images/og-banner-large.png">
 
-    <!-- CDN Libraries -->
+    <!-- 🟢 5. SCRIPTS & ASSETS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Deferred Non-Critical Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js" defer></script>
 
-    <!-- Schema.org Structured Data for Student Analytics Dashboard -->
+    <!-- 🟢 6. STRUCTURED DATA -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebApplication",
       "name": "Pro Batch 1 Student Analytics Dashboard",
       "description": "Student Performance Portal to view live test scores, diagnostic reports, and payment status.",
-      "url": "https://999moneysave.co.in/dashboard.html",
-      "applicationCategory": "BusinessApplication",
+      "url": "https://999moneysave.co.in/versant/dashboard.html",
+      "applicationCategory": "EducationalApplication",
       "browserRequirements": "Requires JavaScript. Requires HTML5.",
       "provider": {
         "@type": "EducationalOrganization",
@@ -67,7 +63,6 @@
       }
     }
     </script>
-
     <style>
         html,
         body {
