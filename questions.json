@@ -1,96 +1,220 @@
 [
   {
-  "setId": 1,
-  "obj": [
-    { "q": "1. You can _____ go to the cinema _____ stay at home.", "opts": ["either / or", "neither / nor", "whether / or"], "ans": "either / or" },
-    { "q": "2. _____ of the two answers is correct.", "opts": ["Either", "Neither", "Rather"], "ans": "Neither" },
-    { "q": "3. I prefer walking _____ taking the bus.", "opts": ["instead of", "rather than", "such as"], "ans": "rather than" },
-    { "q": "4. He likes outdoor activities _____ hiking and cycling.", "opts": ["such as", "in fact", "above all"], "ans": "such as" },
-    { "q": "5. She is very talented. _____, she is extremely hardworking.", "opts": ["Indeed", "Unlike", "Instead of"], "ans": "Indeed" },
-    { "q": "6. I enjoy reading books. _____, my brother loves watching movies.", "opts": ["Unlike", "Similarly", "Likewise"], "ans": "Unlike" },
-    { "q": "7. Many fruits are good for health. _____, apples and oranges are rich in vitamins.", "opts": ["For example", "Rather than", "Whether"], "ans": "For example" },
-    { "q": "8. He worked hard. _____, he achieved his goal.", "opts": ["As a result", "In other words", "Instead of"], "ans": "As a result" },
-    { "q": "9. We must be honest. _____, we should always keep our promises.", "opts": ["Above all", "Such as", "Unlike"], "ans": "Above all" },
-    { "q": "10. I don't like spicy food. _____, I avoid very hot dishes.", "opts": ["In other words", "Either or", "Namely"], "ans": "In other words" }
-  ],
-  "email": {
-    "question": "Tell me about your favorite color. Write a short professional response explaining which color you like and why.",
-    "correctAnswer": "My favorite color is blue. I like it because it feels calm and professional. I especially prefer navy blue because it represents trust, confidence, and stability. It is also a color that I find easy to work with in both design and everyday life. Thank you for giving me the opportunity to share my preference.",
-    "keywords": ["favorite color", "blue", "calm", "professional", "navy blue", "trust", "confidence", "stability", "design", "everyday life"]
-  },
-  "typing": "My favorite color is blue. I like it because it feels calm and professional. I especially prefer navy blue because it represents trust, confidence, and stability. It is a color that I find easy to work with in both design and everyday life.",
-  "voiceD": [
-    "You can either go to the cinema or stay at home.",
-    "She likes outdoor activities such as hiking and cycling.",
-    "For example, apples and oranges are rich in vitamins.",
-    "In fact, he has lived in this city for five years.",
-    "Above all, we should always be honest."
-  ],
-  "passagesE": [
-    "You can either choose tea or coffee.",
-    "I prefer walking rather than taking the bus.",
-    "Many fruits are good for health, for example, apples and oranges.",
-    "In other words, the job is yours.",
-    "The team performed well. Likewise, the coach was pleased."
-  ],
-  "audioPromptsF": [
-    "You can either go to the cinema or the park.",
-    "I prefer walking rather than taking the bus.",
-    "For instance, apples and oranges are rich in vitamins.",
-    "In fact, he has lived here for five years.",
-    "Above all, be true to yourself."
-  ],
-  "storyG": [
-    {
-      "id": 1,
-      "question": "Tell me about your Happiest Moment (Getting your first job offer).",
-      "correctAnswer": "I woke up early and got ready for my interview. I reached the office on time. I greeted the interviewer with a smile. I answered all the interview questions confidently. I completed all the interview rounds successfully. I went back home and waited for the result. I received a phone call from the HR team. They offered me my first job. I thanked the HR for giving me this opportunity. I immediately shared the good news with my family. My parents congratulated me and felt proud. We celebrated the special day together. We ordered my favorite food. We clicked many happy pictures. My friends also congratulated me. I thanked God for this wonderful opportunity. I promised myself to work hard. I became more confident about my future. That day became a beautiful memory. It was the happiest moment of my life. Thank you for giving me this opportunity!",
+    "setId": 1,
+    "obj": [
+      {
+        "q": "1. You can _____ go to the cinema _____ stay at home.",
+        "opts": [
+          "either / or",
+          "neither / nor",
+          "whether / or"
+        ],
+        "ans": "either / or"
+      },
+      {
+        "q": "2. _____ of the two answers is correct.",
+        "opts": [
+          "Either",
+          "Neither",
+          "Rather"
+        ],
+        "ans": "Neither"
+      },
+      {
+        "q": "3. I prefer walking _____ taking the bus.",
+        "opts": [
+          "instead of",
+          "rather than",
+          "such as"
+        ],
+        "ans": "rather than"
+      },
+      {
+        "q": "4. He likes outdoor activities _____ hiking and cycling.",
+        "opts": [
+          "such as",
+          "in fact",
+          "above all"
+        ],
+        "ans": "such as"
+      },
+      {
+        "q": "5. She is very talented. _____, she is extremely hardworking.",
+        "opts": [
+          "Indeed",
+          "Unlike",
+          "Instead of"
+        ],
+        "ans": "Indeed"
+      },
+      {
+        "q": "6. I enjoy reading books. _____, my brother loves watching movies.",
+        "opts": [
+          "Unlike",
+          "Similarly",
+          "Likewise"
+        ],
+        "ans": "Unlike"
+      },
+      {
+        "q": "7. Many fruits are good for health. _____, apples and oranges are rich in vitamins.",
+        "opts": [
+          "For example",
+          "Rather than",
+          "Whether"
+        ],
+        "ans": "For example"
+      },
+      {
+        "q": "8. He worked hard. _____, he achieved his goal.",
+        "opts": [
+          "As a result",
+          "In other words",
+          "Instead of"
+        ],
+        "ans": "As a result"
+      },
+      {
+        "q": "9. We must be honest. _____, we should always keep our promises.",
+        "opts": [
+          "Above all",
+          "Such as",
+          "Unlike"
+        ],
+        "ans": "Above all"
+      },
+      {
+        "q": "10. I don't like spicy food. _____, I avoid very hot dishes.",
+        "opts": [
+          "In other words",
+          "Either or",
+          "Namely"
+        ],
+        "ans": "In other words"
+      }
+    ],
+    "email": {
+      "question": "Tell me about your favorite color. Write a short professional response explaining which color you like and why.",
+      "correctAnswer": "My favorite color is blue. I like it because it feels calm and professional. I especially prefer navy blue because it represents trust, confidence, and stability. It is also a color that I find easy to work with in both design and everyday life. Thank you for giving me the opportunity to share my preference.",
       "keywords": [
-        "woke up early",
-        "got ready for my interview",
-        "reached the office on time",
-        "greeted the interviewer",
-        "answered all the interview questions confidently",
-        "completed all the interview rounds successfully",
-        "waited for the result",
-        "phone call from the HR team",
-        "offered me my first job",
-        "thanked the HR",
-        "shared the good news with my family",
-        "parents congratulated me",
-        "celebrated the special day together",
-        "ordered my favorite food",
-        "clicked many happy pictures",
-        "thanked God",
-        "promised myself to work hard",
-        "became more confident",
-        "beautiful memory",
-        "happiest moment of my life"
+        "favorite color",
+        "blue",
+        "calm",
+        "professional",
+        "navy blue",
+        "trust",
+        "confidence",
+        "stability",
+        "design",
+        "everyday life"
       ]
-    }
-  ],
-  "trueFalse": [
-    { "q": "1. 'Either...or' is used to express a choice between two options.", "ans": "True" },
-    { "q": "2. 'Neither...nor' is used to show that both options are possible.", "ans": "False" },
-    { "q": "3. 'For example' is used to introduce an example.", "ans": "True" },
-    { "q": "4. 'Unlike' is used to show similarity between two subjects.", "ans": "False" },
-    { "q": "5. 'Above all' is used to emphasize the most important point.", "ans": "True" }
-  ],
-  "fillBlanks": [
-    { "q": "1. You can _____ go to the cinema _____ stay at home.", "ans": "either, or" },
-    { "q": "2. I prefer walking _____ than taking the bus.", "ans": "rather" },
-    { "q": "3. Many fruits are healthy. _____, apples are rich in vitamins.", "ans": "For example" },
-    { "q": "4. _____, we should always be honest.", "ans": "Above all" },
-    { "q": "5. _____, the two students solved the problem in the same way.", "ans": "Similarly" }
-  ]
-},
-
+    },
+    "typing": "My favorite color is blue. I like it because it feels calm and professional. I especially prefer navy blue because it represents trust, confidence, and stability. It is a color that I find easy to work with in both design and everyday life.",
+    "voiceD": [
+      "You can either go to the cinema or stay at home.",
+      "She likes outdoor activities such as hiking and cycling.",
+      "For example, apples and oranges are rich in vitamins.",
+      "In fact, he has lived in this city for five years.",
+      "Above all, we should always be honest."
+    ],
+    "passagesE": [
+      "You can either choose tea or coffee.",
+      "I prefer walking rather than taking the bus.",
+      "Many fruits are good for health, for example, apples and oranges.",
+      "In other words, the job is yours.",
+      "The team performed well. Likewise, the coach was pleased."
+    ],
+    "audioPromptsF": [
+      "You can either go to the cinema or the park.",
+      "I prefer walking rather than taking the bus.",
+      "For instance, apples and oranges are rich in vitamins.",
+      "In fact, he has lived here for five years.",
+      "Above all, be true to yourself."
+    ],
+    "storyG": [
+      {
+        "id": 1,
+        "question": "Tell me about your Happiest Moment (Getting your first job offer).",
+        "correctAnswer": "I woke up early and got ready for my interview. I reached the office on time. I greeted the interviewer with a smile. I answered all the interview questions confidently. I completed all the interview rounds successfully. I went back home and waited for the result. I received a phone call from the HR team. They offered me my first job. I thanked the HR for giving me this opportunity. I immediately shared the good news with my family. My parents congratulated me and felt proud. We celebrated the special day together. We ordered my favorite food. We clicked many happy pictures. My friends also congratulated me. I thanked God for this wonderful opportunity. I promised myself to work hard. I became more confident about my future. That day became a beautiful memory. It was the happiest moment of my life. Thank you for giving me this opportunity!",
+        "keywords": [
+          "woke up early",
+          "got ready for my interview",
+          "reached the office on time",
+          "greeted the interviewer",
+          "answered all the interview questions confidently",
+          "completed all the interview rounds successfully",
+          "waited for the result",
+          "phone call from the HR team",
+          "offered me my first job",
+          "thanked the HR",
+          "shared the good news with my family",
+          "parents congratulated me",
+          "celebrated the special day together",
+          "ordered my favorite food",
+          "clicked many happy pictures",
+          "thanked God",
+          "promised myself to work hard",
+          "became more confident",
+          "beautiful memory",
+          "happiest moment of my life"
+        ]
+      }
+    ],
+    "trueFalse": [
+      {
+        "q": "1. 'Either...or' is used to express a choice between two options.",
+        "ans": "True"
+      },
+      {
+        "q": "2. 'Neither...nor' is used to show that both options are possible.",
+        "ans": "False"
+      },
+      {
+        "q": "3. 'For example' is used to introduce an example.",
+        "ans": "True"
+      },
+      {
+        "q": "4. 'Unlike' is used to show similarity between two subjects.",
+        "ans": "False"
+      },
+      {
+        "q": "5. 'Above all' is used to emphasize the most important point.",
+        "ans": "True"
+      }
+    ],
+    "fillBlanks": [
+      {
+        "q": "1. You can _____ go to the cinema _____ stay at home.",
+        "ans": "either, or"
+      },
+      {
+        "q": "2. I prefer walking _____ than taking the bus.",
+        "ans": "rather"
+      },
+      {
+        "q": "3. Many fruits are healthy. _____, apples are rich in vitamins.",
+        "ans": "For example"
+      },
+      {
+        "q": "4. _____, we should always be honest.",
+        "ans": "Above all"
+      },
+      {
+        "q": "5. _____, the two students solved the problem in the same way.",
+        "ans": "Similarly"
+      }
+    ]
+  },
   {
     "setId": 2,
     "obj": [
       {
         "q": "1. How _____ is your school  your house?",
-        "opts": ["far/from", "many/for", "far/form"],
+        "opts": [
+          "far/from",
+          "many/for",
+          "far/form"
+        ],
         "ans": "far/from"
       },
       {
@@ -104,12 +228,20 @@
       },
       {
         "q": "3. Regular verbs usually form the past by adding _____ to the base form.",
-        "opts": ["-ed", "-ing", "-en"],
+        "opts": [
+          "-ed",
+          "-ing",
+          "-en"
+        ],
         "ans": "-ed"
       },
       {
         "q": "4. If a regular verb ends in 'e', what do we usually add?",
-        "opts": ["-d", "-ed", "-ing"],
+        "opts": [
+          "-d",
+          "-ed",
+          "-ing"
+        ],
         "ans": "-d"
       },
       {
@@ -150,7 +282,11 @@
       },
       {
         "q": "9. In the pronunciation guide, the word 'nation' is given as an example of which sound?",
-        "opts": ["SH sound", "J sound", "R sound"],
+        "opts": [
+          "SH sound",
+          "J sound",
+          "R sound"
+        ],
         "ans": "SH sound"
       },
       {
@@ -275,8 +411,208 @@
         "ans": "Written"
       }
     ]
+  },
+  {
+    "setId": 3,
+    "obj": [
+      {
+        "q": "1. Where do you see yourself in five years?",
+        "opts": [
+          "In five years, I see myself growing with this company and taking on bigger responsibilities.",
+          "In five years, I want to change jobs every month.",
+          "In five years, I do not want to work anywhere."
+        ],
+        "ans": "In five years, I see myself growing with this company and taking on bigger responsibilities."
+      },
+      {
+        "q": "2. Which of the following is a customer-focused strength?",
+        "opts": [
+          "Good Listening and Empathy",
+          "Taking things personally",
+          "Overcommitting beyond limits"
+        ],
+        "ans": "Good Listening and Empathy"
+      },
+      {
+        "q": "3. Which sentence correctly expresses a future career aspiration?",
+        "opts": [
+          "I want to build a good career and learn new skills.",
+          "I am want build good career.",
+          "I wants to build career good."
+        ],
+        "ans": "I want to build a good career and learn new skills."
+      },
+      {
+        "q": "4. What does having 'Patience' with customers mean?",
+        "opts": [
+          "Staying calm and polite, even with upset customers.",
+          "Arguing back when a customer is angry.",
+          "Ignoring customer queries."
+        ],
+        "ans": "Staying calm and polite, even with upset customers."
+      },
+      {
+        "q": "5. Which of the following represents a recognized weakness to work on?",
+        "opts": [
+          "Overcommitting and taking on too much work",
+          "Problem-Solving Skills",
+          "Teamwork and collaboration"
+        ],
+        "ans": "Overcommitting and taking on too much work"
+      },
+      {
+        "q": "6. Why is Clear Communication an important strength?",
+        "opts": [
+          "It helps explain things simply so the customer understands easily.",
+          "It makes conversations more complicated.",
+          "It avoids talking to team members."
+        ],
+        "ans": "It helps explain things simply so the customer understands easily."
+      },
+      {
+        "q": "7. What mindset helps in achieving five-year goals?",
+        "opts": [
+          "Success needs hard work, consistency, and patience.",
+          "Success happens without any effort.",
+          "Giving up easily when tasks are difficult."
+        ],
+        "ans": "Success needs hard work, consistency, and patience."
+      },
+      {
+        "q": "8. What does 'Responsiveness' mean in customer support?",
+        "opts": [
+          "Responding quickly and helping without delays.",
+          "Delaying customer queries indefinitely.",
+          "Passing all work to others."
+        ],
+        "ans": "Responding quickly and helping without delays."
+      },
+      {
+        "q": "9. How does teamwork contribute to better performance?",
+        "opts": [
+          "Working with coworkers ensures great service for every customer.",
+          "It creates confusion in handling requests.",
+          "It slows down problem resolution."
+        ],
+        "ans": "Working with coworkers ensures great service for every customer."
+      },
+      {
+        "q": "10. Which statement is correct regarding personal improvement?",
+        "opts": [
+          "I am working hard to improve my weaknesses.",
+          "I do not need to learn anything new.",
+          "Weaknesses cannot be improved."
+        ],
+        "ans": "I am working hard to improve my weaknesses."
+      }
+    ],
+    "email": {
+      "question": "Where do you see yourself in 5 years?",
+      "correctAnswer": "In five years, I see myself growing with this company. I want to build a solid career and take on more responsibilities, perhaps as a Senior Advisor, Team Leader, or Quality Analyst. I am not just looking for a job, but a long-term career where I can continuously learn, sharpen my skills, and contribute. I believe that staying consistent, delivering strong performance, and embracing new challenges will enable me to deliver meaningful value to the team and the organization.",
+      "keywords": [
+        "five years",
+        "growing with this company",
+        "responsibilities",
+        "Senior Advisor",
+        "Team Leader",
+        "Quality Analyst",
+        "long-term career",
+        "learn",
+        "consistent",
+        "strong performance",
+        "valuable",
+        "organization"
+      ]
+    },
+    "typing": "In five years, I see myself growing with this company. I want to take on more responsibilities — maybe as a Senior Advisor, Team Leader, or Quality Analyst. I’m not just looking for a job — I’m looking for a long-term career where I can learn, grow, and contribute. I believe that if I stay consistent, deliver strong performance, and keep learning, the company will definitely give me opportunities where I can do something valuable and meaningful for the team and the organization.",
+    "voiceD": [
+      "In five years, I see myself growing with this company.",
+      "I want to take on more responsibilities as a leader.",
+      "My key strengths are good listening, empathy, and clear communication.",
+      "I believe success requires hard work, patience, and consistency.",
+      "I am actively working to overcome my weaknesses."
+    ],
+    "passagesE": [
+      "In five years, I see myself building a stable career and taking on higher leadership responsibilities.",
+      "Good listening and empathy allow professionals to understand customer needs deeply without interrupting.",
+      "Problem-solving and responsiveness ensure issues are resolved promptly and effectively.",
+      "Recognizing weaknesses like overcommitting or taking things personally is the first step toward self-improvement.",
+      "Staying consistent and delivering strong performance creates long-term growth opportunities within an organization."
+    ],
+    "audioPromptsF": [
+      "In five years, I see myself in a leadership position.",
+      "I want to learn new skills and take on bigger responsibilities.",
+      "Clear communication helps customers understand solutions easily.",
+      "Patience helps in staying calm and polite during tough situations.",
+      "I am dedicated to turning my weaknesses into strengths."
+    ],
+    "storyG": [
+      {
+        "id": 1,
+        "question": "What are your strengths and weaknesses?",
+        "correctAnswer": "My key strengths include Good Listening, where I pay close attention to what the customer says without interrupting, and Empathy, which allows me to understand customer feelings and genuinely show care. I possess strong Problem-Solving Skills to quickly find effective solutions, alongside a Positive Attitude that keeps me cheerful during challenging situations. My Teamwork skills help me collaborate well with coworkers, while Responsiveness ensures I reply promptly to customer inquiries. Additionally, my Patience keeps me calm and polite with upset customers, and my Clear Communication allows me to explain complex things simply. Regarding weaknesses, I sometimes struggle with Overcommitting by taking on too much beyond my role to assist others. I have also dealt with Taking Things Personally when customers are upset, and a tendency where I Don’t Like Making Mistakes, even minor ones. However, I am actively working on these areas by managing boundaries, maintaining professional perspective, and treating errors as learning opportunities to continually grow.",
+        "keywords": [
+          "strengths and weaknesses",
+          "Good Listening",
+          "Empathy",
+          "Problem-Solving Skills",
+          "Positive Attitude",
+          "Teamwork",
+          "Responsiveness",
+          "Patience",
+          "Clear Communication",
+          "Overcommitting",
+          "Taking Things Personally",
+          "Don’t Like Making Mistakes",
+          "improve weaknesses",
+          "customer service",
+          "professional growth"
+        ]
+      }
+    ],
+    "trueFalse": [
+      {
+        "q": "1. Good listening means paying close attention without interrupting.",
+        "ans": "True"
+      },
+      {
+        "q": "2. Empathy means ignoring how a customer feels.",
+        "ans": "False"
+      },
+      {
+        "q": "3. Clear communication helps explain solutions simply and clearly.",
+        "ans": "True"
+      },
+      {
+        "q": "4. Overcommitting beyond one's role is considered a strength in time management.",
+        "ans": "False"
+      },
+      {
+        "q": "5. Long-term career growth requires continuous learning, consistency, and strong performance.",
+        "ans": "True"
+      }
+    ],
+    "fillBlanks": [
+      {
+        "q": "1. In five years, I want to take on more _____ within the organization.",
+        "ans": "responsibilities"
+      },
+      {
+        "q": "2. _____ allows me to stay calm and polite, even with upset customers.",
+        "ans": "Patience"
+      },
+      {
+        "q": "3. I explain things simply and clearly because of my clear _____ skills.",
+        "ans": "communication"
+      },
+      {
+        "q": "4. _____ is trying to understand how the customer feels and showing care.",
+        "ans": "Empathy"
+      },
+      {
+        "q": "5. Success needs hard work, consistency, and _____.",
+        "ans": "patience"
+      }
+    ]
   }
-
-
-
 ]
